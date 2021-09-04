@@ -1,0 +1,28 @@
+﻿<Properties StartupConfiguration="{F356F4D7-23AF-4A79-B5A9-5CF52E07BA9B}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="SocketServerWithStrings/SocketServer.cs">
+    <Files>
+      <File FileName="ClientWithDataExample/Program.cs" Line="51" Column="50" />
+      <File FileName="SocketServerWithStrings/SocketServer.cs" Line="35" Column="45" />
+      <File FileName="SocketServerWithStrings/Server.cs" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="SocketExampleWithString" expanded="True">
+            <Node name="ClientWithDataExample" expanded="True" />
+            <Node name="SocketServerWithStrings" expanded="True">
+              <Node name="SocketServer.cs" selected="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.SocketServerWithStrings PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>

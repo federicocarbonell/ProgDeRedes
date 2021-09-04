@@ -1,0 +1,30 @@
+﻿<Properties StartupConfiguration="{89CBFE87-34B6-46D1-8842-401A8F326CE0}|Default">
+  <MonoDevelop.Ide.ItemProperties.Socket__v2 FirstBuild="True" />
+  <MonoDevelop.Ide.ItemProperties.Socket__v1 PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="ClientSocket_v1/Client.cs">
+    <Files>
+      <File FileName="Socket_v1/Server.cs" Line="27" Column="51" />
+      <File FileName="ClientSocket_v1/Client.cs" Line="22" Column="66" />
+      <File FileName="Socket_v2/Program.cs" Line="40" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Socket_v1" expanded="True">
+            <Node name="ClientSocket_v1" expanded="True">
+              <Node name="Client.cs" selected="True" />
+            </Node>
+            <Node name="Socket_v1" expanded="True" />
+            <Node name="Socket_v2" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
