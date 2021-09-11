@@ -49,6 +49,26 @@ namespace Client
                         }
 
                         break;
+                    case "add":
+                        Console.WriteLine("Ingrese el nombre del juego:");
+                        mensaje = Console.ReadLine();
+                        header = new Header(HeaderConstants.Request, CommandConstants.AddGame, mensaje.Length);
+                        data = header.GetRequest();
+                        sentBytes = 0;
+                        while (sentBytes < data.Length)
+                        {
+                            sentBytes += socket.Send(data, sentBytes, data.Length - sentBytes, SocketFlags.None);
+                        }
+
+                        sentBytes = 0;
+                        bytesMessage = Encoding.UTF8.GetBytes(mensaje);
+                        while (sentBytes < bytesMessage.Length)
+                        {
+                            sentBytes += socket.Send(bytesMessage, sentBytes, bytesMessage.Length - sentBytes,
+                                SocketFlags.None);
+                        }
+
+                        break;
                     default:
                         Console.WriteLine("Opcion invalida");
                         break;

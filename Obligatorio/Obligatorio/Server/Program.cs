@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using ProtocolLibrary;
+using StateServices;
 
 namespace Server
 {
@@ -81,8 +82,13 @@ namespace Server
                 switch (header.ICommand)
                 {
                     case CommandConstants.Login:
-                    case CommandConstants.ListUsers:
-                        Console.WriteLine("Not Implemented yet...");
+                    case CommandConstants.AddGame:
+                        Console.WriteLine("Adding game");
+                        var bufferData1 = new byte[header.IDataLength];
+                        ReceiveData(clientSocket, header.IDataLength, bufferData1);
+                        string gameName = Encoding.UTF8.GetString(bufferData1);
+                        AddGame(gameName);
+                        Console.WriteLine("Game added: " + gameName);
                         break;
                     case CommandConstants.Message:
                         Console.WriteLine("Will receive message to display...");
@@ -119,5 +125,12 @@ namespace Server
                 }
             }
         }
+
+        private static void AddGame(String name)
+        {
+            GameService gameService = new GameService();
+            gameService.AddGame(name);
+        }
+
     }
 }
