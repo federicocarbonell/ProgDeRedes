@@ -8,34 +8,37 @@ namespace StateServices
 {
     public class GameRepository : IRepository<Game>
     {
-        private ServerState State;
+
+        public GameRepository() { }
 
         public void Add(Game entity)
         {
-            State.GetInstance().Games.Add(entity);
-        }
+            var auxList = ServerState.GetInstance().Games;
+            auxList.Add(entity);
+            ServerState.GetInstance().Games = auxList;
+        }//hay que hacer esta magia con las listas en todos creo
 
         public void Delete(int id)
         {
-            int arrPos = State.GetInstance().Games.FindIndex(x => x.Id == id);
-            State.GetInstance().Games.RemoveAt(arrPos);
+            int arrPos = ServerState.GetInstance().Games.FindIndex(x => x.Id == id);
+            ServerState.GetInstance().Games.RemoveAt(arrPos);
         }
 
         public Game Get(int id)
         {
             if (!ValidId(id))
                 throw new Exception("Given id has no corresponding game");
-            return State.GetInstance().Games.Find(x => x.Id == id);
+            return ServerState.GetInstance().Games.Find(x => x.Id == id);
         }
 
         private bool ValidId(int id)
         {
-            return id <= State.GetInstance().Users.FindLast(x => x != null).Id;
+            return id <= ServerState.GetInstance().Users.FindLast(x => x != null).Id;
         }
 
         public IQueryable<Game> GetAll()
         {
-            return State.GetInstance().Games.ToList().AsQueryable();
+            return ServerState.GetInstance().Games.ToList().AsQueryable();
         }
 
         public void Update(int id, Game newEntity)

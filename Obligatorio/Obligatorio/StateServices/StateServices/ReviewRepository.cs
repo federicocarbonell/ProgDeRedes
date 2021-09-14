@@ -8,34 +8,33 @@ namespace StateServices
 {
     public class ReviewRepository : IRepository<Review>
     {
-        private ServerState State;
 
         public void Add(Review entity)
         {
-            State.GetInstance().Reviews.Add(entity);
+            ServerState.GetInstance().Reviews.Add(entity);
         }
 
         public void Delete(int id)
         {
-            int arrPos = State.GetInstance().Users.FindIndex(x => x.Id == id);
-            State.GetInstance().Users.RemoveAt(arrPos);
+            int arrPos = ServerState.GetInstance().Users.FindIndex(x => x.Id == id);
+            ServerState.GetInstance().Users.RemoveAt(arrPos);
         }
 
         public Review Get(int id)
         {
             if (!ValidId(id))
                 throw new Exception("Given id has no corresponding game");
-            return State.GetInstance().Reviews.Find(x => x.Id == id);
+            return ServerState.GetInstance().Reviews.Find(x => x.Id == id);
         }
 
         private bool ValidId(int id)
         {
-            return id <= State.GetInstance().Reviews.FindLast(x => x != null).Id;
+            return id <= ServerState.GetInstance().Reviews.FindLast(x => x != null).Id;
         }
 
         public IQueryable<Review> GetAll()
         {
-            return State.GetInstance().Reviews.ToList().AsQueryable();
+            return ServerState.GetInstance().Reviews.ToList().AsQueryable();
         }
 
         public void Update(int id, Review newEntity)
