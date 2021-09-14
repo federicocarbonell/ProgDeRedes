@@ -14,6 +14,7 @@ namespace StateServices
 
         //aca no se si no hacer lockers auxiliares para cada lista y en los gets lockear tambien, pregunta para Luis.
         private static ServerState Instance { get; set; }
+        private List<Game> _Games { get; set; }
 
         public List<User> Users 
         { 
@@ -59,15 +60,15 @@ namespace StateServices
             {
                 lock (GamesLocker)
                 {
-                    if (Games == null) return new List<Game>();
-                    return Games;
+                    if (_Games == null) return new List<Game>();
+                    return _Games;
                 }//no se si para lectura es necesario
             }
             set
             {
                 lock (GamesLocker)
                 {
-                    Games = value;
+                    _Games = value;
                 }
             }
         }

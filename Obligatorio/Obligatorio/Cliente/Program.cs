@@ -17,6 +17,7 @@ namespace Client
             Console.WriteLine("Bienvenido al Sistema Client");
             Console.WriteLine("Opciones validas: ");
             Console.WriteLine("message  <mensaje> -> envia <mensaje> al server");
+            Console.WriteLine("add game -> crea un juego con el nombre");
             Console.WriteLine("exit -> abandonar el programa");
             Console.WriteLine("Ingrese su opcion: ");
             while (connected)
@@ -29,10 +30,10 @@ namespace Client
                         socket.Close();
                         connected = false;
                         break;
-                    case "message":
+                    case "view games":
                         Console.WriteLine("Ingrese el mensaje a enviar:");
                         var mensaje = Console.ReadLine();
-                        var header = new Header(HeaderConstants.Request, CommandConstants.Message, mensaje.Length);
+                        var header = new Header(HeaderConstants.Request, CommandConstants.GetGames, mensaje.Length);
                         var data = header.GetRequest();
                         var sentBytes = 0;
                         while (sentBytes < data.Length)
@@ -49,7 +50,7 @@ namespace Client
                         }
 
                         break;
-                    case "add":
+                    case "add game":
                         Console.WriteLine("Ingrese el nombre del juego:");
                         mensaje = Console.ReadLine();
                         header = new Header(HeaderConstants.Request, CommandConstants.AddGame, mensaje.Length);

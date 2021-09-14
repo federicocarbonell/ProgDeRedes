@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using ProtocolLibrary;
 using StateServices;
+using StateServices.DomainEntities;
 
 namespace Server
 {
@@ -90,11 +92,9 @@ namespace Server
                         AddGame(gameName);
                         Console.WriteLine("Game added: " + gameName);
                         break;
-                    case CommandConstants.Message:
-                        Console.WriteLine("Will receive message to display...");
-                        var bufferData = new byte[header.IDataLength];
-                        ReceiveData(clientSocket, header.IDataLength, bufferData);
-                        Console.WriteLine("Message received: " + Encoding.UTF8.GetString(bufferData));
+                    case CommandConstants.GetGames:
+                        Console.WriteLine("Below is the list of games...");
+                        //Console.WriteLine("Message received: " + Encoding.UTF8.GetString(bufferData));
                         break;
                 }
 
