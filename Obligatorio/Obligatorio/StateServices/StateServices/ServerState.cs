@@ -69,6 +69,7 @@ namespace StateServices
                 lock (GamesLocker)
                 {
                     _Games = value;
+                    Games = _Games;
                 }
             }
         }
