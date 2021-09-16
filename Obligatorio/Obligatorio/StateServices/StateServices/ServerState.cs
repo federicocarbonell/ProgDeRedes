@@ -69,7 +69,6 @@ namespace StateServices
                 lock (GamesLocker)
                 {
                     _Games = value;
-                    Games = _Games;
                 }
             }
         }
@@ -82,7 +81,7 @@ namespace StateServices
             {
                 lock (Locker)
                 {
-                    return new ServerState();
+                    Instance = new ServerState();
                 }
             }
             return Instance;

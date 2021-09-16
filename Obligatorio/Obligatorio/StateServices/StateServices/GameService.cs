@@ -6,9 +6,14 @@ namespace StateServices
 {
     public class GameService
     {
+        GameRepository gameRepository;
+        public GameService(GameRepository gameRepository)
+        {
+            this.gameRepository = gameRepository;
+        }
+
         public void AddGame(string name)
         {
-            GameRepository gameRepository = new GameRepository();
             Game game = new Game();
             game.Name = name;
             gameRepository.Add(game);

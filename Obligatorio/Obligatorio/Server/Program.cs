@@ -15,12 +15,15 @@ namespace Server
     {
         static bool _exit = false;
         static List<Socket> _clients = new List<Socket>();
+        static GameService gameService;
         static void Main(string[] args)
         {
             var socketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socketServer.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 20000));
             socketServer.Listen(100);
-            var threadServer = new Thread(() => ListenForConnections(socketServer));
+            GameRepository gameRepository = new GameRepository();
+            gameService = new GameService(gameRepository);
+            var threadServer = new Thread(() => ListenForConnections(socketServer, gameService));
             threadServer.Start();
 
             Console.WriteLine("Bienvenido al Sistema Server");
@@ -50,7 +53,7 @@ namespace Server
             }
         }
 
-        private static void ListenForConnections(Socket socketServer)
+        private static void ListenForConnections(Socket socketServer, GameService gameService)
         {
             while (!_exit)
             {
@@ -58,7 +61,7 @@ namespace Server
                 {
                     var clientConnected = socketServer.Accept();
                     _clients.Add(clientConnected);
-                    var threacClient = new Thread(() => HandleClient(clientConnected));
+                    var threacClient = new Thread(() => HandleClient(clientConnected, gameService));
                     threacClient.Start();
                 }
                 catch (Exception e)
@@ -70,7 +73,7 @@ namespace Server
             Console.WriteLine("Exiting....");
         }
 
-        private static void HandleClient(Socket clientSocket)
+        private static void HandleClient(Socket clientSocket, GameService gameService)
         {
             while (!_exit)
             {
@@ -128,7 +131,6 @@ namespace Server
 
         private static void AddGame(String name)
         {
-            GameService gameService = new GameService();
             gameService.AddGame(name);
         }
 
