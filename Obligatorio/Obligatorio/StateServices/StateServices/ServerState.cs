@@ -20,11 +20,9 @@ namespace StateServices
         { 
             get
             {
-                lock(UsersLocker)
-                {
-                    if (Users == null) return new List<User>();
-                    return Users;
-                }//no se si para lectura es necesario
+                if (Users == null) return new List<User>();
+                return Users;
+                
             }
             set
             {
@@ -39,11 +37,8 @@ namespace StateServices
         {
             get
             {
-                lock (ReviewsLocker)
-                {
-                    if (Reviews == null) return new List<Review>();
-                    return Reviews;
-                }//no se si para lectura es necesario
+                if (Reviews == null) return new List<Review>();
+                return Reviews;
             }
             set
             {
@@ -58,11 +53,8 @@ namespace StateServices
         {
             get
             {
-                lock (GamesLocker)
-                {
-                    if (_Games == null) return new List<Game>();
-                    return _Games;
-                }//no se si para lectura es necesario
+                if (_Games == null) return new List<Game>();
+                return _Games;
             }
             set
             {
