@@ -8,4 +8,10 @@
   <ItemGroup>
     <ProjectReference Include="..\ProtocolLibrary1\ProtocolLibrary.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="Interfaces\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
+  </ItemGroup>
 </Project>
