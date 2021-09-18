@@ -8,75 +8,75 @@ namespace Client
 {
     class Program
     {
-        static void Main(string[] args)
-        {
-            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            socket.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 0));
-            socket.Connect("127.0.0.1", 20000);
-            var connected = true;
-            Console.WriteLine("Bienvenido al Sistema Client");
-            Console.WriteLine("Opciones validas: ");
-            Console.WriteLine("message  <mensaje> -> envia <mensaje> al server");
-            Console.WriteLine("add game -> crea un juego con el nombre");
-            Console.WriteLine("exit -> abandonar el programa");
-            Console.WriteLine("Ingrese su opcion: ");
-            while (connected)
-            {
-                var opcion = Console.ReadLine();
-                switch (opcion)
-                {
-                    case "exit":
-                        socket.Shutdown(SocketShutdown.Both);
-                        socket.Close();
-                        connected = false;
-                        break;
-                    case "view games":
-                        Console.WriteLine("Ingrese el mensaje a enviar:");
-                        var mensaje = Console.ReadLine();
-                        var header = new Header(HeaderConstants.Request, CommandConstants.GetGames, mensaje.Length);
-                        var data = header.GetRequest();
-                        var sentBytes = 0;
-                        while (sentBytes < data.Length)
-                        {
-                            sentBytes += socket.Send(data, sentBytes, data.Length - sentBytes, SocketFlags.None);
-                        }
+        //static void Main(string[] args)
+        //{
+        //    var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        //    socket.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 0));
+        //    socket.Connect("127.0.0.1", 20000);
+        //    var connected = true;
+        //    Console.WriteLine("Bienvenido al Sistema Client");
+        //    Console.WriteLine("Opciones validas: ");
+        //    Console.WriteLine("message  <mensaje> -> envia <mensaje> al server");
+        //    Console.WriteLine("add game -> crea un juego con el nombre");
+        //    Console.WriteLine("exit -> abandonar el programa");
+        //    Console.WriteLine("Ingrese su opcion: ");
+        //    while (connected)
+        //    {
+        //        var opcion = Console.ReadLine();
+        //        switch (opcion)
+        //        {
+        //            case "exit":
+        //                socket.Shutdown(SocketShutdown.Both);
+        //                socket.Close();
+        //                connected = false;
+        //                break;
+        //            case "view games":
+        //                Console.WriteLine("Ingrese el mensaje a enviar:");
+        //                var mensaje = Console.ReadLine();
+        //                var header = new Header(HeaderConstants.Request, CommandConstants.GetGames, mensaje.Length);
+        //                var data = header.GetRequest();
+        //                var sentBytes = 0;
+        //                while (sentBytes < data.Length)
+        //                {
+        //                    sentBytes += socket.Send(data, sentBytes, data.Length - sentBytes, SocketFlags.None);
+        //                }
 
-                        sentBytes = 0;
-                        var bytesMessage = Encoding.UTF8.GetBytes(mensaje);
-                        while (sentBytes < bytesMessage.Length)
-                        {
-                            sentBytes += socket.Send(bytesMessage, sentBytes, bytesMessage.Length - sentBytes,
-                                SocketFlags.None);
-                        }
+        //                sentBytes = 0;
+        //                var bytesMessage = Encoding.UTF8.GetBytes(mensaje);
+        //                while (sentBytes < bytesMessage.Length)
+        //                {
+        //                    sentBytes += socket.Send(bytesMessage, sentBytes, bytesMessage.Length - sentBytes,
+        //                        SocketFlags.None);
+        //                }
 
-                        break;
-                    case "add game":
-                        Console.WriteLine("Ingrese el nombre del juego:");
-                        mensaje = Console.ReadLine();
-                        header = new Header(HeaderConstants.Request, CommandConstants.AddGame, mensaje.Length);
-                        data = header.GetRequest();
-                        sentBytes = 0;
-                        while (sentBytes < data.Length)
-                        {
-                            sentBytes += socket.Send(data, sentBytes, data.Length - sentBytes, SocketFlags.None);
-                        }
+        //                break;
+        //            case "add game":
+        //                Console.WriteLine("Ingrese el nombre del juego:");
+        //                mensaje = Console.ReadLine();
+        //                header = new Header(HeaderConstants.Request, CommandConstants.AddGame, mensaje.Length);
+        //                data = header.GetRequest();
+        //                sentBytes = 0;
+        //                while (sentBytes < data.Length)
+        //                {
+        //                    sentBytes += socket.Send(data, sentBytes, data.Length - sentBytes, SocketFlags.None);
+        //                }
 
-                        sentBytes = 0;
-                        bytesMessage = Encoding.UTF8.GetBytes(mensaje);
-                        while (sentBytes < bytesMessage.Length)
-                        {
-                            sentBytes += socket.Send(bytesMessage, sentBytes, bytesMessage.Length - sentBytes,
-                                SocketFlags.None);
-                        }
+        //                sentBytes = 0;
+        //                bytesMessage = Encoding.UTF8.GetBytes(mensaje);
+        //                while (sentBytes < bytesMessage.Length)
+        //                {
+        //                    sentBytes += socket.Send(bytesMessage, sentBytes, bytesMessage.Length - sentBytes,
+        //                        SocketFlags.None);
+        //                }
 
-                        break;
-                    default:
-                        Console.WriteLine("Opcion invalida");
-                        break;
-                }
-            }
+        //                break;
+        //            default:
+        //                Console.WriteLine("Opcion invalida");
+        //                break;
+        //        }
+        //    }
 
-            Console.WriteLine("Exiting Application");
-        }
+        //    Console.WriteLine("Exiting Application");
+        //}
     }
 }
