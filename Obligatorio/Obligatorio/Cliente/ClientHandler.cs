@@ -17,6 +17,8 @@ namespace Client
         private const int ServerPort = 20000;
         private const int ClientPort = 0;
         public readonly Socket socket;
+        private Header header;
+        //lei en internet de thread pools o socket pools
 
         public ClientHandler()
         {
@@ -86,13 +88,36 @@ namespace Client
             result.AddRange(data);
             //TERMINO DE ARMAR EL ENCABEZADO
 
-            //ACA NOS FALTARIA ENVIAR ESTO, PERO EL PAQUETE YA ESTA ARMADO DEL LADO CLIENTE
+            header = new Header(HeaderConstants.Request, CommandConstants.AddGame, data.Count);
 
-            throw new NotImplementedException();
+            byte[] headerBytes = header.GetRequest();
+
+            int sentHeaderBytes = 0;
+            while(sentHeaderBytes < headerBytes.Length)
+            {
+                sentHeaderBytes += socket.Send(headerBytes, sentHeaderBytes, headerBytes.Length - sentHeaderBytes, SocketFlags.None);
+            }
+
+            int sentBodyBytes = 0;
+            while(sentBodyBytes < data.Count)
+            {
+                sentBodyBytes += socket.Send(data.ToArray(), sentBodyBytes, data.Count - sentBodyBytes, SocketFlags.None);
+            }
         }
 
         public void DeleteGame(int id)
         {
+            List<byte> result = new List<byte>();
+            List<byte> data = new List<byte>();
+
+            byte[] gameIdBytes = BitConverter.GetBytes(id);
+            data.AddRange(BitConverter.GetBytes(gameIdBytes.Length));
+            data.AddRange(gameIdBytes);
+
+            result.AddRange(CommandConstants.DeleteGame);
+            result.AddRange(BitConverter.GetBytes(data.Count));
+            result.AddRange(data);
+
             throw new NotImplementedException();
         }
 
