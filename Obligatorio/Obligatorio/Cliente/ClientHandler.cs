@@ -24,6 +24,7 @@ namespace Client
         {
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socket.Bind(new IPEndPoint(IPAddress.Parse(ClientIp), ClientPort));
+            ConnectToServer();
         }
 
         public void ConnectToServer()
@@ -40,8 +41,7 @@ namespace Client
 
         public void AddGame(string title, string genre, string trailer, string cover)
         {
-            ConnectToServer();
-
+            
             GameDTO game = new GameDTO { Name = title, Genre = genre, Description = trailer, CoverPath = cover };
 
             List<byte> result = new List<byte>();
