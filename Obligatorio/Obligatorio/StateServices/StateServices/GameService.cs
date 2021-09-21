@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Client.DTOs;
 using StateServices.DomainEntities;
 
 namespace StateServices
@@ -12,11 +13,17 @@ namespace StateServices
             this.gameRepository = gameRepository;
         }
 
-        public void AddGame(string name)
+        public void AddGame(GameDTO game)
         {
-            Game game = new Game();
-            game.Name = name;
-            gameRepository.Add(game);
+            // TODO: Mapper
+            Game gameToInsert = new Game
+            {
+                Name = game.Name,
+                Genre = game.Genre,
+                CoverPath = game.CoverPath,
+                Description = game.Description
+            };
+            gameRepository.Add(gameToInsert);
         }
 
         public IQueryable<Game> GetAllGames()

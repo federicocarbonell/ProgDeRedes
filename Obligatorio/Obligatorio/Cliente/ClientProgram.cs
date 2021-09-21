@@ -3,12 +3,12 @@ namespace Client
 {
     public class ClientProgram
     {
-        //static ClientHandler clientHandler;
+        static ClientHandler clientHandler;
 
 
         static void Main(string[] args)
         {
-            //clientHandler = new ClientHandler();
+            clientHandler = new ClientHandler();
             int command = -1;
             do
             {
@@ -109,7 +109,20 @@ namespace Client
 
         private static void PrintAddGame()
         {
-            throw new NotImplementedException();
+            Console.Write("Game title: ");
+            var title = Console.ReadLine();
+
+            Console.Write("Game genre: ");
+            var genre = Console.ReadLine();
+
+            Console.Write("Game sinopsis: ");
+            var trailer = Console.ReadLine();
+
+            Console.Write("Game cover: ");
+            var cover = Console.ReadLine();
+
+            clientHandler.AddGame(title, genre, trailer, cover);
+            Console.Write("--- Game added ---");
         }
 
 

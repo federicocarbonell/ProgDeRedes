@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using Client.DTOs;
 using ProtocolLibrary;
 using StateServices;
 using StateServices.DomainEntities;
@@ -16,8 +17,10 @@ namespace Server
         static bool _exit = false;
         static List<Socket> _clients = new List<Socket>();
         static GameService gameService;
+        static ServerHandler serverHandler;
         static void Main(string[] args)
         {
+            serverHandler = new ServerHandler();
             var socketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socketServer.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 20000));
             socketServer.Listen(100);
@@ -91,9 +94,10 @@ namespace Server
                         Console.WriteLine("Adding game");
                         var bufferData1 = new byte[header.IDataLength];
                         ReceiveData(clientSocket, header.IDataLength, bufferData1);
-                        string gameName = Encoding.UTF8.GetString(bufferData1);
-                        AddGame(gameName);
-                        Console.WriteLine("Game added: " + gameName);
+
+                        GameDTO game = serverHandler.ReceiveGame(bufferData1);
+                        AddGame(game);
+                        Console.WriteLine("Game added: " + game.Name);
                         break;
                     case CommandConstants.GetGames:
                         Console.WriteLine("Below is the list of games...");
@@ -129,9 +133,9 @@ namespace Server
             }
         }
 
-        private static void AddGame(String name)
+        private static void AddGame(GameDTO game)
         {
-            gameService.AddGame(name);
+            gameService.AddGame(game);
         }
 
     }

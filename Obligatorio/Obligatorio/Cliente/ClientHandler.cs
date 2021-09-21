@@ -40,6 +40,8 @@ namespace Client
 
         public void AddGame(string title, string genre, string trailer, string cover)
         {
+            ConnectToServer();
+
             GameDTO game = new GameDTO { Name = title, Genre = genre, Description = trailer, CoverPath = cover };
 
             List<byte> result = new List<byte>();
@@ -114,7 +116,7 @@ namespace Client
             data.AddRange(BitConverter.GetBytes(gameIdBytes.Length));
             data.AddRange(gameIdBytes);
 
-            result.AddRange(CommandConstants.DeleteGame);
+            //result.AddRange(CommandConstants.DeleteGame);
             result.AddRange(BitConverter.GetBytes(data.Count));
             result.AddRange(data);
 
