@@ -30,6 +30,12 @@ namespace Server
             return new GameDTO { Name = name , Genre = genre, Description = description, CoverPath = coverPath};
         }
 
+        public int ReceiveId(byte[] bufferData)
+        {
+            int idLength = obtainLength(bufferData, 0);
+            return convertToInt(bufferData, idLength, 0);
+        }
+
         public int obtainLength(byte[] bufferData, int start)
         {
             return Convert.ToInt32(bufferData[start]);
@@ -43,6 +49,16 @@ namespace Server
                 stringBytes[i] = bufferData[i + start + 4];
             }
             return System.Text.Encoding.UTF8.GetString(stringBytes);
+        }
+
+        public int convertToInt(byte[] bufferData, int stringLength, int start)
+        {
+            byte[] stringBytes = new byte[stringLength];
+            for (int i = 0; i < stringLength; i++)
+            {
+                stringBytes[i] = bufferData[i + start + 4];
+            }
+            return BitConverter.ToInt32(stringBytes);
         }
 
     }

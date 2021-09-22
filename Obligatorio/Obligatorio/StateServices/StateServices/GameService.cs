@@ -31,5 +31,10 @@ namespace StateServices
             GameRepository gameRepository = new GameRepository();
             return gameRepository.GetAll();
         }
+
+        public void DeleteGame(int id)
+        {
+            gameRepository.Delete(id);
+        }
     }
 }

@@ -104,7 +104,11 @@ namespace Client
 
         private static void PrintDeleteGame()
         {
-            throw new NotImplementedException();
+            Console.Write("Game id: ");
+            int id = Int32.Parse(Console.ReadLine());
+
+            clientHandler.DeleteGame(id);
+            Console.Write("--- Game deleted ---");
         }
 
         private static void PrintAddGame()

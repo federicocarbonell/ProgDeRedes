@@ -18,6 +18,8 @@ namespace StateServices.DomainEntities
         //aca no se si guardamos la referencia a la ruta en disco o que 
         public string CoverPath { get; set; }
 
+        public bool isDeleted { get; set; }
+
         public List<Review> Reviews { get; set; }
 
     }

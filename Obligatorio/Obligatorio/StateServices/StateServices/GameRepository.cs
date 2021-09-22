@@ -14,14 +14,25 @@ namespace StateServices
         public void Add(Game entity)
         {
             var auxList = ServerState.GetInstance().Games;
+            entity.isDeleted = false;
+            entity.Id = obtainId();
             auxList.Add(entity);
             ServerState.GetInstance().Games = auxList;
         }//hay que hacer esta magia con las listas en todos creo
 
+        public int obtainId()
+        {
+            var auxList = ServerState.GetInstance().Games;
+            var id = auxList.Count() + 1;
+            return id;
+        }
+
         public void Delete(int id)
         {
             int arrPos = ServerState.GetInstance().Games.FindIndex(x => x.Id == id);
-            ServerState.GetInstance().Games.RemoveAt(arrPos);
+            var auxList = ServerState.GetInstance().Games;
+            auxList.Find(x => x.Id == id).isDeleted = true;
+            ServerState.GetInstance().Games = auxList;
         }
 
         public Game Get(int id)
