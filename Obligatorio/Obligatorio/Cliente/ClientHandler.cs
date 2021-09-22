@@ -44,34 +44,10 @@ namespace Client
             
             List<byte> data = new List<byte>();
 
-            //ARMO TRAMA DE DATOS
-            //paso a bytes info a pasar
-            byte[] titleBytes = Encoding.UTF8.GetBytes(title);
-            //agrego tamaño de info a pasar
-            data.AddRange(BitConverter.GetBytes(titleBytes.Length));
-            //agrego info a pasar
-            data.AddRange(titleBytes);
-
-            //paso a bytes info a pasar
-            byte[] genreBytes = Encoding.UTF8.GetBytes(genre);
-            //agrego tamaño de info a pasar
-            data.AddRange(BitConverter.GetBytes(genreBytes.Length));
-            //agrego info a pasar
-            data.AddRange(genreBytes);
-
-            //paso a bytes info a pasar
-            byte[] trailerBytes = Encoding.UTF8.GetBytes(trailer);
-            //agrego tamaño de info a pasar
-            data.AddRange(BitConverter.GetBytes(trailerBytes.Length));
-            //agrego info a pasar
-            data.AddRange(trailerBytes);
-
-            //paso a bytes info a pasar
-            byte[] coverBytes = Encoding.UTF8.GetBytes(cover);
-            //agrego tamaño de info a pasar
-            data.AddRange(BitConverter.GetBytes(coverBytes.Length));
-            //agrego info a pasar
-            data.AddRange(coverBytes);
+            AddStringData(data, title);
+            AddStringData(data, genre);
+            AddStringData(data, trailer);
+            AddStringData(data, cover);
 
             SendData(data, CommandConstants.AddGame);
 
@@ -82,10 +58,7 @@ namespace Client
             //creo q no tamo usando el result para nada habria q revisar bien
             List<byte> data = new List<byte>();
 
-            byte[] gameIdBytes = BitConverter.GetBytes(id);
-            data.AddRange(BitConverter.GetBytes(gameIdBytes.Length));
-            data.AddRange(gameIdBytes);
-
+            AddIntData(data, id);
             SendData(data, CommandConstants.DeleteGame);
 
         }
@@ -94,25 +67,11 @@ namespace Client
         {
             List<byte> data = new List<byte>();
 
-            byte[] gameIdBytes = BitConverter.GetBytes(id);
-            data.AddRange(BitConverter.GetBytes(gameIdBytes.Length));
-            data.AddRange(gameIdBytes);
-
-            byte[] titleBytes = Encoding.UTF8.GetBytes(title);
-            data.AddRange(BitConverter.GetBytes(titleBytes.Length));
-            data.AddRange(titleBytes);
-
-            byte[] genreBytes = Encoding.UTF8.GetBytes(genre);
-            data.AddRange(BitConverter.GetBytes(genreBytes.Length));
-            data.AddRange(genreBytes);
-
-            byte[] trailerBytes = Encoding.UTF8.GetBytes(trailer);
-            data.AddRange(BitConverter.GetBytes(trailerBytes.Length));
-            data.AddRange(trailerBytes);
-
-            byte[] coverBytes = Encoding.UTF8.GetBytes(cover);
-            data.AddRange(BitConverter.GetBytes(coverBytes.Length));
-            data.AddRange(coverBytes);
+            AddIntData(data, id);
+            AddStringData(data, title);
+            AddStringData(data, genre);
+            AddStringData(data, trailer);
+            AddStringData(data, cover);
 
             SendData(data, CommandConstants.ModifyGame);
 
@@ -122,17 +81,9 @@ namespace Client
         {
             List<byte> data = new List<byte>();
 
-            byte[] gameIdBytes = BitConverter.GetBytes(id);
-            data.AddRange(BitConverter.GetBytes(gameIdBytes.Length));
-            data.AddRange(gameIdBytes);
-
-            byte[] titleBytes = BitConverter.GetBytes(rating);
-            data.AddRange(BitConverter.GetBytes(titleBytes.Length));
-            data.AddRange(titleBytes);
-
-            byte[] genreBytes = Encoding.UTF8.GetBytes(review);
-            data.AddRange(BitConverter.GetBytes(genreBytes.Length));
-            data.AddRange(genreBytes);
+            AddIntData(data, id);
+            AddIntData(data, rating);
+            AddStringData(data, review);
 
             SendData(data, CommandConstants.QualifyGame);
 
@@ -143,9 +94,7 @@ namespace Client
 
             List<byte> data = new List<byte>();
 
-            byte[] gameIdBytes = BitConverter.GetBytes(id);
-            data.AddRange(BitConverter.GetBytes(gameIdBytes.Length));
-            data.AddRange(gameIdBytes);
+            AddIntData(data, id);
 
             SendData(data, CommandConstants.ViewDetail);
 
@@ -183,5 +132,20 @@ namespace Client
             }
 
         }
+
+        private void AddIntData(List<byte> data, int info)
+        {
+            byte[] bytes = BitConverter.GetBytes(info);
+            data.AddRange(BitConverter.GetBytes(bytes.Length));
+            data.AddRange(bytes);
+        }
+
+        private void AddStringData(List<byte> data, string info)
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(info);
+            data.AddRange(BitConverter.GetBytes(bytes.Length));
+            data.AddRange(bytes);
+        }
+
     }
 }
