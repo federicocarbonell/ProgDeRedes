@@ -42,14 +42,7 @@ namespace Client
         public void AddGame(string title, string genre, string trailer, string cover)
         {
             
-            GameDTO game = new GameDTO { Name = title, Genre = genre, Description = trailer, CoverPath = cover };
-
-            List<byte> result = new List<byte>();
             List<byte> data = new List<byte>();
-
-            //pa esto no podremos hacer un strategy re picante
-                //le pasas el objeto, setea la strategy
-                //en funcion de la strategy hace la conversion, dejamos en una clase estatica las auxiliares (int/string/algo -> byte[])
 
             //ARMO TRAMA DE DATOS
             //paso a bytes info a pasar
@@ -79,63 +72,22 @@ namespace Client
             data.AddRange(BitConverter.GetBytes(coverBytes.Length));
             //agrego info a pasar
             data.AddRange(coverBytes);
-            //TERMINO ARMADO TRAMA DATOS
 
-            //ARRANCO A ARMAR ENCABEZADO
-            //seteo comando
-            result.AddRange(BitConverter.GetBytes(CommandConstants.AddGame));
-            //seteo largo datos a enviar
-            result.AddRange(BitConverter.GetBytes(data.Count));
-            //seteo datos
-            result.AddRange(data);
-            //TERMINO DE ARMAR EL ENCABEZADO
+            SendData(data, CommandConstants.AddGame);
 
-            header = new Header(HeaderConstants.Request, CommandConstants.AddGame, data.Count);
-
-            byte[] headerBytes = header.GetRequest();
-
-            int sentHeaderBytes = 0;
-            while(sentHeaderBytes < headerBytes.Length)
-            {
-                sentHeaderBytes += socket.Send(headerBytes, sentHeaderBytes, headerBytes.Length - sentHeaderBytes, SocketFlags.None);
-            }
-
-            int sentBodyBytes = 0;
-            while(sentBodyBytes < data.Count)
-            {
-                sentBodyBytes += socket.Send(data.ToArray(), sentBodyBytes, data.Count - sentBodyBytes, SocketFlags.None);
-            }
         }
 
         public void DeleteGame(int id)
         {
             //creo q no tamo usando el result para nada habria q revisar bien
-            List<byte> result = new List<byte>();
             List<byte> data = new List<byte>();
 
             byte[] gameIdBytes = BitConverter.GetBytes(id);
             data.AddRange(BitConverter.GetBytes(gameIdBytes.Length));
             data.AddRange(gameIdBytes);
 
-            //result.AddRange(CommandConstants.DeleteGame);
-            result.AddRange(BitConverter.GetBytes(data.Count));
-            result.AddRange(data);
+            SendData(data, CommandConstants.DeleteGame);
 
-            header = new Header(HeaderConstants.Request, CommandConstants.DeleteGame, data.Count);
-
-            byte[] headerBytes = header.GetRequest();
-
-            int sentHeaderBytes = 0;
-            while (sentHeaderBytes < headerBytes.Length)
-            {
-                sentHeaderBytes += socket.Send(headerBytes, sentHeaderBytes, headerBytes.Length - sentHeaderBytes, SocketFlags.None);
-            }
-
-            int sentBodyBytes = 0;
-            while (sentBodyBytes < data.Count)
-            {
-                sentBodyBytes += socket.Send(data.ToArray(), sentBodyBytes, data.Count - sentBodyBytes, SocketFlags.None);
-            }
         }
 
         public void ModifyGame(int id, string title, string genre, string trailer, string cover)
@@ -162,21 +114,7 @@ namespace Client
             data.AddRange(BitConverter.GetBytes(coverBytes.Length));
             data.AddRange(coverBytes);
 
-            header = new Header(HeaderConstants.Request, CommandConstants.DeleteGame, data.Count);
-
-            byte[] headerBytes = header.GetRequest();
-
-            int sentHeaderBytes = 0;
-            while (sentHeaderBytes < headerBytes.Length)
-            {
-                sentHeaderBytes += socket.Send(headerBytes, sentHeaderBytes, headerBytes.Length - sentHeaderBytes, SocketFlags.None);
-            }
-
-            int sentBodyBytes = 0;
-            while (sentBodyBytes < data.Count)
-            {
-                sentBodyBytes += socket.Send(data.ToArray(), sentBodyBytes, data.Count - sentBodyBytes, SocketFlags.None);
-            }
+            SendData(data, CommandConstants.ModifyGame);
 
         }
 
@@ -196,54 +134,36 @@ namespace Client
             data.AddRange(BitConverter.GetBytes(genreBytes.Length));
             data.AddRange(genreBytes);
 
-            header = new Header(HeaderConstants.Request, CommandConstants.ModifyGame, data.Count);
-
-            byte[] headerBytes = header.GetRequest();
-
-            int sentHeaderBytes = 0;
-            while (sentHeaderBytes < headerBytes.Length)
-            {
-                sentHeaderBytes += socket.Send(headerBytes, sentHeaderBytes, headerBytes.Length - sentHeaderBytes, SocketFlags.None);
-            }
-
-            int sentBodyBytes = 0;
-            while (sentBodyBytes < data.Count)
-            {
-                sentBodyBytes += socket.Send(data.ToArray(), sentBodyBytes, data.Count - sentBodyBytes, SocketFlags.None);
-            }
+            SendData(data, CommandConstants.QualifyGame);
 
         }
 
         public void ViewGameDetail(int id)
         {
+
             List<byte> data = new List<byte>();
 
             byte[] gameIdBytes = BitConverter.GetBytes(id);
             data.AddRange(BitConverter.GetBytes(gameIdBytes.Length));
             data.AddRange(gameIdBytes);
 
-            header = new Header(HeaderConstants.Request, CommandConstants.ModifyGame, data.Count);
-
-            byte[] headerBytes = header.GetRequest();
-
-            int sentHeaderBytes = 0;
-            while (sentHeaderBytes < headerBytes.Length)
-            {
-                sentHeaderBytes += socket.Send(headerBytes, sentHeaderBytes, headerBytes.Length - sentHeaderBytes, SocketFlags.None);
-            }
-
-            int sentBodyBytes = 0;
-            while (sentBodyBytes < data.Count)
-            {
-                sentBodyBytes += socket.Send(data.ToArray(), sentBodyBytes, data.Count - sentBodyBytes, SocketFlags.None);
-            }
+            SendData(data, CommandConstants.ViewDetail);
 
         }
 
         public void ViewGames()
         {
 
-            header = new Header(HeaderConstants.Request, CommandConstants.ModifyGame, 0);
+            List<byte> data = new List<byte>();
+
+            SendData(data, CommandConstants.GetGames);
+
+        }
+
+        private void SendData(List<byte> data, int command)
+        {
+
+            header = new Header(HeaderConstants.Request, command, data.Count);
 
             byte[] headerBytes = header.GetRequest();
 
@@ -251,6 +171,15 @@ namespace Client
             while (sentHeaderBytes < headerBytes.Length)
             {
                 sentHeaderBytes += socket.Send(headerBytes, sentHeaderBytes, headerBytes.Length - sentHeaderBytes, SocketFlags.None);
+            }
+
+            if(data.Count != 0)
+            {
+                int sentBodyBytes = 0;
+                while (sentBodyBytes < data.Count)
+                {
+                    sentBodyBytes += socket.Send(data.ToArray(), sentBodyBytes, data.Count - sentBodyBytes, SocketFlags.None);
+                }
             }
 
         }
