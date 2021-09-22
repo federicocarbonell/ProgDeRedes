@@ -140,22 +140,119 @@ namespace Client
 
         public void ModifyGame(int id, string title, string genre, string trailer, string cover)
         {
-            throw new NotImplementedException();
+            List<byte> data = new List<byte>();
+
+            byte[] gameIdBytes = BitConverter.GetBytes(id);
+            data.AddRange(BitConverter.GetBytes(gameIdBytes.Length));
+            data.AddRange(gameIdBytes);
+
+            byte[] titleBytes = Encoding.UTF8.GetBytes(title);
+            data.AddRange(BitConverter.GetBytes(titleBytes.Length));
+            data.AddRange(titleBytes);
+
+            byte[] genreBytes = Encoding.UTF8.GetBytes(genre);
+            data.AddRange(BitConverter.GetBytes(genreBytes.Length));
+            data.AddRange(genreBytes);
+
+            byte[] trailerBytes = Encoding.UTF8.GetBytes(trailer);
+            data.AddRange(BitConverter.GetBytes(trailerBytes.Length));
+            data.AddRange(trailerBytes);
+
+            byte[] coverBytes = Encoding.UTF8.GetBytes(cover);
+            data.AddRange(BitConverter.GetBytes(coverBytes.Length));
+            data.AddRange(coverBytes);
+
+            header = new Header(HeaderConstants.Request, CommandConstants.DeleteGame, data.Count);
+
+            byte[] headerBytes = header.GetRequest();
+
+            int sentHeaderBytes = 0;
+            while (sentHeaderBytes < headerBytes.Length)
+            {
+                sentHeaderBytes += socket.Send(headerBytes, sentHeaderBytes, headerBytes.Length - sentHeaderBytes, SocketFlags.None);
+            }
+
+            int sentBodyBytes = 0;
+            while (sentBodyBytes < data.Count)
+            {
+                sentBodyBytes += socket.Send(data.ToArray(), sentBodyBytes, data.Count - sentBodyBytes, SocketFlags.None);
+            }
+
         }
 
         public void QualifyGame(int id, int rating, string review)
         {
-            throw new NotImplementedException();
+            List<byte> data = new List<byte>();
+
+            byte[] gameIdBytes = BitConverter.GetBytes(id);
+            data.AddRange(BitConverter.GetBytes(gameIdBytes.Length));
+            data.AddRange(gameIdBytes);
+
+            byte[] titleBytes = BitConverter.GetBytes(rating);
+            data.AddRange(BitConverter.GetBytes(titleBytes.Length));
+            data.AddRange(titleBytes);
+
+            byte[] genreBytes = Encoding.UTF8.GetBytes(review);
+            data.AddRange(BitConverter.GetBytes(genreBytes.Length));
+            data.AddRange(genreBytes);
+
+            header = new Header(HeaderConstants.Request, CommandConstants.ModifyGame, data.Count);
+
+            byte[] headerBytes = header.GetRequest();
+
+            int sentHeaderBytes = 0;
+            while (sentHeaderBytes < headerBytes.Length)
+            {
+                sentHeaderBytes += socket.Send(headerBytes, sentHeaderBytes, headerBytes.Length - sentHeaderBytes, SocketFlags.None);
+            }
+
+            int sentBodyBytes = 0;
+            while (sentBodyBytes < data.Count)
+            {
+                sentBodyBytes += socket.Send(data.ToArray(), sentBodyBytes, data.Count - sentBodyBytes, SocketFlags.None);
+            }
+
         }
 
         public void ViewGameDetail(int id)
         {
-            throw new NotImplementedException();
+            List<byte> data = new List<byte>();
+
+            byte[] gameIdBytes = BitConverter.GetBytes(id);
+            data.AddRange(BitConverter.GetBytes(gameIdBytes.Length));
+            data.AddRange(gameIdBytes);
+
+            header = new Header(HeaderConstants.Request, CommandConstants.ModifyGame, data.Count);
+
+            byte[] headerBytes = header.GetRequest();
+
+            int sentHeaderBytes = 0;
+            while (sentHeaderBytes < headerBytes.Length)
+            {
+                sentHeaderBytes += socket.Send(headerBytes, sentHeaderBytes, headerBytes.Length - sentHeaderBytes, SocketFlags.None);
+            }
+
+            int sentBodyBytes = 0;
+            while (sentBodyBytes < data.Count)
+            {
+                sentBodyBytes += socket.Send(data.ToArray(), sentBodyBytes, data.Count - sentBodyBytes, SocketFlags.None);
+            }
+
         }
 
         public void ViewGames()
         {
-            throw new NotImplementedException();
+
+            header = new Header(HeaderConstants.Request, CommandConstants.ModifyGame, 0);
+
+            byte[] headerBytes = header.GetRequest();
+
+            int sentHeaderBytes = 0;
+            while (sentHeaderBytes < headerBytes.Length)
+            {
+                sentHeaderBytes += socket.Send(headerBytes, sentHeaderBytes, headerBytes.Length - sentHeaderBytes, SocketFlags.None);
+            }
+
         }
     }
 }
