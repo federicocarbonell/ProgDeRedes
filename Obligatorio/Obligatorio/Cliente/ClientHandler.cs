@@ -109,6 +109,7 @@ namespace Client
 
         public void DeleteGame(int id)
         {
+            //creo q no tamo usando el result para nada habria q revisar bien
             List<byte> result = new List<byte>();
             List<byte> data = new List<byte>();
 
@@ -120,7 +121,21 @@ namespace Client
             result.AddRange(BitConverter.GetBytes(data.Count));
             result.AddRange(data);
 
-            throw new NotImplementedException();
+            header = new Header(HeaderConstants.Request, CommandConstants.DeleteGame, data.Count);
+
+            byte[] headerBytes = header.GetRequest();
+
+            int sentHeaderBytes = 0;
+            while (sentHeaderBytes < headerBytes.Length)
+            {
+                sentHeaderBytes += socket.Send(headerBytes, sentHeaderBytes, headerBytes.Length - sentHeaderBytes, SocketFlags.None);
+            }
+
+            int sentBodyBytes = 0;
+            while (sentBodyBytes < data.Count)
+            {
+                sentBodyBytes += socket.Send(data.ToArray(), sentBodyBytes, data.Count - sentBodyBytes, SocketFlags.None);
+            }
         }
 
         public void ModifyGame(int id, string title, string genre, string trailer, string cover)
