@@ -62,11 +62,11 @@ namespace Server
             int beforeLength = 0;
             int gameId = convertToInt(bufferData, idLength, beforeLength);
 
-            beforeLength = idLength + 4;
+            beforeLength += idLength + 4;
             int ratingLength = obtainLength(bufferData, beforeLength);
             int rating = convertToInt(bufferData, ratingLength, beforeLength);
 
-            beforeLength = ratingLength + 4;
+            beforeLength += ratingLength + 4;
             int reviewLength = obtainLength(bufferData, beforeLength);
             string review = convertToString(bufferData, reviewLength, beforeLength);
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Client.DTOs;
 using StateServices.DomainEntities;
@@ -21,7 +22,8 @@ namespace StateServices
                 Name = game.Name,
                 Genre = game.Genre,
                 CoverPath = game.CoverPath,
-                Description = game.Description
+                Description = game.Description,
+                Reviews = new List<Review>(),
             };
             gameRepository.Add(gameToInsert);
         }

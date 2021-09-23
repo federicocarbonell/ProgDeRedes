@@ -42,7 +42,7 @@ namespace StateServices
             Game game = Get(id);
             Review newReview = CreateReview(id, rating, review);
             var auxList = ServerState.GetInstance().Games;
-            auxList.Find(x => x.Id == id).Reviews = new List<Review> { newReview};
+            auxList.Find(x => x.Id == id).Reviews.Add(newReview);
         }
 
         public Review CreateReview(int gameId, int rating, string review)
@@ -50,7 +50,7 @@ namespace StateServices
             if (!ValidId(gameId))
                 throw new Exception("Given id has no corresponding game");
             Game game = Get(gameId);
-            int reviewId = game.Reviews != null ? game.Reviews.Count() + 1 : 1;
+            int reviewId = game.Reviews.Count() + 1;
             Review newReview = new Review{ Id = reviewId, Rating = rating, Content =review};
             return newReview;
         }
