@@ -147,12 +147,22 @@ namespace Server
                         Console.WriteLine("Game with id: " + id + " deleted");
                         break;
                     case CommandConstants.ModifyGame:
-                        Console.WriteLine("Not implemented yet");
-                        //Console.WriteLine("Message received: " + Encoding.UTF8.GetString(bufferData));
+                        Console.WriteLine("Modifying game");
+                        bufferData = new byte[header.IDataLength];
+                        ReceiveData(clientSocket, header.IDataLength, bufferData);
+
+                        GameDTO modifyingGame = serverHandler.ReceiveGameForModifying(bufferData);
+                        ModifyGame(modifyingGame);
+                        Console.WriteLine("Game added: " + modifyingGame.Name);
                         break;
                     case CommandConstants.QualifyGame:
-                        Console.WriteLine("Not implemented yet");
-                        //Console.WriteLine("Message received: " + Encoding.UTF8.GetString(bufferData));
+                        Console.WriteLine("Qualifying game");
+                        bufferData = new byte[header.IDataLength];
+                        ReceiveData(clientSocket, header.IDataLength, bufferData);
+
+                        ReviewDTO gameReview = serverHandler.ReceiveQualification(bufferData);
+                        QualifyGame(gameReview);
+                        Console.WriteLine("Qualification for game with id: " + gameReview.GameId);
                         break;
                     case CommandConstants.ViewDetail:
                         Console.WriteLine("Not implemented yet");
@@ -162,6 +172,7 @@ namespace Server
 
             }
         }
+
 
         private static void ReceiveData(Socket clientSocket, int Length, byte[] buffer)
         {
@@ -196,6 +207,16 @@ namespace Server
         private static void DeleteGame(int id)
         {
             gameService.DeleteGame(id);
+        }
+
+        private static void ModifyGame(GameDTO game)
+        {
+            gameService.ModifyGame(game.Id, game);
+        }
+
+        private static void QualifyGame(ReviewDTO gameReview)
+        {
+            gameService.QualifyGame(gameReview);
         }
 
         static int PrintMenu()

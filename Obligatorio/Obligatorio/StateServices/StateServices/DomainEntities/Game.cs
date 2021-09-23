@@ -8,6 +8,7 @@ namespace StateServices.DomainEntities
     {
         //usamos esto de Id?
         public int Id { get; set; }
+
         public string Name { get; set; }
 
         public string Genre { get; set; }
