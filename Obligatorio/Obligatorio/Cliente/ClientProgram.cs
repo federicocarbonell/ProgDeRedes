@@ -84,7 +84,7 @@ namespace Client
 
         private static void PrintViewGames()
         {
-            throw new NotImplementedException();
+            clientHandler.ViewGames();
         }
 
         private static void PrintViewGameDetails()

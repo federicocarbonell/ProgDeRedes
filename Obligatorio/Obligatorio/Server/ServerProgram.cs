@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using Client.DTOs;
 using ProtocolLibrary;
@@ -130,6 +132,7 @@ namespace Server
 
                         GameDTO game = serverHandler.ReceiveGame(bufferData);
                         AddGame(game);
+                        clientSocket.Send(Encoding.UTF8.GetBytes(game.Name));
                         Console.WriteLine("Game added: " + game.Name);
                         break;
                     case CommandConstants.SendGameCover:
@@ -141,8 +144,12 @@ namespace Server
                         Console.WriteLine("Add cover ok ");
                         break;
                     case CommandConstants.GetGames:
-                        Console.WriteLine("Not implemented yet");
-                        //Console.WriteLine("Message received: " + Encoding.UTF8.GetString(bufferData));
+                        Console.WriteLine("Games: ");
+                        foreach (string gameInfo in gameService.GetAllGames())
+                        {
+                            clientSocket.Send(Encoding.UTF8.GetBytes(gameInfo));
+                        }
+                        clientSocket.Send("<EOF>");
                         break;
                     case CommandConstants.DeleteGame:
                         //Console.WriteLine("Message received: " + Encoding.UTF8.GetString(bufferData));

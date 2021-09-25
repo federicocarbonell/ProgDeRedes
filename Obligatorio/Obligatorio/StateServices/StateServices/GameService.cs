@@ -28,10 +28,17 @@ namespace StateServices
             gameRepository.Add(gameToInsert);
         }
 
-        public IQueryable<Game> GetAllGames()
+        public List<string> GetAllGames()
         {
-            GameRepository gameRepository = new GameRepository();
-            return gameRepository.GetAll();
+            List<string> games = new List<string>();
+            foreach (Game game in gameRepository.GetAll())
+            {
+                if (!game.isDeleted)
+                {
+                    games.Add($"Id: {game.Id} Name: {game.Name}");
+                }
+            }
+            return games;
         }
 
         public void DeleteGame(int id)
