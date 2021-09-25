@@ -50,7 +50,7 @@ namespace Client
             AddStringData(data, cover);
 
             SendData(data, CommandConstants.AddGame);
-
+            //AWAITRESPONSE
         }
 
         public void DeleteGame(int id)
