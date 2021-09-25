@@ -141,8 +141,9 @@ namespace Client
             List<byte> req = new List<byte>();
             FileInfo coverInfo = new FileInfo(path);
             long fileSize = coverInfo.Length;
+            string ext = coverInfo.Extension;
 
-            AddStringData(req, gameName);
+            AddStringData(req, gameName + ext);
             AddLongData(req, fileSize);
             SendData(req, CommandConstants.SendGameCover);
             //envio nombre y largo de la imagen
