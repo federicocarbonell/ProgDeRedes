@@ -109,7 +109,7 @@ namespace Client
             List<byte> data = new List<byte>();
 
             SendData(data, CommandConstants.GetGames);
-
+            Recieve();
         }
 
         private void SendData(List<byte> data, int command)
@@ -214,8 +214,6 @@ namespace Client
             int bytesReceived = socket.Receive(bytes);
             Console.WriteLine("Mensaje recibido = {0}",
                     Encoding.UTF8.GetString(bytes, 0, bytesReceived));
-            socket.Shutdown(SocketShutdown.Receive);
-            socket.Close();
         }
 
     }
