@@ -94,17 +94,47 @@ namespace Client
 
         private static void PrintQualifyGame()
         {
-            throw new NotImplementedException();
+            Console.Write("Game id: ");
+            int id = Int32.Parse(Console.ReadLine());
+
+            Console.Write("Game rating: ");
+            int rating = Int32.Parse(Console.ReadLine());
+
+            Console.Write("Game content: ");
+            string content = Console.ReadLine();
+
+            Console.Write("--- Game qualified ---");
+            clientHandler.QualifyGame(id, rating, content);
         }
 
         private static void PrintModifyGame()
         {
-            throw new NotImplementedException();
+            Console.Write("Game id: ");
+            int id = Int32.Parse(Console.ReadLine());
+
+            Console.Write("Game title: ");
+            var title = Console.ReadLine();
+
+            Console.Write("Game genre: ");
+            var genre = Console.ReadLine();
+
+            Console.Write("Game trailer: ");
+            var trailer = Console.ReadLine();
+
+            Console.Write("Game cover: ");
+            var cover = Console.ReadLine();
+
+            clientHandler.ModifyGame(id, title, genre, trailer, cover);
+            Console.Write("--- Game modified ---");
         }
 
         private static void PrintDeleteGame()
         {
-            throw new NotImplementedException();
+            Console.Write("Game id: ");
+            int id = Int32.Parse(Console.ReadLine());
+
+            clientHandler.DeleteGame(id);
+            Console.Write("--- Game deleted ---");
         }
 
         private static void PrintAddGame()

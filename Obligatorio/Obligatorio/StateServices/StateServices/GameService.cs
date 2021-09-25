@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Client.DTOs;
 using StateServices.DomainEntities;
@@ -21,7 +22,8 @@ namespace StateServices
                 Name = game.Name,
                 Genre = game.Genre,
                 CoverPath = game.CoverPath,
-                Description = game.Description
+                Description = game.Description,
+                Reviews = new List<Review>(),
             };
             gameRepository.Add(gameToInsert);
         }
@@ -30,6 +32,29 @@ namespace StateServices
         {
             GameRepository gameRepository = new GameRepository();
             return gameRepository.GetAll();
+        }
+
+        public void DeleteGame(int id)
+        {
+            gameRepository.Delete(id);
+        }
+
+        public void ModifyGame(int id, GameDTO game)
+        {
+            Game gameToModify = new Game
+            {
+                Id = game.Id,
+                Name = game.Name,
+                Genre = game.Genre,
+                CoverPath = game.CoverPath,
+                Description = game.Description
+            };
+            gameRepository.Update(id, gameToModify);
+        }
+
+        public void QualifyGame (ReviewDTO reviewDTO)
+        {
+            gameRepository.QualifyGame(reviewDTO.GameId, reviewDTO.Rating, reviewDTO.Content);
         }
     }
 }

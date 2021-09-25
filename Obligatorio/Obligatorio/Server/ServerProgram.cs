@@ -15,6 +15,7 @@ namespace Server
         static List<Socket> _clients = new List<Socket>();
         static GameService gameService;
         static ServerHandler serverHandler;
+        static byte[] bufferData;
         static void Main(string[] args)
         {
             Console.WriteLine("Starting server");
@@ -124,21 +125,54 @@ namespace Server
                     case CommandConstants.Login:
                     case CommandConstants.AddGame:
                         Console.WriteLine("Adding game");
-                        var bufferData1 = new byte[header.IDataLength];
-                        ReceiveData(clientSocket, header.IDataLength, bufferData1);
+                        bufferData = new byte[header.IDataLength];
+                        ReceiveData(clientSocket, header.IDataLength, bufferData);
 
-                        GameDTO game = serverHandler.ReceiveGame(bufferData1);
+                        GameDTO game = serverHandler.ReceiveGame(bufferData);
                         AddGame(game);
                         Console.WriteLine("Game added: " + game.Name);
                         break;
                     case CommandConstants.GetGames:
-                        Console.WriteLine("Below is the list of games...");
+                        Console.WriteLine("Not implemented yet");
+                        //Console.WriteLine("Message received: " + Encoding.UTF8.GetString(bufferData));
+                        break;
+                    case CommandConstants.DeleteGame:
+                        //Console.WriteLine("Message received: " + Encoding.UTF8.GetString(bufferData));
+                        Console.WriteLine("Deleting game");
+                        bufferData = new byte[header.IDataLength];
+                        ReceiveData(clientSocket, header.IDataLength, bufferData);
+
+                        int id = serverHandler.ReceiveId(bufferData);
+                        DeleteGame(id);
+                        Console.WriteLine("Game with id: " + id + " deleted");
+                        break;
+                    case CommandConstants.ModifyGame:
+                        Console.WriteLine("Modifying game");
+                        bufferData = new byte[header.IDataLength];
+                        ReceiveData(clientSocket, header.IDataLength, bufferData);
+
+                        GameDTO modifyingGame = serverHandler.ReceiveGameForModifying(bufferData);
+                        ModifyGame(modifyingGame);
+                        Console.WriteLine("Game added: " + modifyingGame.Name);
+                        break;
+                    case CommandConstants.QualifyGame:
+                        Console.WriteLine("Qualifying game");
+                        bufferData = new byte[header.IDataLength];
+                        ReceiveData(clientSocket, header.IDataLength, bufferData);
+
+                        ReviewDTO gameReview = serverHandler.ReceiveQualification(bufferData);
+                        QualifyGame(gameReview);
+                        Console.WriteLine("Qualification for game with id: " + gameReview.GameId);
+                        break;
+                    case CommandConstants.ViewDetail:
+                        Console.WriteLine("Not implemented yet");
                         //Console.WriteLine("Message received: " + Encoding.UTF8.GetString(bufferData));
                         break;
                 }
 
             }
         }
+
 
         private static void ReceiveData(Socket clientSocket, int Length, byte[] buffer)
         {
@@ -168,6 +202,21 @@ namespace Server
         private static void AddGame(GameDTO game)
         {
             gameService.AddGame(game);
+        }
+
+        private static void DeleteGame(int id)
+        {
+            gameService.DeleteGame(id);
+        }
+
+        private static void ModifyGame(GameDTO game)
+        {
+            gameService.ModifyGame(game.Id, game);
+        }
+
+        private static void QualifyGame(ReviewDTO gameReview)
+        {
+            gameService.QualifyGame(gameReview);
         }
 
         static int PrintMenu()

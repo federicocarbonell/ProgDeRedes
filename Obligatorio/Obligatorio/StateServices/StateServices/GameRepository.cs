@@ -14,14 +14,45 @@ namespace StateServices
         public void Add(Game entity)
         {
             var auxList = ServerState.GetInstance().Games;
+            entity.isDeleted = false;
+            entity.Id = obtainId();
             auxList.Add(entity);
             ServerState.GetInstance().Games = auxList;
         }//hay que hacer esta magia con las listas en todos creo
 
+        public int obtainId()
+        {
+            var auxList = ServerState.GetInstance().Games;
+            var id = auxList.Count() + 1;
+            return id;
+        }
+
         public void Delete(int id)
         {
             int arrPos = ServerState.GetInstance().Games.FindIndex(x => x.Id == id);
-            ServerState.GetInstance().Games.RemoveAt(arrPos);
+            var auxList = ServerState.GetInstance().Games;
+            auxList.Find(x => x.Id == id).isDeleted = true;
+            ServerState.GetInstance().Games = auxList;
+        }
+
+        public void QualifyGame(int id, int rating, string review)
+        {
+            if (!ValidId(id))
+                throw new Exception("Given id has no corresponding game");
+            Game game = Get(id);
+            Review newReview = CreateReview(id, rating, review);
+            var auxList = ServerState.GetInstance().Games;
+            auxList.Find(x => x.Id == id).Reviews.Add(newReview);
+        }
+
+        public Review CreateReview(int gameId, int rating, string review)
+        {
+            if (!ValidId(gameId))
+                throw new Exception("Given id has no corresponding game");
+            Game game = Get(gameId);
+            int reviewId = game.Reviews.Count() + 1;
+            Review newReview = new Review{ Id = reviewId, Rating = rating, Content =review};
+            return newReview;
         }
 
         public Game Get(int id)
@@ -33,7 +64,7 @@ namespace StateServices
 
         private bool ValidId(int id)
         {
-            return id <= ServerState.GetInstance().Users.FindLast(x => x != null).Id;
+            return id <= ServerState.GetInstance().Games.Count();
         }
 
         public IQueryable<Game> GetAll()
@@ -46,9 +77,10 @@ namespace StateServices
             if (!ValidId(id))
                 throw new Exception("Given id has no corresponding game");
             Game old = Get(id);
+            old.Name = newEntity.Name;
             old.Genre = newEntity.Genre;
-            old.Rating = newEntity.Rating;
-            old.Reviews = newEntity.Reviews;
+            old.CoverPath = newEntity.CoverPath;
+            old.Description = newEntity.Description;
         }
 
     }
