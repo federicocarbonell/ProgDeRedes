@@ -51,6 +51,7 @@ namespace Client
 
             SendData(data, CommandConstants.AddGame);
             SendFileData(cover, title);
+            Recieve();
 
             //AWAITRESPONSE
         }
@@ -205,6 +206,16 @@ namespace Client
             byte[] bytes = Encoding.UTF8.GetBytes(info);
             data.AddRange(BitConverter.GetBytes(bytes.Length));
             data.AddRange(bytes);
+        }
+
+        private void Recieve()
+        {
+            byte[] bytes = new byte[1024];
+            int bytesReceived = socket.Receive(bytes);
+            Console.WriteLine("Mensaje recibido = {0}",
+                    Encoding.UTF8.GetString(bytes, 0, bytesReceived));
+            socket.Shutdown(SocketShutdown.Receive);
+            socket.Close();
         }
 
     }
