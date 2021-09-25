@@ -3,6 +3,7 @@ using Client.Interfaces;
 using ProtocolLibrary;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -47,9 +48,10 @@ namespace Client
             AddStringData(data, title);
             AddStringData(data, genre);
             AddStringData(data, trailer);
-            AddStringData(data, cover);
 
             SendData(data, CommandConstants.AddGame);
+            SendFileData(cover);
+
             //AWAITRESPONSE
         }
 
@@ -71,9 +73,9 @@ namespace Client
             AddStringData(data, title);
             AddStringData(data, genre);
             AddStringData(data, trailer);
-            AddStringData(data, cover);
 
             SendData(data, CommandConstants.ModifyGame);
+            SendFileData(cover);
 
         }
 
@@ -133,7 +135,65 @@ namespace Client
 
         }
 
+        private void SendFileData(string path)
+        {
+            //envio nombre y largo de la imagen
+            List<byte> req = new List<byte>();
+            FileInfo coverInfo = new FileInfo(path);
+            string fileName = coverInfo.Name;
+            long fileSize = coverInfo.Length;
+
+            AddStringData(req, fileName);
+            AddLongData(req, fileSize);
+            SendData(req, CommandConstants.SendGameCover);
+            //envio nombre y largo de la imagen
+
+            //envio la imagen
+            long fileParts = FileTransferProtocol.CalculateParts(fileSize);
+            long offset = 0;
+            long currentPart = 1;
+
+            while (fileSize > offset)
+            {
+                byte[] data;
+                if (currentPart != fileParts)
+                {
+                    data = FileStreamHandler.ReadData(path, FileTransferProtocol.MaxPacketSize, offset);
+                    offset += FileTransferProtocol.MaxPacketSize;
+                }
+                else
+                {
+                    int lastPartSize = (int)(fileSize - offset);
+                    data = FileStreamHandler.ReadData(path, lastPartSize, offset);
+                    offset += lastPartSize;
+                }
+
+                //_socketStreamHandler.SendData(data);
+                //aca hago a mano
+                int auxOffset = 0;
+                int auxSize = data.Length;
+                while(auxOffset < data.Length)
+                {
+                    int sent = socket.Send(data, auxOffset, auxSize - auxOffset, SocketFlags.None);
+                    if(sent == 0)
+                    {
+                        throw new SocketException();
+                    }
+                    auxOffset += sent;
+                }
+                //hasta aca
+                currentPart++;
+            }
+        }
+
         private void AddIntData(List<byte> data, int info)
+        {
+            byte[] bytes = BitConverter.GetBytes(info);
+            data.AddRange(BitConverter.GetBytes(bytes.Length));
+            data.AddRange(bytes);
+        }
+
+        private void AddLongData(List<byte> data, long info)
         {
             byte[] bytes = BitConverter.GetBytes(info);
             data.AddRange(BitConverter.GetBytes(bytes.Length));

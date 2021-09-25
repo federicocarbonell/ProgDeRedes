@@ -10,6 +10,7 @@
         public const int ModifyGame = 5;
         public const int QualifyGame = 6;
         public const int ViewDetail = 7;
+        public const int SendGameCover = 8;
     }
 
 }
