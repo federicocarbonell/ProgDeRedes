@@ -1,12 +1,19 @@
 ﻿using System;
+using System.Net.Sockets;
 using Client.DTOs;
+using ProtocolLibrary;
 
 namespace Server
 {
     public class ServerHandler
     {
-        public ServerHandler()
+        private readonly Socket socket;
+        private readonly SocketStreamHandler socketStreamHandler;
+
+        public ServerHandler(Socket socket)
         {
+            this.socket = socket;
+            socketStreamHandler = new SocketStreamHandler(this.socket);
         }
 
         public GameDTO ReceiveGame(byte[] bufferData)
@@ -23,12 +30,27 @@ namespace Server
             int descriptionLength = obtainLength(bufferData, beforeLength);
             string description = convertToString(bufferData, descriptionLength, beforeLength);
 
-            beforeLength += descriptionLength + 4;
-            int coverLength = obtainLength(bufferData, beforeLength);
-            string coverPath = convertToString(bufferData, coverLength, beforeLength);
+            //beforeLength += descriptionLength + 4;
+            //int coverLength = obtainLength(bufferData, beforeLength);
+            //string coverPath = convertToString(bufferData, coverLength, beforeLength);
 
-            return new GameDTO { Name = name , Genre = genre, Description = description, CoverPath = coverPath};
+            return new GameDTO { Name = name , Genre = genre, Description = description};
         }
+
+        public void AddCoverGame(Socket clientSocket, byte[] bufferData)
+        {
+            int fileNameLength = obtainLength(bufferData, 0);
+            int beforeLength = 0;
+            string fileName = convertToString(bufferData, fileNameLength, beforeLength);
+
+            beforeLength += fileNameLength + 4;
+            int fileSizeLength = obtainLength(bufferData, beforeLength);
+            long fileSize = convertToLong(bufferData, fileSizeLength, beforeLength);
+            ReceiveFile(clientSocket, fileSize, fileName);
+            //game.CoverPath = fileName;
+            //return game;
+        }
+
 
         public GameDTO ReceiveGameForModifying (byte[] bufferData)
         {
@@ -79,6 +101,30 @@ namespace Server
             return convertToInt(bufferData, idLength, 0);
         }
 
+        private void ReceiveFile(Socket clientSocket, long fileSize, string fileName)
+        {
+            long fileParts = FileTransferProtocol.CalculateParts(fileSize);
+            long offset = 0;
+            long currentPart = 1;
+            while (fileSize > offset)
+            {
+                byte[] data;
+                if (currentPart != fileParts)
+                {
+                    data = socketStreamHandler.ReceiveData(clientSocket, FileTransferProtocol.MaxPacketSize);
+                    offset += FileTransferProtocol.MaxPacketSize;
+                }
+                else
+                {
+                    int lastPartSize = (int)(fileSize - offset);
+                    data = socketStreamHandler.ReceiveData(clientSocket, lastPartSize);
+                    offset += lastPartSize;
+                }
+                FileStreamHandler.WriteData(fileName, data);
+                currentPart++;
+            }
+        }
+
         public int obtainLength(byte[] bufferData, int start)
         {
             return Convert.ToInt32(bufferData[start]);
@@ -94,14 +140,24 @@ namespace Server
             return System.Text.Encoding.UTF8.GetString(stringBytes);
         }
 
-        public int convertToInt(byte[] bufferData, int stringLength, int start)
+        public int convertToInt(byte[] bufferData, int intLength, int start)
         {
-            byte[] stringBytes = new byte[stringLength];
-            for (int i = 0; i < stringLength; i++)
+            byte[] intBytes = new byte[intLength];
+            for (int i = 0; i < intLength; i++)
             {
-                stringBytes[i] = bufferData[i + start + 4];
+                intBytes[i] = bufferData[i + start + 4];
             }
-            return BitConverter.ToInt32(stringBytes);
+            return BitConverter.ToInt32(intBytes);
+        }
+
+        private long convertToLong(byte[] bufferData, int longLength, int start)
+        {
+            byte[] longBytes = new byte[longLength];
+            for (int i = 0; i < longLength; i++)
+            {
+                longBytes[i] = bufferData[i + start + 4];
+            }
+            return BitConverter.ToInt64(longBytes);
         }
 
     }

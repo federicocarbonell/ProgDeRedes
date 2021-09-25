@@ -19,10 +19,10 @@ namespace Server
         static void Main(string[] args)
         {
             Console.WriteLine("Starting server");
-            serverHandler = new ServerHandler();
             var socketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socketServer.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 20000));
             socketServer.Listen(100);
+            serverHandler = new ServerHandler(socketServer);
             GameRepository gameRepository = new GameRepository();
             gameService = new GameService(gameRepository);
             var threadServer = new Thread(() => ListenForConnections(socketServer, gameService));
@@ -131,6 +131,14 @@ namespace Server
                         GameDTO game = serverHandler.ReceiveGame(bufferData);
                         AddGame(game);
                         Console.WriteLine("Game added: " + game.Name);
+                        break;
+                    case CommandConstants.SendGameCover:
+                        Console.WriteLine("Adding cover");
+                        bufferData = new byte[header.IDataLength];
+                        ReceiveData(clientSocket, header.IDataLength, bufferData);
+
+                        serverHandler.AddCoverGame(clientSocket, bufferData);
+                        Console.WriteLine("Add cover ok ");
                         break;
                     case CommandConstants.GetGames:
                         Console.WriteLine("Not implemented yet");
