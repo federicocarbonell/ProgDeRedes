@@ -210,12 +210,21 @@ namespace Client
 
         private void Recieve()
         {
+
             byte[] bytes = new byte[1024];
-            int bytesReceived = socket.Receive(bytes);
-            Console.WriteLine("Mensaje recibido = {0}",
-                    Encoding.UTF8.GetString(bytes, 0, bytesReceived));
-            socket.Shutdown(SocketShutdown.Receive);
-            socket.Close();
+
+            while (true)
+            {
+                int bytesRec = socket.Receive(bytes);
+                var data = Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                Console.WriteLine("Texto recibido : {0}", data);
+
+                if (data.IndexOf("<EOF>") > -1)
+                {
+                    break;
+                }
+            }
+
         }
 
     }
