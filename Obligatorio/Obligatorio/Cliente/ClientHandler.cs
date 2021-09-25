@@ -50,7 +50,7 @@ namespace Client
             AddStringData(data, trailer);
 
             SendData(data, CommandConstants.AddGame);
-            SendFileData(cover);
+            SendFileData(cover, title);
 
             //AWAITRESPONSE
         }
@@ -75,7 +75,7 @@ namespace Client
             AddStringData(data, trailer);
 
             SendData(data, CommandConstants.ModifyGame);
-            SendFileData(cover);
+            SendFileData(cover, title);
 
         }
 
@@ -135,15 +135,14 @@ namespace Client
 
         }
 
-        private void SendFileData(string path)
+        private void SendFileData(string path, string gameName)
         {
             //envio nombre y largo de la imagen
             List<byte> req = new List<byte>();
             FileInfo coverInfo = new FileInfo(path);
-            string fileName = coverInfo.Name;
             long fileSize = coverInfo.Length;
 
-            AddStringData(req, fileName);
+            AddStringData(req, gameName);
             AddLongData(req, fileSize);
             SendData(req, CommandConstants.SendGameCover);
             //envio nombre y largo de la imagen
