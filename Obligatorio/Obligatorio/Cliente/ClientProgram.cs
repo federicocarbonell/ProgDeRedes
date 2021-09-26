@@ -191,7 +191,7 @@ namespace Client
                 Console.Write("Minimum rating: ");
                 minRating = Console.ReadLine();
             }
-            Console.Write("--- Search ongoing ---");
+            Console.WriteLine("--- Search ongoing ---");
 
             clientHandler.SearchForGames(searchMode, searchTerm, minRating);
         }

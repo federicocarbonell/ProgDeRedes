@@ -41,6 +41,47 @@ namespace StateServices
             return games;
         }
 
+        public string GetAllByQuery(Tuple<int, string, int> queryData)
+        {
+            IQueryable<Game> games = gameRepository.GetAll();
+            string result = "";
+            int queryType = queryData.Item1;
+
+            switch (queryType)
+            {
+                case 1:
+                    {
+                        foreach (Game game in games.Where(x => x.Name.Contains(queryData.Item2) && !x.isDeleted))
+                        {
+                            result += $"Id: {game.Id} Name: {game.Name} \n";
+                        }
+                    }
+                    break;
+                case 2:
+                    {
+                        foreach (Game game in games.Where(x => x.Genre.Equals(queryData.Item2) && !x.isDeleted))
+                        {
+                            result += $"Id: {game.Id} Name: {game.Name} \n";
+                        }
+                    }
+                    break;
+                case 3:
+                    {
+                        foreach (Game game in games.Where(x => x.Rating >= queryData.Item3 && !x.isDeleted))
+                        {
+                            result += $"Id: {game.Id} Name: {game.Name} \n";
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            if (string.IsNullOrEmpty(result)) result = "No games matching the given filter were found";
+
+            return result;
+        }
+
         public String GetGameDetail(int gameId)
         {
             //List<string> details = new List<string>();
