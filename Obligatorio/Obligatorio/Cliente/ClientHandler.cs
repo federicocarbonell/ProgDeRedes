@@ -242,5 +242,11 @@ namespace Client
 
         }
 
+        internal void Logout()
+        {
+            socket.Shutdown(SocketShutdown.Send);
+            socket.Close();
+        }
+
     }
 }

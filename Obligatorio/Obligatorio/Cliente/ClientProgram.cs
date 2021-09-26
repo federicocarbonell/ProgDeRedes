@@ -83,7 +83,9 @@ namespace Client
 
         private static void PrintLogout()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Cerrando conexion con el servidor");
+            clientHandler.Logout();
+            Console.WriteLine("Conexion cerrada con exito");
         }
 
         private static void PrintViewGames()
