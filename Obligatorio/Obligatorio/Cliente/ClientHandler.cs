@@ -116,18 +116,15 @@ namespace Client
         {
             List<byte> data = new List<byte>();
             int mode = Int32.Parse(searchMode);
+            if (string.IsNullOrEmpty(minRating)) minRating = "0";
+            
             AddIntData(data, mode);
-
-            if (mode == 1 || mode == 2)
-            {
-                AddStringData(data, searchTerm);
-            }
-            else
-            {
-                AddIntData(data, Int32.Parse(minRating));
-            }
+            AddStringData(data, searchTerm);
+            AddIntData(data, Int32.Parse(minRating));
+            
 
             SendData(data, CommandConstants.SearchForGame);
+            Recieve();
         }
 
         private void SendData(List<byte> data, int command)

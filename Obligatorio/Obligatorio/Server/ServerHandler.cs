@@ -79,6 +79,28 @@ namespace Server
             return new GameDTO { Id = id, Name = name, Genre = genre, Description = description, CoverPath = coverPath };
         }
 
+        public Tuple<int, string, int> ReceiveSearchTerms(byte[] bufferData)
+        {
+
+            int idLength = obtainLength(bufferData, 0);
+            int beforeLength = 0;
+            int id = convertToInt(bufferData, idLength, beforeLength);
+
+            beforeLength = idLength + 4;
+            int nameLength = obtainLength(bufferData, beforeLength);
+            string name = convertToString(bufferData, nameLength, beforeLength);
+
+            int minRating = 0;
+            if (id == 3)
+            {
+                beforeLength = nameLength + 4;
+                int ratingLength = obtainLength(bufferData, beforeLength);
+                minRating = convertToInt(bufferData, ratingLength, beforeLength);
+            }
+
+            return new Tuple<int, string, int>(id, name, minRating);
+        }
+
         public ReviewDTO ReceiveQualification(byte[] bufferData)
         {
             int idLength = obtainLength(bufferData, 0);

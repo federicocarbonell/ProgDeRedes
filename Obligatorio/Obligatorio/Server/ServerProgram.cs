@@ -189,6 +189,76 @@ namespace Server
                         clientSocket.Send(Encoding.UTF8.GetBytes(gameService.GetGameDetail(gameId)));
                         clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                         break;
+                    case CommandConstants.SearchForGame:
+                        Console.WriteLine("Searching for games");
+                        bufferData = new byte[header.IDataLength];
+                        ReceiveData(clientSocket, header.IDataLength, bufferData);
+
+                        var data = serverHandler.ReceiveSearchTerms(bufferData);
+
+                        if(data.Item1 == 1)
+                        {
+                            var games = ServerState.GetInstance().Games;
+                            foreach(var g in games)
+                            {
+                                if (!g.Name.Contains(data.Item2)) games.Remove(g);
+                            }
+
+                            string result = "";
+                            foreach(var g in games)
+                            {
+                                if (!g.isDeleted)
+                                {
+                                    result += $"Id: {g.Id} Name: {g.Name} \n";
+                                }
+                            }
+
+                            clientSocket.Send(Encoding.UTF8.GetBytes(result));
+                            clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                        }
+                        if(data.Item1 == 2)
+                        {
+                            var games = ServerState.GetInstance().Games;
+                            foreach (var g in games)
+                            {
+                                if (!g.Genre.Equals(data.Item2)) games.Remove(g);
+                            }
+
+                            string result = "";
+                            foreach (var g in games)
+                            {
+                                if (!g.isDeleted)
+                                {
+                                    result += $"Id: {g.Id} Name: {g.Name} \n";
+                                }
+                            }
+
+                            clientSocket.Send(Encoding.UTF8.GetBytes(result));
+                            clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                        }
+                        if(data.Item1 == 3)
+                        {
+                            var games = ServerState.GetInstance().Games;
+                            foreach (var g in games)
+                            {
+                                if (!(g.Rating >= data.Item3)) games.Remove(g);
+                            }
+
+                            string result = "";
+                            foreach (var g in games)
+                            {
+                                if (!g.isDeleted)
+                                {
+                                    result += $"Id: {g.Id} Name: {g.Name} \n";
+                                }
+                            }
+                            //sacar declaracion de games, result, clientSocket.send para arafue
+                            clientSocket.Send(Encoding.UTF8.GetBytes(result));
+                            clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                        }
+
+                        
+                        break;
                 }
 
             }
