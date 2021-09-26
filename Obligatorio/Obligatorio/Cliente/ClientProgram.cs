@@ -84,16 +84,22 @@ namespace Client
 
         private static void PrintViewGames()
         {
+            Console.WriteLine("Games: ");
             clientHandler.ViewGames();
         }
 
         private static void PrintViewGameDetails()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("View game details");
+            Console.Write("Game id: ");
+            int id = Int32.Parse(Console.ReadLine());
+
+            clientHandler.ViewGameDetail(id);
         }
 
         private static void PrintQualifyGame()
         {
+            Console.WriteLine("Qualify game");
             Console.Write("Game id: ");
             int id = Int32.Parse(Console.ReadLine());
 
@@ -105,10 +111,12 @@ namespace Client
 
             Console.Write("--- Game qualified ---");
             clientHandler.QualifyGame(id, rating, content);
+
         }
 
         private static void PrintModifyGame()
         {
+            Console.WriteLine("Modify game");
             Console.Write("Game id: ");
             int id = Int32.Parse(Console.ReadLine());
 
@@ -130,6 +138,7 @@ namespace Client
 
         private static void PrintDeleteGame()
         {
+            Console.WriteLine("Delete game");
             Console.Write("Game id: ");
             int id = Int32.Parse(Console.ReadLine());
 
@@ -139,6 +148,7 @@ namespace Client
 
         private static void PrintAddGame()
         {
+            Console.WriteLine("Add game");
             Console.Write("Game title: ");
             var title = Console.ReadLine();
 

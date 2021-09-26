@@ -63,7 +63,7 @@ namespace Client
 
             AddIntData(data, id);
             SendData(data, CommandConstants.DeleteGame);
-
+            Recieve();
         }
 
         public void ModifyGame(int id, string title, string genre, string trailer, string cover)
@@ -77,7 +77,7 @@ namespace Client
 
             SendData(data, CommandConstants.ModifyGame);
             SendFileData(cover, title);
-
+            Recieve();
         }
 
         public void QualifyGame(int id, int rating, string review)
@@ -89,7 +89,7 @@ namespace Client
             AddStringData(data, review);
 
             SendData(data, CommandConstants.QualifyGame);
-
+            Recieve();
         }
 
         public void ViewGameDetail(int id)
@@ -100,7 +100,7 @@ namespace Client
             AddIntData(data, id);
 
             SendData(data, CommandConstants.ViewDetail);
-
+            Recieve();
         }
 
         public void ViewGames()
@@ -216,7 +216,7 @@ namespace Client
             while (true)
             {
                 int bytesRec = socket.Receive(bytes);
-                var data = Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                var data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
                 Console.WriteLine("Texto recibido : {0}", data);
 
                 if (data.IndexOf("<EOF>") > -1)

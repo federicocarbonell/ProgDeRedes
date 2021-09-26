@@ -59,6 +59,9 @@ namespace StateServices
         {
             if (!ValidId(id))
                 throw new Exception("Given id has no corresponding game");
+            Game game = ServerState.GetInstance().Games.Find(x => x.Id == id);
+            if (game.isDeleted)
+                throw new Exception("Given id has no corresponding game");
             return ServerState.GetInstance().Games.Find(x => x.Id == id);
         }
 

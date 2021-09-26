@@ -132,8 +132,9 @@ namespace Server
 
                         GameDTO game = serverHandler.ReceiveGame(bufferData);
                         AddGame(game);
-                        clientSocket.Send(Encoding.UTF8.GetBytes(game.Name));
+                        clientSocket.Send(Encoding.UTF8.GetBytes(game.Name + "\n"));
                         Console.WriteLine("Game added: " + game.Name);
+                        clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                         break;
                     case CommandConstants.SendGameCover:
                         Console.WriteLine("Adding cover");
@@ -141,25 +142,22 @@ namespace Server
                         ReceiveData(clientSocket, header.IDataLength, bufferData);
 
                         serverHandler.AddCoverGame(clientSocket, bufferData);
-                        Console.WriteLine("Add cover ok ");
+                        Console.WriteLine("Add cover ok");
                         break;
                     case CommandConstants.GetGames:
-                        Console.WriteLine("Games: ");
-                        foreach (string gameInfo in gameService.GetAllGames())
-                        {
-                            clientSocket.Send(Encoding.UTF8.GetBytes(gameInfo));
-                        }
-                        clientSocket.Send("<EOF>");
+                        Console.WriteLine("Showing games");
+                        clientSocket.Send(Encoding.UTF8.GetBytes(gameService.GetAllGames()));
+                        clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                         break;
                     case CommandConstants.DeleteGame:
-                        //Console.WriteLine("Message received: " + Encoding.UTF8.GetString(bufferData));
                         Console.WriteLine("Deleting game");
                         bufferData = new byte[header.IDataLength];
                         ReceiveData(clientSocket, header.IDataLength, bufferData);
 
                         int id = serverHandler.ReceiveId(bufferData);
                         DeleteGame(id);
-                        Console.WriteLine("Game with id: " + id + " deleted");
+                        clientSocket.Send(Encoding.UTF8.GetBytes("Game with id: " + id + " deleted \n"));
+                        clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                         break;
                     case CommandConstants.ModifyGame:
                         Console.WriteLine("Modifying game");
@@ -168,7 +166,8 @@ namespace Server
 
                         GameDTO modifyingGame = serverHandler.ReceiveGameForModifying(bufferData);
                         ModifyGame(modifyingGame);
-                        Console.WriteLine("Game added: " + modifyingGame.Name);
+                        clientSocket.Send(Encoding.UTF8.GetBytes("Game added: " + modifyingGame.Name + "\n"));
+                        clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                         break;
                     case CommandConstants.QualifyGame:
                         Console.WriteLine("Qualifying game");
@@ -177,11 +176,18 @@ namespace Server
 
                         ReviewDTO gameReview = serverHandler.ReceiveQualification(bufferData);
                         QualifyGame(gameReview);
-                        Console.WriteLine("Qualification for game with id: " + gameReview.GameId);
+                        clientSocket.Send(Encoding.UTF8.GetBytes("Qualification for game with id: " + gameReview.GameId + "\n"));
+                        clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                         break;
                     case CommandConstants.ViewDetail:
-                        Console.WriteLine("Not implemented yet");
-                        //Console.WriteLine("Message received: " + Encoding.UTF8.GetString(bufferData));
+                        Console.WriteLine("Viewing game detail");
+                        bufferData = new byte[header.IDataLength];
+                        ReceiveData(clientSocket, header.IDataLength, bufferData);
+
+                        int gameId = serverHandler.ReceiveId(bufferData);
+                        
+                        clientSocket.Send(Encoding.UTF8.GetBytes(gameService.GetGameDetail(gameId)));
+                        clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                         break;
                 }
 

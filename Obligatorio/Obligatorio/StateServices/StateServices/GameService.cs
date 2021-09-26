@@ -28,17 +28,50 @@ namespace StateServices
             gameRepository.Add(gameToInsert);
         }
 
-        public List<string> GetAllGames()
+        public String GetAllGames()
         {
-            List<string> games = new List<string>();
+            String games = "";
             foreach (Game game in gameRepository.GetAll())
             {
                 if (!game.isDeleted)
                 {
-                    games.Add($"Id: {game.Id} Name: {game.Name}");
+                    games += $"Id: {game.Id} Name: {game.Name} \n";
                 }
             }
             return games;
+        }
+
+        public String GetGameDetail(int gameId)
+        {
+            //List<string> details = new List<string>();
+            //Game game = gameRepository.Get(gameId);
+            //details.Add($"Id: {game.Id}, Name: {game.Name}, ");
+            //details.Add($"Genre: {game.Genre} , Description: {game.Description}, ");
+            //double rating = 0;
+            //foreach (var review in game.Reviews)
+            //{
+            //    details.Add("Reviews: ");
+            //    details.Add($"Id: {review.Id}, Rating: {review.Rating}" +
+            //        $", Content: {review.Content}, ");
+            //    rating += review.Rating;
+            //}
+            //details.Add($"Rating average: {rating / game.Reviews.Count}");
+            //return details;
+
+            String details = "";
+            Game game = gameRepository.Get(gameId);
+            details += $"Id: {game.Id}, Name: {game.Name} \n";
+            details += $"Genre: {game.Genre} , Description: {game.Description} \n";
+            double rating = 0;
+            details +=  "Reviews: \n";
+            foreach (var review in game.Reviews)
+            {
+                details += $"Id: {review.Id}, Rating: {review.Rating}" +
+                    $", Content: {review.Content}, \n";
+                rating += review.Rating;
+            }
+            details += $"Rating average: {rating / game.Reviews.Count} \n";
+            return details;
         }
 
         public void DeleteGame(int id)
