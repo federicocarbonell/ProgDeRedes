@@ -112,6 +112,24 @@ namespace Client
             Recieve();
         }
 
+        public void SearchForGames(string searchMode, string searchTerm, string minRating)
+        {
+            List<byte> data = new List<byte>();
+            int mode = Int32.Parse(searchMode);
+            AddIntData(data, mode);
+
+            if (mode == 1 || mode == 2)
+            {
+                AddStringData(data, searchTerm);
+            }
+            else
+            {
+                AddIntData(data, Int32.Parse(minRating));
+            }
+
+            SendData(data, CommandConstants.SearchForGame);
+        }
+
         private void SendData(List<byte> data, int command)
         {
 

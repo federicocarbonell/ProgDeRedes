@@ -11,6 +11,7 @@
         public const int QualifyGame = 6;
         public const int ViewDetail = 7;
         public const int SendGameCover = 8;
+        public const int SearchForGame = 9;
     }
 
 }

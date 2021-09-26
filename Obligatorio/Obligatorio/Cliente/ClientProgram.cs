@@ -35,6 +35,9 @@ namespace Client
                         case 6:
                             PrintViewGames();
                             break;
+                        case 7:
+                            PrintSearchForGame();
+                            break;
                         case 0:
                             PrintLogout();
                             break;
@@ -63,6 +66,7 @@ namespace Client
             Console.WriteLine("4- Qualify game");
             Console.WriteLine("5- View game detail");
             Console.WriteLine("6- View all games");
+            Console.WriteLine("7- Search for game");
             Console.WriteLine("0- Exit");
             Console.WriteLine("Choose menu number: ");
             try
@@ -165,7 +169,33 @@ namespace Client
             Console.Write("--- Game added ---");
         }
 
+        private static void PrintSearchForGame()
+        {
+            string searchMode = "", searchTerm = "", minRating = "";
+            
+            Console.WriteLine("Search for name by :");
+            Console.WriteLine("1: Title");
+            Console.WriteLine("2: Category");
+            Console.WriteLine("3: Minimum rating");
+            Console.Write("Mode: ");
+            
+            searchMode = Console.ReadLine();
 
+            if(searchMode == "1" || searchMode == "2")
+            {
+                Console.Write("Filter: ");
+                searchTerm = Console.ReadLine();
+            }
+            else
+            {
+                Console.Write("Minimum rating: ");
+                minRating = Console.ReadLine();
+            }
+
+            clientHandler.SearchForGames(searchMode, searchTerm, minRating);
+            
+            Console.Write("--- Search ongoing ---");
+        }
 
     }
 }
