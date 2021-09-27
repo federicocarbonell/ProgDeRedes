@@ -43,6 +43,19 @@ namespace StateServices
             Review newReview = CreateReview(id, rating, review);
             var auxList = ServerState.GetInstance().Games;
             auxList.Find(x => x.Id == id).Reviews.Add(newReview);
+            auxList.Find(x => x.Id == id).Rating = GetRating(id);
+        }
+
+        private int GetRating(int gameId)
+        {
+            List<int> ratings = new List<int>();
+
+            foreach (var review in Get(gameId).Reviews)
+            {
+                ratings.Add(review.Rating);
+            }
+
+            return (int)ratings.Average();
         }
 
         public Review CreateReview(int gameId, int rating, string review)
