@@ -86,14 +86,14 @@ namespace Server
             int beforeLength = 0;
             int id = convertToInt(bufferData, idLength, beforeLength);
 
-            beforeLength = idLength + 4;
+            beforeLength += idLength + 4;
             int nameLength = obtainLength(bufferData, beforeLength);
             string name = convertToString(bufferData, nameLength, beforeLength);
 
             int minRating = 0;
             if (id == 3)
-            {
-                beforeLength = nameLength + 4;
+            {//aca no tengo qeu estar haciendo nameLength + beforeLength?
+                beforeLength += nameLength + 4;
                 int ratingLength = obtainLength(bufferData, beforeLength);
                 minRating = convertToInt(bufferData, ratingLength, beforeLength);
             }
