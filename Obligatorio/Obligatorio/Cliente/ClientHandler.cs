@@ -50,7 +50,16 @@ namespace Client
             AddStringData(data, trailer);
 
             SendData(data, CommandConstants.AddGame);
-            SendFileData(cover, title);
+            
+            try
+            {
+                SendFileData(cover, title);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("No se pudo enviar el archivo de portada");
+            }
+            
             Recieve();
 
             //AWAITRESPONSE
