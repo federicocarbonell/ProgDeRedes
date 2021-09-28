@@ -3,8 +3,11 @@
 ## Manual de usuario
 
 1. Iniciar aplicación Server.
+ - Ejecutar server.exe.
 2. Iniciar aplicación Client.
+ - Ejecutar client.exe
 3. Utilizar la aplicación
+ - [Comandos disponibles](#comandos)
 
 ## Desglose de requerimientos
 
@@ -77,3 +80,38 @@
 Este fue el principal desafío encontrado en este obligatorio. Nos decantamos por la utilización de una clase ServerState que almacenase el estado del servidor durante su ejecución en memoria. Esta clase es estática y aplica el patrón Singleton, al cual le agregamos el uso de una serie de locks para asegurar la integridad de las operaciones sobre la misma. Las operaciones de lectura sobre las listas  de entidades de dominio son de libre acceso, mientras que las de escritura sobre las mismas tienen un lock individual (ej, si el cliente A está escribiendo a la lista de reviews, el cliente B puede al mismo tiempo escribir a la lista de usuarios).
 
 ## Protocolo utilizado
+
+El protocolo utilizado es enviar en un array de bytes largo dato | dato | largo dato | dato ....
+Una vez que se recibe dicho array se obtiene el largo del dato a leer, se itera el array por posicion agregando estos datos a un nuevo array hasta el largo deseado. Al finalizar se transforma al tipo de dato deseado, ya sea int, string, double, etc.
+
+## Arquitectura
+
+La arquitectura del sistema esta compuesta por un servidor y un cliente, ellos se comunicaran mediante el protocolo TCP. Como se menciono previamente, se pueden conectar diversos clientes al mismo servidor.
+Los ejecutables mencionados se pueden deployar en un mismo host, no es necesario tenerlo en separados hosts.
+
+- El servidor se compone por:
+  - Server.dll
+  - StateServices.dll
+  - ProtocolLibrary.dll
+- El cliente se compone por:
+  - Client.dll
+  - ProtocolLibrary.dll
+
+[<img src="./.images/architecture.png" width="500"/>](architecture.png)
+
+## Comandos
+
+Desde el lado del cliente existen los siguientes comandos:
+
+0. Desconectar cliente.
+1. Agregar juego.
+2. Eliminar juego.
+3. Modificar juego.
+4. Calificar juego.
+5. Ver detalles de un juego.
+6. Ver todos los juegos.
+7. Buscar juegos.
+
+Desde el lado del servidor existe un unico comando:
+
+0. Desconectar servidor.
