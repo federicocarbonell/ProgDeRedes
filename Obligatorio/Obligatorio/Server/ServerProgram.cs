@@ -126,61 +126,61 @@ namespace Server
                 {
                     case CommandConstants.Login:
                     case CommandConstants.AddGame:
-                        Console.WriteLine("Adding game");
+                        Console.WriteLine("Agregando juego");
                         bufferData = new byte[header.IDataLength];
                         ReceiveData(clientSocket, header.IDataLength, bufferData);
 
                         GameDTO game = serverHandler.ReceiveGame(bufferData);
                         AddGame(game);
                         clientSocket.Send(Encoding.UTF8.GetBytes(game.Name + "\n"));
-                        Console.WriteLine("Game added: " + game.Name);
+                        Console.WriteLine("Juego agregado: " + game.Name);
                         clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                         break;
                     case CommandConstants.SendGameCover:
-                        Console.WriteLine("Adding cover");
+                        Console.WriteLine("Agregando imagen a juego");
                         bufferData = new byte[header.IDataLength];
                         ReceiveData(clientSocket, header.IDataLength, bufferData);
 
                         serverHandler.AddCoverGame(clientSocket, bufferData);
-                        Console.WriteLine("Add cover ok");
+                        Console.WriteLine("Imagen agregada de manera exitosa");
                         break;
                     case CommandConstants.GetGames:
-                        Console.WriteLine("Showing games");
+                        Console.WriteLine("Mostrando juegos");
                         clientSocket.Send(Encoding.UTF8.GetBytes(gameService.GetAllGames()));
                         clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                         break;
                     case CommandConstants.DeleteGame:
-                        Console.WriteLine("Deleting game");
+                        Console.WriteLine("Borrando juego");
                         bufferData = new byte[header.IDataLength];
                         ReceiveData(clientSocket, header.IDataLength, bufferData);
 
                         int id = serverHandler.ReceiveId(bufferData);
                         DeleteGame(id);
-                        clientSocket.Send(Encoding.UTF8.GetBytes("Game with id: " + id + " deleted \n"));
+                        clientSocket.Send(Encoding.UTF8.GetBytes("Juego con id: " + id + " borrado \n"));
                         clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                         break;
                     case CommandConstants.ModifyGame:
-                        Console.WriteLine("Modifying game");
+                        Console.WriteLine("Modificando juego");
                         bufferData = new byte[header.IDataLength];
                         ReceiveData(clientSocket, header.IDataLength, bufferData);
 
                         GameDTO modifyingGame = serverHandler.ReceiveGameForModifying(bufferData);
                         ModifyGame(modifyingGame);
-                        clientSocket.Send(Encoding.UTF8.GetBytes("Game added: " + modifyingGame.Name + "\n"));
+                        clientSocket.Send(Encoding.UTF8.GetBytes("Juego modificado: " + modifyingGame.Name + "\n"));
                         clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                         break;
                     case CommandConstants.QualifyGame:
-                        Console.WriteLine("Qualifying game");
+                        Console.WriteLine("Calificando juego");
                         bufferData = new byte[header.IDataLength];
                         ReceiveData(clientSocket, header.IDataLength, bufferData);
 
                         ReviewDTO gameReview = serverHandler.ReceiveQualification(bufferData);
                         QualifyGame(gameReview);
-                        clientSocket.Send(Encoding.UTF8.GetBytes("Qualification for game with id: " + gameReview.GameId + "\n"));
+                        clientSocket.Send(Encoding.UTF8.GetBytes("Juego con id: " + gameReview.GameId + " calificado.\n"));
                         clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                         break;
                     case CommandConstants.ViewDetail:
-                        Console.WriteLine("Viewing game detail");
+                        Console.WriteLine("Viendo detalle de juego");
                         bufferData = new byte[header.IDataLength];
                         ReceiveData(clientSocket, header.IDataLength, bufferData);
 
@@ -190,7 +190,7 @@ namespace Server
                         clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                         break;
                     case CommandConstants.SearchForGame:
-                        Console.WriteLine("Searching for games");
+                        Console.WriteLine("Buscando juegos");
                         bufferData = new byte[header.IDataLength];
                         ReceiveData(clientSocket, header.IDataLength, bufferData);
 
@@ -257,11 +257,11 @@ namespace Server
             Console.WriteLine("Server >>>");
             Console.WriteLine("----------------");
             Console.WriteLine();
-            Console.WriteLine("1 - Create user");
-            Console.WriteLine("2 - Update user");
-            Console.WriteLine("3 - Delete user");
-            Console.WriteLine("4 - Active users");
-            Console.WriteLine("0 - Exit");
+            Console.WriteLine("1 - Crear usuario");
+            Console.WriteLine("2 - Actualizar usuario");
+            Console.WriteLine("3 - Borrar usuario");
+            Console.WriteLine("4 - Usuarios activos");
+            Console.WriteLine("0 - Salir");
             Console.Write("Enter command: ");
             string command = Console.ReadLine();
             try
