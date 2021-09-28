@@ -25,7 +25,9 @@ namespace Client
         {
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socket.Bind(new IPEndPoint(IPAddress.Parse(ClientIp), ClientPort));
+           
             ConnectToServer();
+            
         }
 
         public void ConnectToServer()
@@ -36,7 +38,7 @@ namespace Client
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Could not connect to server, {e.Message}");
+                throw new Exception($"Could not connect to server, {e.Message}");
             }
         }
 
@@ -253,7 +255,7 @@ namespace Client
 
         internal void Logout()
         {
-            socket.Shutdown(SocketShutdown.Send);
+            socket.Shutdown(SocketShutdown.Both);
             socket.Close();
         }
 
