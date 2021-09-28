@@ -35,7 +35,7 @@ namespace StateServices
             {
                 if (!game.isDeleted)
                 {
-                    games += $"Id: {game.Id} Name: {game.Name} \n";
+                    games += $"Id: {game.Id} Nombre: {game.Name} \n";
                 }
             }
             return games;
@@ -53,7 +53,7 @@ namespace StateServices
                     {
                         foreach (Game game in games.Where(x => x.Name.Contains(queryData.Item2) && !x.isDeleted))
                         {
-                            result += $"Id: {game.Id} Name: {game.Name} \n";
+                            result += $"Id: {game.Id} Nombre: {game.Name} \n";
                         }
                     }
                     break;
@@ -61,7 +61,7 @@ namespace StateServices
                     {
                         foreach (Game game in games.Where(x => x.Genre.Equals(queryData.Item2) && !x.isDeleted))
                         {
-                            result += $"Id: {game.Id} Name: {game.Name} \n";
+                            result += $"Id: {game.Id} Nombre: {game.Name} \n";
                         }
                     }
                     break;
@@ -69,7 +69,7 @@ namespace StateServices
                     {
                         foreach (Game game in games.Where(x => x.Rating >= queryData.Item3 && !x.isDeleted))
                         {
-                            result += $"Id: {game.Id} Name: {game.Name} \n";
+                            result += $"Id: {game.Id} Nombre: {game.Name} \n";
                         }
                     }
                     break;
@@ -77,7 +77,7 @@ namespace StateServices
                     break;
             }
 
-            if (string.IsNullOrEmpty(result)) result = "No games matching the given filter were found";
+            if (string.IsNullOrEmpty(result)) result = "No se encontraron juegos con el filtro especificado";
 
             return result;
         }
@@ -101,17 +101,17 @@ namespace StateServices
 
             String details = "";
             Game game = gameRepository.Get(gameId);
-            details += $"Id: {game.Id}, Name: {game.Name} \n";
-            details += $"Genre: {game.Genre} , Description: {game.Description} \n";
+            details += $"Id: {game.Id}, Nombre: {game.Name} \n";
+            details += $"Categoria: {game.Genre} , Descripcion: {game.Description} \n";
             double rating = 0;
             details +=  "Reviews: \n";
             foreach (var review in game.Reviews)
             {
                 details += $"Id: {review.Id}, Rating: {review.Rating}" +
-                    $", Content: {review.Content}, \n";
+                    $", Reseña: {review.Content}, \n";
                 rating += review.Rating;
             }
-            details += $"Rating average: {rating / game.Reviews.Count} \n";
+            details += $"Rating promedio: {rating / game.Reviews.Count} \n";
             return details;
         }
 
