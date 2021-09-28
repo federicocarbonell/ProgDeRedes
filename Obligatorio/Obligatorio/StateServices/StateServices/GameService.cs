@@ -28,9 +28,9 @@ namespace StateServices
             gameRepository.Add(gameToInsert);
         }
 
-        public String GetAllGames()
+        public string GetAllGames()
         {
-            String games = "";
+            string games = "";
             foreach (Game game in gameRepository.GetAll())
             {
                 if (!game.isDeleted)
@@ -82,7 +82,7 @@ namespace StateServices
             return result;
         }
 
-        public String GetGameDetail(int gameId)
+        public string GetGameDetail(int gameId)
         {
             //List<string> details = new List<string>();
             //Game game = gameRepository.Get(gameId);
@@ -99,7 +99,7 @@ namespace StateServices
             //details.Add($"Rating average: {rating / game.Reviews.Count}");
             //return details;
 
-            String details = "";
+            string details = "";
             Game game = gameRepository.Get(gameId);
             details += $"Id: {game.Id}, Nombre: {game.Name} \n";
             details += $"Categoria: {game.Genre} , Descripcion: {game.Description} \n";
