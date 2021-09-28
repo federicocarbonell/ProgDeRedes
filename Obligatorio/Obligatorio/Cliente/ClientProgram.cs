@@ -47,7 +47,7 @@ namespace Client
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Unexpected exception: {0}", ex.Message);
+                    Console.WriteLine("Excepcion inesperada: {0}", ex.Message);
                 }
                 finally
                 {
@@ -59,16 +59,15 @@ namespace Client
         static int PrintMenu()
         {
             Console.WriteLine("Bienvenido al Sistema Client");
-            Console.WriteLine("Opciones validas: ");
-            Console.WriteLine("1- Add game");
-            Console.WriteLine("2- Delete game");
-            Console.WriteLine("3- Modify game");
-            Console.WriteLine("4- Qualify game");
-            Console.WriteLine("5- View game detail");
-            Console.WriteLine("6- View all games");
-            Console.WriteLine("7- Search for game");
-            Console.WriteLine("0- Exit");
-            Console.WriteLine("Choose menu number: ");
+            Console.WriteLine("Elija una de las siguientes opciones: ");
+            Console.WriteLine("1 - Agregar juego");
+            Console.WriteLine("2 - Borrar juego");
+            Console.WriteLine("3 - Modificar juego");
+            Console.WriteLine("4 - Calificar juego");
+            Console.WriteLine("5 - Ver detalle de juego");
+            Console.WriteLine("6 - Ver catalogo de juegos");
+            Console.WriteLine("7 - Buscar juego");
+            Console.WriteLine("0 - Salir");
             try
             {
                 return Int32.Parse(Console.ReadLine());
@@ -76,7 +75,7 @@ namespace Client
             }
             catch (Exception)
             {
-                Console.WriteLine("Invalid input.");
+                Console.WriteLine("Por favor seleccione una de las opciones ofrecidas.");
                 return -1;
             }
         }
@@ -90,14 +89,13 @@ namespace Client
 
         private static void PrintViewGames()
         {
-            Console.WriteLine("Games: ");
+            Console.WriteLine("Juegos en el sistema: ");
             clientHandler.ViewGames();
         }
 
         private static void PrintViewGameDetails()
         {
-            Console.WriteLine("View game details");
-            Console.Write("Game id: ");
+            Console.Write("Ver detalle del juego con el id: ");
             int id = Int32.Parse(Console.ReadLine());
 
             clientHandler.ViewGameDetail(id);
@@ -105,95 +103,88 @@ namespace Client
 
         private static void PrintQualifyGame()
         {
-            Console.WriteLine("Qualify game");
-            Console.Write("Game id: ");
+            Console.Write("Calificar juego con el id: ");
             int id = Int32.Parse(Console.ReadLine());
 
-            Console.Write("Game rating: ");
+            Console.Write("Puntaje: ");
             int rating = Int32.Parse(Console.ReadLine());
 
-            Console.Write("Game content: ");
+            Console.Write("Reseña: ");
             string content = Console.ReadLine();
 
-            Console.Write("--- Game qualified ---");
             clientHandler.QualifyGame(id, rating, content);
 
         }
 
         private static void PrintModifyGame()
         {
-            Console.WriteLine("Modify game");
-            Console.Write("Game id: ");
+            Console.Write("Modificar juego con el id: ");
             int id = Int32.Parse(Console.ReadLine());
 
-            Console.Write("Game title: ");
+            Console.Write("Nombre: ");
             var title = Console.ReadLine();
 
-            Console.Write("Game genre: ");
+            Console.Write("Genero: ");
             var genre = Console.ReadLine();
 
-            Console.Write("Game trailer: ");
+            Console.Write("Descripcion: ");
             var trailer = Console.ReadLine();
 
-            Console.Write("Game cover: ");
+            Console.Write("Ruta a la imagen: ");
             var cover = Console.ReadLine();
 
             clientHandler.ModifyGame(id, title, genre, trailer, cover);
-            Console.Write("--- Game modified ---");
         }
 
         private static void PrintDeleteGame()
         {
-            Console.WriteLine("Delete game");
-            Console.Write("Game id: ");
+            Console.Write("Borrar juego con el id: ");
             int id = Int32.Parse(Console.ReadLine());
 
             clientHandler.DeleteGame(id);
-            Console.Write("--- Game deleted ---");
         }
 
         private static void PrintAddGame()
         {
-            Console.WriteLine("Add game");
-            Console.Write("Game title: ");
+            Console.WriteLine("Agregar juego");
+            Console.Write("Nombre: ");
             var title = Console.ReadLine();
 
-            Console.Write("Game genre: ");
+            Console.Write("Genero: ");
             var genre = Console.ReadLine();
 
-            Console.Write("Game sinopsis: ");
+            Console.Write("Descripcion: ");
             var trailer = Console.ReadLine();
 
-            Console.Write("Game cover: ");
+            Console.Write("Ruta a la imagen: ");
             var cover = Console.ReadLine();
 
             clientHandler.AddGame(title, genre, trailer, cover);
-            Console.Write("--- Game added ---");
         }
 
         private static void PrintSearchForGame()
         {
             string searchMode = "", searchTerm = "", minRating = "";
             
-            Console.WriteLine("Search for name by :");
-            Console.WriteLine("1: Title");
-            Console.WriteLine("2: Category");
-            Console.WriteLine("3: Minimum rating");
-            Console.Write("Mode: ");
+            Console.WriteLine("Buscar por:");
+            Console.WriteLine("1 - Nombre");
+            Console.WriteLine("2 - Genero");
+            Console.WriteLine("3 - Puntaje minimo");
+            Console.Write("Modo: ");
             
             searchMode = Console.ReadLine();
 
-            if(searchMode == "1" || searchMode == "2")
+            if (searchMode == "1" || searchMode == "2")
             {
-                Console.Write("Filter: ");
+                Console.Write("Filtro: ");
                 searchTerm = Console.ReadLine();
             }
             else
             {
-                Console.Write("Minimum rating: ");
+                Console.Write("Puntaje minimo: ");
                 minRating = Console.ReadLine();
             }
-            Console.WriteLine("--- Search ongoing ---");
+
 
             clientHandler.SearchForGames(searchMode, searchTerm, minRating);
         }
