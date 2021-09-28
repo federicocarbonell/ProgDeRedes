@@ -4,15 +4,16 @@ namespace Client
     public class ClientProgram
     {
         static ClientHandler clientHandler;
-
+        static bool connected;
 
         static void Main(string[] args)
         {
-            clientHandler = new ClientHandler();
-            int command = -1;
-            do
+            try
             {
-                try
+                clientHandler = new ClientHandler();
+                int command = -1;
+                connected = true;
+                while (connected)
                 {
                     command = PrintMenu();
                     switch (command)
@@ -45,15 +46,15 @@ namespace Client
                             break;
                     }
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Excepcion inesperada: {0}", ex.Message);
-                }
-                finally
-                {
-                    Console.WriteLine();
-                }
-            } while (command != 0);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Excepcion inesperada: {0}", ex.Message);
+            }
+            finally
+            {
+                Console.WriteLine();
+            }
         }
 
         static int PrintMenu()
@@ -84,6 +85,7 @@ namespace Client
         {
             Console.WriteLine("Cerrando conexion con el servidor");
             clientHandler.Logout();
+            connected = false;
             Console.WriteLine("Conexion cerrada con exito");
         }
 

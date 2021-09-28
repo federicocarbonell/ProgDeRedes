@@ -32,13 +32,24 @@ namespace Server
             //serverHandler = new ServerHandler();
             StartServer();
             int command = -1;
-            do
+            while(!_exit)
             {
                 try
                 {
                     command = PrintMenu();
                     switch (command)
                     {
+                        case 0:
+                            _exit = true;
+                            socketServer.Close(0);
+                            foreach (var client in _clients)
+                            {
+                                client.Shutdown(SocketShutdown.Both);
+                                client.Close();
+                            }
+                            var socketTrampa = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                            socketTrampa.Connect("127.0.0.1", 20000);
+                            break;
                         case 1:
                             CreateUser();
                             break;
@@ -63,7 +74,7 @@ namespace Server
                 {
                     Console.WriteLine();
                 }
-            } while (command != 0);
+            }
         }
 
         static void StartServer()
@@ -118,17 +129,18 @@ namespace Server
                 var headerLength = HeaderConstants.Request.Length + HeaderConstants.CommandLength +
                                    HeaderConstants.DataLength;
                 var buffer = new byte[headerLength];
-                ReceiveData(clientSocket, headerLength, buffer);
-
-                var header = new Header();
-                header.DecodeData(buffer);
-                switch (header.ICommand)
+                try
                 {
-                    case CommandConstants.Login:
-                    case CommandConstants.AddGame:
-                        Console.WriteLine("Agregando juego");
-                        bufferData = new byte[header.IDataLength];
-                        ReceiveData(clientSocket, header.IDataLength, bufferData);
+                    ReceiveData(clientSocket, headerLength, buffer);
+                    var header = new Header();
+                    header.DecodeData(buffer);
+                    switch (header.ICommand)
+                    {
+                        case CommandConstants.Login:
+                        case CommandConstants.AddGame:
+                            Console.WriteLine("Agregando juego");
+                            bufferData = new byte[header.IDataLength];
+                            ReceiveData(clientSocket, header.IDataLength, bufferData);
 
                         GameDTO game = serverHandler.ReceiveGame(bufferData);
                         AddGame(game);
@@ -184,7 +196,7 @@ namespace Server
                         bufferData = new byte[header.IDataLength];
                         ReceiveData(clientSocket, header.IDataLength, bufferData);
 
-                        int gameId = serverHandler.ReceiveId(bufferData);
+                            int gameId = serverHandler.ReceiveId(bufferData);
                         
                         clientSocket.Send(Encoding.UTF8.GetBytes(gameService.GetGameDetail(gameId)));
                         clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
@@ -201,6 +213,12 @@ namespace Server
                         clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
 
                         break;
+                    }
+
+                } catch(Exception se)
+                {
+                    Console.WriteLine(se.Message);
+                    return;
                 }
 
             }
@@ -219,7 +237,7 @@ namespace Server
                     {
                         clientSocket.Shutdown(SocketShutdown.Both);
                         clientSocket.Close();
-                        //throw exception -> se desconecto el cliente remoto
+                        throw new Exception("Client has been desconnected.");
                     }
 
                     iRecv += localRecv;
