@@ -9,7 +9,7 @@
 3. Utilizar la aplicación
  - [Comandos disponibles](#comandos)
 
-## Desglose de requerimientos
+## Alcance
 
 ### Cliente
 
@@ -21,21 +21,21 @@
     
     Opción 1 del menú del cliente. Luego de dado de alta al juego se notifica al cliente con un mensaje del lado del servidor. Se puede chequear la adición haciendo uso de la opción 6 del menú (ver todos).
 
-    Por esta iteración, no tenemos muchos chequeos sobre los datos recibidos del lado del servidor, lo cual puede llegar a llevar a problemas con las carátulas dado que se asume que los nombres de los juegos van a ser únicos, y por lo tanto guardamos las carátulas del lado del servidor como nombreJuego.jpg .(aca no me acuerdo si es jpg o png)
+    Por esta iteración, no tenemos muchos chequeos sobre los datos recibidos del lado del servidor, lo cual puede llegar a llevar a problemas con las carátulas dado que se asume que los nombres de los juegos van a ser únicos, y por lo tanto guardamos las carátulas del lado del servidor como nombreJuego.jpg .
 
 * RF3 - Baja y modificación de juego.
 
-    Opciones 2 y 3 del menú del cliente. Si el juego está en el sistema, modifica sus datos con los recibidos o lo marca como borrado, de lo contrario notifica que el id es inválido (está chequeado esto?).
+    Opciones 2 y 3 del menú del cliente. Si el juego está en el sistema, modifica sus datos con los recibidos o lo marca como borrado.
 
 * RF4 - Búsqueda de juegos.
 
-    Opción 7 del menú del cliente. Se puede buscar por nombre/título del juego, el cual retorna matches parciales. Se puede buscar por categoría, que retorna solo matches absolutos. Se puede buscar por calificación, se retornan juegos con promedio de calificaciones >= al parámetro de búsqueda.
+    Opción 7 del menú del cliente. Se puede buscar por nombre del juego, el cual retorna matches parciales. Se puede buscar por categoría, que retorna solo matches absolutos. Se puede buscar por calificación, se retornan juegos con promedio de calificaciones >= al parámetro de búsqueda.
 
     Importante a la hora de probar búsqueda por calificación, tener en cuenta que los juegos que aún no han sido calificados tienen una calificación nula, es decir, no van a ser tenidos en cuenta a la hora de evaluar los juegos que cumplan con la condición.
 
 * RF5 - Calificación de un juego.
 
-    Opción 4 del menú del cliente. Se permite calificar títulos, luego podemos verificar que la calificación quedó registrada de manera exitosa en el detalle del juego calificado.
+    Opción 4 del menú del cliente. Se permite calificar juegos, luego podemos verificar que la calificación quedó registrada de manera exitosa en el detalle del juego calificado.
 
 * RF6 - Detalle de un juego.
 
@@ -85,7 +85,7 @@ El protocolo que utilizamos es muy similar al descrito en la letra del obligator
 * Esta implementado sobre TCP/IP.
 * Valores alineados a la izquierda, bytes de relleno tienen valor 0.
 * Campos HEADER, CMD, LARGO van con largo fijo, DATOS tiene largo variable segun valor indicado en largo.
-* Formato general de la trama (aca armar una tablita y sacarle un screenshot)
+* Formato general de la trama
 
 Para la serializacion y deserializacion de los datos, utilizamos la siguiente metodologia:
 * Calculamos largo del dato a insertar
@@ -96,9 +96,8 @@ Para la serializacion y deserializacion de los datos, utilizamos la siguiente me
 Esto nos permite luego hacer una lectura precisa del lado del servidor. Supongamos que quisieramos enviar un dato que vale 1567.
 
 En ese caso, nuestra trama de datos tendria el siguiente formato => |4|0|0|0|1|5|6|7|
+
 Al querer deserializar los datos el servidor, comienza a leer sabiendo que los primeros 4 bytes se corresponden al largo del dato. Luego, asigna al dato el valor correspondiente a la deserializacion de los siguientes cuatro bytes.
-(aca todavia habria que mirar un poco de mejorar esto)
-Una vez que se recibe dicho array se obtiene el largo del dato a leer, se itera el array por posicion agregando estos datos a un nuevo array hasta el largo deseado. Al finalizar se transforma al tipo de dato deseado, ya sea int, string, double, etc.
 
 ## Arquitectura
 
