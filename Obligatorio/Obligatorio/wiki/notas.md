@@ -1,4 +1,9 @@
-# Apuntes del primer obligatorio
+#  Documentación del primer obligatorio
+
+## Autores
+
+* Federico Carbonell - 224359
+* Juan Pablo Sobral - 192247
 
 ## Manual de usuario
 
