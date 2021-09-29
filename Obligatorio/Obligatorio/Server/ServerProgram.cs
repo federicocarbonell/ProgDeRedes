@@ -172,6 +172,28 @@ namespace Server
                             clientSocket.Send(Encoding.UTF8.GetBytes(result));
                             clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                             break;
+                        case CommandConstants.ViewBoughtGames:
+                            Console.WriteLine("Viendo juegos comprados");
+                            bufferData = new byte[header.IDataLength];
+                            ReceiveData(clientSocket, header.IDataLength, bufferData);
+
+                            string username = serverHandler.ReceiveOwnerName(bufferData);
+                            string aux = gameService.GetAllBoughtGames(username);
+
+                            clientSocket.Send(Encoding.UTF8.GetBytes(aux));
+                            clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                            break;
+                        case CommandConstants.BuyGame:
+                            Console.WriteLine("Usuario adquiriendo juego");
+                            bufferData = new byte[header.IDataLength];
+                            ReceiveData(clientSocket, header.IDataLength, bufferData);
+
+                            var data = serverHandler.ReceiveSearchTerms(bufferData);
+                            string result = gameService.GetAllByQuery(data);
+
+                            clientSocket.Send(Encoding.UTF8.GetBytes(result));
+                            clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                            break;
                     }
                 }
                 catch (Exception se)

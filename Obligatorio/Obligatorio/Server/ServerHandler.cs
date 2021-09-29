@@ -38,7 +38,16 @@ namespace Server
             return new GameDTO { Name = name , Genre = genre, Description = description};
         }
 
-        public void AddCoverGame(Socket clientSocket, byte[] bufferData)
+        public string ReceiveOwnerName(byte[] bufferData)
+        {
+            int nameLength = obtainLength(bufferData, 0);
+            int beforeLength = 0;
+            string name = convertToString(bufferData, nameLength, beforeLength);
+
+            return name;
+        }
+
+            public void AddCoverGame(Socket clientSocket, byte[] bufferData)
         {
             int fileNameLength = obtainLength(bufferData, 0);
             int beforeLength = 0;

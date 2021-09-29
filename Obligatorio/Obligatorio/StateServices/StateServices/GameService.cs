@@ -47,6 +47,21 @@ namespace StateServices
             return games;
         }
 
+        public string GetAllBoughtGames(string username)
+        {
+            string games = "";
+
+            foreach (Game game in gameRepository.GetAll())
+            {
+                if (game.owners.Contains(username))
+                {
+                    games += $"Id: {game.Id} Nombre: {game.Name} \n";
+                }
+            }
+            
+            return games;
+        }
+
         public string GetAllByQuery(Tuple<int, string, int> queryData)
         {
             IQueryable<Game> games = gameRepository.GetAll();

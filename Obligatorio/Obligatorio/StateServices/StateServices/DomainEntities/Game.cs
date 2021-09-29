@@ -20,6 +20,8 @@ namespace StateServices.DomainEntities
         public string CoverPath { get; set; }
 
         public bool isDeleted { get; set; }
+        
+        public List<string> owners { get; set; }
 
         public List<Review> Reviews { get; set; }
 
