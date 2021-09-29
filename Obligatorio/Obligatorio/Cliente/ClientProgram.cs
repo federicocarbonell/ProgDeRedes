@@ -39,6 +39,12 @@ namespace Client
                         case 7:
                             PrintSearchForGame();
                             break;
+                        case 8:
+                            PrintBuyGame();
+                            break;
+                        case 9:
+                            PrintSeeMyGames();
+                            break;
                         case 0:
                             PrintLogout();
                             break;
@@ -59,6 +65,7 @@ namespace Client
 
         static int PrintMenu()
         {
+            
             Console.WriteLine("Bienvenido al Sistema Client");
             Console.WriteLine("Elija una de las siguientes opciones: ");
             Console.WriteLine("1 - Agregar juego");
@@ -68,7 +75,10 @@ namespace Client
             Console.WriteLine("5 - Ver detalle de juego");
             Console.WriteLine("6 - Ver catalogo de juegos");
             Console.WriteLine("7 - Buscar juego");
+            Console.WriteLine("8 - Ver juegos comprados");
+            Console.WriteLine("9 - Comprar juego");
             Console.WriteLine("0 - Salir");
+
             try
             {
                 return Int32.Parse(Console.ReadLine());
@@ -79,6 +89,24 @@ namespace Client
                 Console.WriteLine("Por favor seleccione una de las opciones ofrecidas.");
                 return -1;
             }
+        }
+
+        private static void PrintSeeMyGames()
+        {
+            Console.Write("Ver los juegos del usuario: ");
+            string username = Console.ReadLine();
+
+            clientHandler.ViewBoughtGames(username);
+        }
+
+        private static void PrintBuyGame()
+        {
+            Console.Write("Comprar como usuario: ");
+            string username = Console.ReadLine();
+            Console.Write("El juego con el id: ");
+            int id = Int32.Parse(Console.ReadLine());
+
+            clientHandler.BuyGame(username, id);
         }
 
         private static void PrintLogout()

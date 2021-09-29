@@ -12,6 +12,8 @@
         public const int ViewDetail = 7;
         public const int SendGameCover = 8;
         public const int SearchForGame = 9;
+        public const int ViewBoughtGames = 10;
+        public const int BuyGame = 11;
     }
 
 }
