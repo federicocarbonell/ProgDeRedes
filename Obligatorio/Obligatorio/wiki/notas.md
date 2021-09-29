@@ -15,18 +15,17 @@
 
 * RF1 - Conexión y desconexión al servidor.
 
-    El cliente se conecta al servidor de manera automática al iniciarse la aplicación. La desconexión actualmente presenta problemas.
+    El cliente se conecta al servidor de manera automática al iniciarse la aplicación. Se puede desconectar con la opción 0 del menú principal, cerrando así también la aplicación.
 
 * RF2 - Publicación de juego.
     
     Opción 1 del menú del cliente. Luego de dado de alta al juego se notifica al cliente con un mensaje del lado del servidor. Se puede chequear la adición haciendo uso de la opción 6 del menú (ver todos).
-    ACA AGREGAR ACLARACIÓN TEMA RUTAS PARA LA CARÁTULA.
 
-    Por esta iteración, no tenemos muchos chequeos sobre los datos recibidos del lado del servidor, lo cual puede llegar a llevar a problemas con las carátulas(esto es hacer un chequeo boludo pa q no se repita el nombre y chau).
+    Por esta iteración, no tenemos muchos chequeos sobre los datos recibidos del lado del servidor, lo cual puede llegar a llevar a problemas con las carátulas dado que se asume que los nombres de los juegos van a ser únicos, y por lo tanto guardamos las carátulas del lado del servidor como nombreJuego.jpg .(aca no me acuerdo si es jpg o png)
 
 * RF3 - Baja y modificación de juego.
 
-    Opciones X y Z del menú del cliente. Si el juego está en el sistema, modifica sus datos con los recibidos, de lo contrario notifica que el id es inválido (está chequeado esto?).
+    Opciones 2 y 3 del menú del cliente. Si el juego está en el sistema, modifica sus datos con los recibidos o lo marca como borrado, de lo contrario notifica que el id es inválido (está chequeado esto?).
 
 * RF4 - Búsqueda de juegos.
 
@@ -36,13 +35,13 @@
 
 * RF5 - Calificación de un juego.
 
-    Opción 2 del menú del cliente. Se permite calificar títulos, luego podemos verificar que la calificación quedó registrada de manera exitosa en el detalle del juego calificado.
+    Opción 4 del menú del cliente. Se permite calificar títulos, luego podemos verificar que la calificación quedó registrada de manera exitosa en el detalle del juego calificado.
 
 * RF6 - Detalle de un juego.
 
-    Opción X del menú del cliente. Se busca por id del juego, el cual se puede obtener utilizando la opción de listar todos. Nos trae toda la información del juego disponible en el servidor, incluida la lista de las calificaciones obtenidas con sus respectivos comentarios.
+    Opción 5 del menú del cliente. Se busca por id del juego, el cual se puede obtener utilizando la opción de listar todos. Nos trae toda la información del juego disponible en el servidor, incluida la lista de las calificaciones obtenidas con sus respectivos comentarios.
 
-    La funcionalidad de la descarga de la carátula no se implementa por instrucción de dejarlo para próxima iteración, pero sería relativamente sencillo, replicando de manera inversa el envío realizado del cliente al servidor.
+    La funcionalidad de la descarga de la carátula no se implementa dado que se recibió instrucción de dejarlo para próxima iteración, pero sería relativamente sencillo, replicando de manera inversa el envío realizado del cliente al servidor.
 
 ### Servidor
 
@@ -80,8 +79,25 @@
 Este fue el principal desafío encontrado en este obligatorio. Nos decantamos por la utilización de una clase ServerState que almacenase el estado del servidor durante su ejecución en memoria. Esta clase es estática y aplica el patrón Singleton, al cual le agregamos el uso de una serie de locks para asegurar la integridad de las operaciones sobre la misma. Las operaciones de lectura sobre las listas  de entidades de dominio son de libre acceso, mientras que las de escritura sobre las mismas tienen un lock individual (ej, si el cliente A está escribiendo a la lista de reviews, el cliente B puede al mismo tiempo escribir a la lista de usuarios).
 
 ## Protocolo utilizado
+El protocolo que utilizamos es muy similar al descrito en la letra del obligatorio:
 
-El protocolo utilizado es enviar en un array de bytes largo dato | dato | largo dato | dato ....
+* Es orientado a caracteres.
+* Esta implementado sobre TCP/IP.
+* Valores alineados a la izquierda, bytes de relleno tienen valor 0.
+* Campos HEADER, CMD, LARGO van con largo fijo, DATOS tiene largo variable segun valor indicado en largo.
+* Formato general de la trama (aca armar una tablita y sacarle un screenshot)
+
+Para la serializacion y deserializacion de los datos, utilizamos la siguiente metodologia:
+* Calculamos largo del dato a insertar
+* Pasamos a bytes este valor
+* Pasamos a bytes el dato a insertar
+* Insertamos en el array de datos los bytes del valor seguidos por los bytes del dato
+
+Esto nos permite luego hacer una lectura precisa del lado del servidor. Supongamos que quisieramos enviar un dato que vale 1567.
+
+En ese caso, nuestra trama de datos tendria el siguiente formato => |4|0|0|0|1|5|6|7|
+Al querer deserializar los datos el servidor, comienza a leer sabiendo que los primeros 4 bytes se corresponden al largo del dato. Luego, asigna al dato el valor correspondiente a la deserializacion de los siguientes cuatro bytes.
+(aca todavia habria que mirar un poco de mejorar esto)
 Una vez que se recibe dicho array se obtiene el largo del dato a leer, se itera el array por posicion agregando estos datos a un nuevo array hasta el largo deseado. Al finalizar se transforma al tipo de dato deseado, ya sea int, string, double, etc.
 
 ## Arquitectura
