@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DTOs\DTOs.csproj" />
     <ProjectReference Include="..\ProtocolLibrary1\ProtocolLibrary.csproj" />
     <ProjectReference Include="..\StateServices\StateServices\StateServices.csproj" />
-    <ProjectReference Include="..\Cliente\Client.csproj" />
   </ItemGroup>
 </Project>

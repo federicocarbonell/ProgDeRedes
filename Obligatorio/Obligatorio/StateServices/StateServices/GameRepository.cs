@@ -13,14 +13,23 @@ namespace StateServices
 
         public void Add(Game entity)
         {
+            if(!ValidName(entity.Name))
+                throw new Exception("Ya existe un juego ese nombre, por favor seleccione otro.");
             var auxList = ServerState.GetInstance().Games;
             entity.isDeleted = false;
-            entity.Id = obtainId();
+            entity.Id = ObtainId();
             auxList.Add(entity);
             ServerState.GetInstance().Games = auxList;
-        }//hay que hacer esta magia con las listas en todos creo
+        }
 
-        public int obtainId()
+        private bool ValidName(string name)
+        {
+            var auxList = ServerState.GetInstance().Games;
+            Game game = auxList.Find(x => x.Name.Equals(name));
+            return game == null || game.isDeleted;
+        }
+
+        public int ObtainId()
         {
             var auxList = ServerState.GetInstance().Games;
             var id = auxList.Count() + 1;
@@ -29,16 +38,16 @@ namespace StateServices
 
         public void Delete(int id)
         {
-            int arrPos = ServerState.GetInstance().Games.FindIndex(x => x.Id == id);
-            var auxList = ServerState.GetInstance().Games;
-            auxList.Find(x => x.Id == id).isDeleted = true;
-            ServerState.GetInstance().Games = auxList;
+            if (!ValidId(id))
+                throw new Exception("No existe un juego relacionado al id proporcionado.");
+            Game game = Get(id);
+            game.isDeleted = true;
         }
 
         public void QualifyGame(int id, int rating, string review)
         {
             if (!ValidId(id))
-                throw new Exception("Given id has no corresponding game");
+                throw new Exception("No existe un juego relacionado al id proporcionado.");
             Game game = Get(id);
             Review newReview = CreateReview(id, rating, review);
             var auxList = ServerState.GetInstance().Games;
@@ -61,7 +70,7 @@ namespace StateServices
         public Review CreateReview(int gameId, int rating, string review)
         {
             if (!ValidId(gameId))
-                throw new Exception("Given id has no corresponding game");
+                throw new Exception("No existe un juego relacionado al id proporcionado.");
             Game game = Get(gameId);
             int reviewId = game.Reviews.Count() + 1;
             Review newReview = new Review{ Id = reviewId, Rating = rating, Content =review};
@@ -71,10 +80,10 @@ namespace StateServices
         public Game Get(int id)
         {
             if (!ValidId(id))
-                throw new Exception("Given id has no corresponding game");
+                throw new Exception("No existe un juego relacionado al id proporcionado.");
             Game game = ServerState.GetInstance().Games.Find(x => x.Id == id);
             if (game.isDeleted)
-                throw new Exception("Given id has no corresponding game");
+                throw new Exception("No existe un juego relacionado al id proporcionado.");
             return ServerState.GetInstance().Games.Find(x => x.Id == id);
         }
 
@@ -91,7 +100,9 @@ namespace StateServices
         public void Update(int id, Game newEntity)
         {
             if (!ValidId(id))
-                throw new Exception("Given id has no corresponding game");
+                throw new Exception("No existe un juego relacionado al id proporcionado.");
+            if(!ValidName(newEntity.Name))
+                throw new Exception("Ya existe un juego ese nombre, por favor seleccione otro.");
             Game old = Get(id);
             old.Name = newEntity.Name;
             old.Genre = newEntity.Genre;

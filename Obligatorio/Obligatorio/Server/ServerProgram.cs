@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using Client.DTOs;
+using DTOs;
 using ProtocolLibrary;
 using StateServices;
 
@@ -18,6 +17,7 @@ namespace Server
         static GameService gameService;
         static ServerHandler serverHandler;
         static byte[] bufferData;
+
         static void Main(string[] args)
         {
             Console.WriteLine("Starting server");
@@ -29,10 +29,9 @@ namespace Server
             gameService = new GameService(gameRepository);
             var threadServer = new Thread(() => ListenForConnections(socketServer, gameService));
             threadServer.Start();
-            //serverHandler = new ServerHandler();
             StartServer();
             int command = -1;
-            while(!_exit)
+            while (!_exit)
             {
                 try
                 {
@@ -47,20 +46,10 @@ namespace Server
                                 client.Shutdown(SocketShutdown.Both);
                                 client.Close();
                             }
-                            var socketTrampa = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+                            var socketTrampa = new Socket(AddressFamily.InterNetwork, SocketType.Stream,
+                                ProtocolType.Tcp);
                             socketTrampa.Connect("127.0.0.1", 20000);
-                            break;
-                        case 1:
-                            CreateUser();
-                            break;
-                        case 2:
-                            UpdateUser();
-                            break;
-                        case 3:
-                            DeleteUser();
-                            break;
-                        case 4:
-                            ActiveUsers();
                             break;
                         default:
                             break;
@@ -79,29 +68,8 @@ namespace Server
 
         static void StartServer()
         {
-
         }
-
-        private static void ActiveUsers()
-        {
-            throw new NotImplementedException();
-        }
-
-        private static void DeleteUser()
-        {
-            throw new NotImplementedException();
-        }
-
-        private static void UpdateUser()
-        {
-            throw new NotImplementedException();
-        }
-
-        private static void CreateUser()
-        {
-            throw new NotImplementedException();
-        }
-
+        
         private static void ListenForConnections(Socket socketServer, GameService gameService)
         {
             while (!_exit)
@@ -119,6 +87,7 @@ namespace Server
                     _exit = true;
                 }
             }
+
             Console.WriteLine("Exiting....");
         }
 
@@ -142,85 +111,74 @@ namespace Server
                             bufferData = new byte[header.IDataLength];
                             ReceiveData(clientSocket, header.IDataLength, bufferData);
 
-                        GameDTO game = serverHandler.ReceiveGame(bufferData);
-                        AddGame(game);
-                        clientSocket.Send(Encoding.UTF8.GetBytes(game.Name + "\n"));
-                        Console.WriteLine("Juego agregado: " + game.Name);
-                        clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
-                        break;
-                    case CommandConstants.SendGameCover:
-                        Console.WriteLine("Agregando imagen a juego");
-                        bufferData = new byte[header.IDataLength];
-                        ReceiveData(clientSocket, header.IDataLength, bufferData);
+                            GameDTO game = serverHandler.ReceiveGame(bufferData);
+                            AddGame(game, clientSocket);
+                            break;
+                        case CommandConstants.SendGameCover:
+                            Console.WriteLine("Agregando imagen a juego");
+                            bufferData = new byte[header.IDataLength];
+                            ReceiveData(clientSocket, header.IDataLength, bufferData);
 
-                        serverHandler.AddCoverGame(clientSocket, bufferData);
-                        Console.WriteLine("Imagen agregada de manera exitosa");
-                        break;
-                    case CommandConstants.GetGames:
-                        Console.WriteLine("Mostrando juegos");
-                        clientSocket.Send(Encoding.UTF8.GetBytes(gameService.GetAllGames()));
-                        clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
-                        break;
-                    case CommandConstants.DeleteGame:
-                        Console.WriteLine("Borrando juego");
-                        bufferData = new byte[header.IDataLength];
-                        ReceiveData(clientSocket, header.IDataLength, bufferData);
+                            serverHandler.AddCoverGame(clientSocket, bufferData);
+                            Console.WriteLine("Imagen agregada de manera exitosa");
+                            break;
+                        case CommandConstants.GetGames:
+                            Console.WriteLine("Mostrando juegos");
+                            clientSocket.Send(Encoding.UTF8.GetBytes(gameService.GetAllGames()));
+                            clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                            break;
+                        case CommandConstants.DeleteGame:
+                            Console.WriteLine("Borrando juego");
+                            bufferData = new byte[header.IDataLength];
+                            ReceiveData(clientSocket, header.IDataLength, bufferData);
 
-                        int id = serverHandler.ReceiveId(bufferData);
-                        DeleteGame(id);
-                        clientSocket.Send(Encoding.UTF8.GetBytes("Juego con id: " + id + " borrado \n"));
-                        clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
-                        break;
-                    case CommandConstants.ModifyGame:
-                        Console.WriteLine("Modificando juego");
-                        bufferData = new byte[header.IDataLength];
-                        ReceiveData(clientSocket, header.IDataLength, bufferData);
+                            int id = serverHandler.ReceiveId(bufferData);
+                            DeleteGame(id, clientSocket);
+                            break;
+                        case CommandConstants.ModifyGame:
+                            Console.WriteLine("Modificando juego");
+                            bufferData = new byte[header.IDataLength];
+                            ReceiveData(clientSocket, header.IDataLength, bufferData);
 
-                        GameDTO modifyingGame = serverHandler.ReceiveGameForModifying(bufferData);
-                        ModifyGame(modifyingGame);
-                        clientSocket.Send(Encoding.UTF8.GetBytes("Juego modificado: " + modifyingGame.Name + "\n"));
-                        clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
-                        break;
-                    case CommandConstants.QualifyGame:
-                        Console.WriteLine("Calificando juego");
-                        bufferData = new byte[header.IDataLength];
-                        ReceiveData(clientSocket, header.IDataLength, bufferData);
+                            GameDTO modifyingGame = serverHandler.ReceiveGameForModifying(bufferData);
+                            ModifyGame(modifyingGame, clientSocket);
+                            break;
+                        case CommandConstants.QualifyGame:
+                            Console.WriteLine("Calificando juego");
+                            bufferData = new byte[header.IDataLength];
+                            ReceiveData(clientSocket, header.IDataLength, bufferData);
 
-                        ReviewDTO gameReview = serverHandler.ReceiveQualification(bufferData);
-                        QualifyGame(gameReview);
-                        clientSocket.Send(Encoding.UTF8.GetBytes("Juego con id: " + gameReview.GameId + " calificado.\n"));
-                        clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
-                        break;
-                    case CommandConstants.ViewDetail:
-                        Console.WriteLine("Viendo detalle de juego");
-                        bufferData = new byte[header.IDataLength];
-                        ReceiveData(clientSocket, header.IDataLength, bufferData);
+                            ReviewDTO gameReview = serverHandler.ReceiveQualification(bufferData);
+                            QualifyGame(gameReview, clientSocket);
+                            break;
+                        case CommandConstants.ViewDetail:
+                            Console.WriteLine("Viendo detalle de juego");
+                            bufferData = new byte[header.IDataLength];
+                            ReceiveData(clientSocket, header.IDataLength, bufferData);
 
                             int gameId = serverHandler.ReceiveId(bufferData);
-                        
-                        clientSocket.Send(Encoding.UTF8.GetBytes(gameService.GetGameDetail(gameId)));
-                        clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
-                        break;
-                    case CommandConstants.SearchForGame:
-                        Console.WriteLine("Buscando juegos");
-                        bufferData = new byte[header.IDataLength];
-                        ReceiveData(clientSocket, header.IDataLength, bufferData);
 
-                        var data = serverHandler.ReceiveSearchTerms(bufferData);
-                        string result = gameService.GetAllByQuery(data);
+                            clientSocket.Send(Encoding.UTF8.GetBytes(gameService.GetGameDetail(gameId)));
+                            clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                            break;
+                        case CommandConstants.SearchForGame:
+                            Console.WriteLine("Buscando juegos");
+                            bufferData = new byte[header.IDataLength];
+                            ReceiveData(clientSocket, header.IDataLength, bufferData);
 
-                        clientSocket.Send(Encoding.UTF8.GetBytes(result));
-                        clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                            var data = serverHandler.ReceiveSearchTerms(bufferData);
+                            string result = gameService.GetAllByQuery(data);
 
-                        break;
+                            clientSocket.Send(Encoding.UTF8.GetBytes(result));
+                            clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                            break;
                     }
-
-                } catch(Exception se)
+                }
+                catch (Exception se)
                 {
                     Console.WriteLine(se.Message);
                     return;
                 }
-
             }
         }
 
@@ -237,7 +195,7 @@ namespace Server
                     {
                         clientSocket.Shutdown(SocketShutdown.Both);
                         clientSocket.Close();
-                        throw new Exception("Client has been desconnected.");
+                        throw new Exception("Se ha desconectado el cliente.");
                     }
 
                     iRecv += localRecv;
@@ -250,24 +208,70 @@ namespace Server
             }
         }
 
-        private static void AddGame(GameDTO game)
+        private static void AddGame(GameDTO game, Socket clientSocket)
         {
-            gameService.AddGame(game);
+            try
+            {
+                gameService.AddGame(game);
+                clientSocket.Send(Encoding.UTF8.GetBytes(game.Name + "\n"));
+                Console.WriteLine("Juego agregado: " + game.Name);
+                clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                clientSocket.Send(Encoding.UTF8.GetBytes(e.Message));
+                clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+            }
         }
 
-        private static void DeleteGame(int id)
+        private static void DeleteGame(int id, Socket clientSocket)
         {
-            gameService.DeleteGame(id);
+            try
+            {
+                gameService.DeleteGame(id);
+                clientSocket.Send(Encoding.UTF8.GetBytes("Juego con id: " + id + " borrado \n"));
+                clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                clientSocket.Send(Encoding.UTF8.GetBytes(e.Message));
+                clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+            }
         }
 
-        private static void ModifyGame(GameDTO game)
+        private static void ModifyGame(GameDTO game, Socket clientSocket)
         {
-            gameService.ModifyGame(game.Id, game);
+            try
+            {
+                gameService.ModifyGame(game.Id, game);
+                clientSocket.Send(Encoding.UTF8.GetBytes("Juego modificado: " + game.Name + "\n"));
+                clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                clientSocket.Send(Encoding.UTF8.GetBytes(e.Message));
+                clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+            }
         }
 
-        private static void QualifyGame(ReviewDTO gameReview)
+        private static void QualifyGame(ReviewDTO gameReview, Socket clientSocket)
         {
-            gameService.QualifyGame(gameReview);
+            try
+            {
+                gameService.QualifyGame(gameReview);
+                clientSocket.Send(
+                    Encoding.UTF8.GetBytes("Juego con id: " + gameReview.GameId + " calificado.\n"));
+                clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                clientSocket.Send(Encoding.UTF8.GetBytes(e.Message));
+                clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+            }
         }
 
         static int PrintMenu()
@@ -275,21 +279,15 @@ namespace Server
             Console.WriteLine("Server >>>");
             Console.WriteLine("----------------");
             Console.WriteLine();
-            Console.WriteLine("1 - Crear usuario");
-            Console.WriteLine("2 - Actualizar usuario");
-            Console.WriteLine("3 - Borrar usuario");
-            Console.WriteLine("4 - Usuarios activos");
             Console.WriteLine("0 - Salir");
-            Console.Write("Enter command: ");
             string command = Console.ReadLine();
             try
             {
                 return Int32.Parse(command);
-
             }
             catch (Exception)
             {
-                Console.WriteLine("Invalid input.");
+                Console.WriteLine("Por favor seleccione una de las opciones ofrecidas.");
                 return -1;
             }
         }

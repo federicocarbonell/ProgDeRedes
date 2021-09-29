@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Client.DTOs;
+using DTOs;
 using StateServices.DomainEntities;
 
 namespace StateServices
@@ -16,7 +16,6 @@ namespace StateServices
 
         public void AddGame(GameDTO game)
         {
-            // TODO: Mapper
             Game gameToInsert = new Game
             {
                 Name = game.Name,
@@ -25,7 +24,14 @@ namespace StateServices
                 Description = game.Description,
                 Reviews = new List<Review>(),
             };
-            gameRepository.Add(gameToInsert);
+            try
+            {
+                gameRepository.Add(gameToInsert);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
         public string GetAllGames()
@@ -84,40 +90,39 @@ namespace StateServices
 
         public string GetGameDetail(int gameId)
         {
-            //List<string> details = new List<string>();
-            //Game game = gameRepository.Get(gameId);
-            //details.Add($"Id: {game.Id}, Name: {game.Name}, ");
-            //details.Add($"Genre: {game.Genre} , Description: {game.Description}, ");
-            //double rating = 0;
-            //foreach (var review in game.Reviews)
-            //{
-            //    details.Add("Reviews: ");
-            //    details.Add($"Id: {review.Id}, Rating: {review.Rating}" +
-            //        $", Content: {review.Content}, ");
-            //    rating += review.Rating;
-            //}
-            //details.Add($"Rating average: {rating / game.Reviews.Count}");
-            //return details;
-
             string details = "";
-            Game game = gameRepository.Get(gameId);
-            details += $"Id: {game.Id}, Nombre: {game.Name} \n";
-            details += $"Categoria: {game.Genre} , Descripcion: {game.Description} \n";
-            double rating = 0;
-            details +=  "Reviews: \n";
-            foreach (var review in game.Reviews)
+            try
             {
-                details += $"Id: {review.Id}, Rating: {review.Rating}" +
-                    $", Reseña: {review.Content}, \n";
-                rating += review.Rating;
+                Game game = gameRepository.Get(gameId);
+                details += $"Id: {game.Id}, Nombre: {game.Name} \n";
+                details += $"Categoria: {game.Genre} , Descripcion: {game.Description} \n";
+                double rating = 0;
+                details +=  "Reviews: \n";
+                foreach (var review in game.Reviews)
+                {
+                    details += $"Id: {review.Id}, Rating: {review.Rating}" +
+                        $", Reseña: {review.Content}, \n";
+                    rating += review.Rating;
+                }
+                details += $"Rating promedio: {rating / game.Reviews.Count} \n";
+                return details;
             }
-            details += $"Rating promedio: {rating / game.Reviews.Count} \n";
-            return details;
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
         public void DeleteGame(int id)
         {
-            gameRepository.Delete(id);
+            try
+            {
+                gameRepository.Delete(id);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
         public void ModifyGame(int id, GameDTO game)
@@ -130,12 +135,26 @@ namespace StateServices
                 CoverPath = game.CoverPath,
                 Description = game.Description
             };
-            gameRepository.Update(id, gameToModify);
+            try
+            {
+                gameRepository.Update(id, gameToModify);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
         public void QualifyGame (ReviewDTO reviewDTO)
         {
-            gameRepository.QualifyGame(reviewDTO.GameId, reviewDTO.Rating, reviewDTO.Content);
+            try
+            {
+                gameRepository.QualifyGame(reviewDTO.GameId, reviewDTO.Rating, reviewDTO.Content);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
     }
 }

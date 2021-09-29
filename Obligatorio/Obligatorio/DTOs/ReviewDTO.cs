@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Client.DTOs
+namespace DTOs
 {
     public class ReviewDTO
     {

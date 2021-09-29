@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
-using Client.DTOs;
+using DTOs;
 using ProtocolLibrary;
 
 namespace Server
