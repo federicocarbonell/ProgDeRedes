@@ -19,7 +19,6 @@ namespace Client
         private const int ClientPort = 0;
         public readonly Socket socket;
         private Header header;
-        //lei en internet de thread pools o socket pools
 
         public ClientHandler()
         {
@@ -38,7 +37,7 @@ namespace Client
             }
             catch (Exception e)
             {
-                throw new Exception($"Could not connect to server, {e.Message}");
+                throw new Exception($"No se pudo conectar al servidor, {e.Message}");
             }
         }
 
@@ -63,13 +62,10 @@ namespace Client
             }
             
             Recieve();
-
-            //AWAITRESPONSE
         }
 
         public void DeleteGame(int id)
         {
-            //creo q no tamo usando el result para nada habria q revisar bien
             List<byte> data = new List<byte>();
 
             AddIntData(data, id);
@@ -195,8 +191,6 @@ namespace Client
                     offset += lastPartSize;
                 }
 
-                //_socketStreamHandler.SendData(data);
-                //aca hago a mano
                 int auxOffset = 0;
                 int auxSize = data.Length;
                 while(auxOffset < data.Length)
@@ -208,7 +202,6 @@ namespace Client
                     }
                     auxOffset += sent;
                 }
-                //hasta aca
                 currentPart++;
             }
         }
