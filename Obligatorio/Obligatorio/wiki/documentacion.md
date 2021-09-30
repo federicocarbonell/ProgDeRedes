@@ -166,6 +166,24 @@ Los ejecutables mencionados se pueden deployar en un mismo host, no es necesario
 
 [<img src="./.images/architecture.png" width="500"/>](architecture.png)
 
+### RESPONSABILIDADES DE LOS PAQUETES
+
+* Paquete Server
+
+    Es el encargado del servidor, recibe las consultas, las procesa y envía mensajes al cliente.
+
+* Paquete StateServices
+
+    Es el encargado de manejar la consistencia de datos entre conexiones.
+
+* Paquete ProtocolLibrary
+
+    Es el encargado de almacenar la información necesaria para serializar-deserializar datos y enviar y recibir mensajes.
+
+* Paquete Client
+
+    Es el encargado del servicio de cliente que va a comunicarse con el Servidor. Procesa el input del usuario para luego enviarlo al servidor y tambien recibir y mostrar mensajes del mismo.
+
 ## Comandos
 
 Desde el lado del cliente existen los siguientes comandos:
