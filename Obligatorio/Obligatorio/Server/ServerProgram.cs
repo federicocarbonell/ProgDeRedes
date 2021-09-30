@@ -188,10 +188,10 @@ namespace Server
                             bufferData = new byte[header.IDataLength];
                             ReceiveData(clientSocket, header.IDataLength, bufferData);
 
-                            var data = serverHandler.ReceiveSearchTerms(bufferData);
-                            string result = gameService.GetAllByQuery(data);
+                            var purchaseData = serverHandler.RecieveBuyerInfo(bufferData);
+                            gameService.BuyGame(purchaseData);
 
-                            clientSocket.Send(Encoding.UTF8.GetBytes(result));
+                            clientSocket.Send(Encoding.UTF8.GetBytes("Juego adquirido de manera exitosa"));
                             clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                             break;
                     }

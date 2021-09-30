@@ -53,13 +53,31 @@ namespace StateServices
 
             foreach (Game game in gameRepository.GetAll())
             {
-                if (game.owners.Contains(username))
+                if (game.owners != null && game.owners.Contains(username))
                 {
                     games += $"Id: {game.Id} Nombre: {game.Name} \n";
                 }
             }
-            
+
+            if (string.IsNullOrEmpty(games))
+                games = "El usuario especificado no ha adquirido juegos";
+
             return games;
+        }
+
+        public void BuyGame(Tuple<int, string> data)
+        {
+            Game gameCopy = gameRepository.Get(data.Item1);
+
+            if (gameCopy.owners == null)
+            {
+                gameCopy.owners = new List<string>();
+            }
+
+            gameCopy.owners.Add(data.Item2);
+
+            gameRepository.Update(gameCopy.Id, gameCopy);
+
         }
 
         public string GetAllByQuery(Tuple<int, string, int> queryData)

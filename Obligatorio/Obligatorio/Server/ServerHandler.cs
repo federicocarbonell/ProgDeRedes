@@ -47,7 +47,7 @@ namespace Server
             return name;
         }
 
-            public void AddCoverGame(Socket clientSocket, byte[] bufferData)
+        public void AddCoverGame(Socket clientSocket, byte[] bufferData)
         {
             int fileNameLength = obtainLength(bufferData, 0);
             int beforeLength = 0;
@@ -59,6 +59,19 @@ namespace Server
             ReceiveFile(clientSocket, fileSize, fileName);
             //game.CoverPath = fileName;
             //return game;
+        }
+
+        public Tuple<int, string> RecieveBuyerInfo(byte[] bufferData)
+        {
+            int nameLength = obtainLength(bufferData, 0);
+            int beforeLength = 0;
+            int gameId = convertToInt(bufferData, nameLength, beforeLength);
+
+            beforeLength = nameLength + 4;
+            int genreLength = obtainLength(bufferData, beforeLength);
+            string username = convertToString(bufferData, genreLength, beforeLength);
+
+            return new Tuple<int, string>(gameId, username);
         }
 
 

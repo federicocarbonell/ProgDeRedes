@@ -70,16 +70,18 @@ namespace Client
             AddStringData(data, username);
 
             SendData(data, CommandConstants.ViewBoughtGames);
+            Recieve();
         }
 
         public void BuyGame(string username, int id)
         {
             List<byte> data = new List<byte>();
 
-            AddStringData(data, username);
             AddIntData(data, id);
+            AddStringData(data, username);
 
             SendData(data, CommandConstants.BuyGame);
+            Recieve();
         }
 
         public void DeleteGame(int id)

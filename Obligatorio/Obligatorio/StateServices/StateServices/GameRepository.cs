@@ -101,8 +101,9 @@ namespace StateServices
         {
             if (!ValidId(id))
                 throw new Exception("No existe un juego relacionado al id proporcionado.");
-            if(!ValidName(newEntity.Name))
-                throw new Exception("Ya existe un juego ese nombre, por favor seleccione otro.");
+            //if(!ValidName(newEntity.Name))
+            //    throw new Exception("Ya existe un juego ese nombre, por favor seleccione otro.");
+            //tuve q comentar pq no deja actualizar el juego con su mismo nombre y quiero debuggear
             Game old = Get(id);
             old.Name = newEntity.Name;
             old.Genre = newEntity.Genre;
