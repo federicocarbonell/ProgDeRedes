@@ -32,7 +32,7 @@
     | ------------- |-------------     | -----       |------------- | 
     | string        | string           | string      | string       |
 
-    Por esta iteración, no tenemos muchos chequeos sobre los datos recibidos del lado del servidor, lo cual puede llegar a llevar a problemas con las carátulas dado que se asume que los nombres de los juegos van a ser únicos, y por lo tanto guardamos las carátulas del lado del servidor como nombreJuego.jpg .
+    Por esta iteración, no tenemos muchos chequeos sobre los datos recibidos del lado del servidor, lo cual puede llegar a llevar a problemas con las carátulas dado que se asume que los nombres de los juegos van a ser únicos, y por lo tanto guardamos las carátulas del lado del servidor como nombreJuego.jpg . La ruta es relativa desde el directorio del ejecutable.
 
 * Baja y modificación de juego.
 
@@ -92,7 +92,7 @@
 
     Opción 8 del menú del cliente. Se le pregunta al cliente la lista de juegos de que usuario desea ver, y se la devuelve.
 
-    **PARAMS VER**
+    **PARAMS VER JUEGOS USUARIO**
     | Id        |
     | --------- |
     | int       |
