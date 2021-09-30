@@ -79,6 +79,7 @@ namespace Client
             catch (Exception ex)
             {
                 Console.WriteLine("Hubo un problema: {0}", ex.Message);
+                Console.ReadLine();
             }
             finally
             {
