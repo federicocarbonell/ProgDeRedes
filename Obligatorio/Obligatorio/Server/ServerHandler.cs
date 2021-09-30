@@ -31,10 +31,6 @@ namespace Server
             int descriptionLength = obtainLength(bufferData, beforeLength);
             string description = convertToString(bufferData, descriptionLength, beforeLength);
 
-            //beforeLength += descriptionLength + 4;
-            //int coverLength = obtainLength(bufferData, beforeLength);
-            //string coverPath = convertToString(bufferData, coverLength, beforeLength);
-
             return new GameDTO { Name = name , Genre = genre, Description = description};
         }
 
@@ -57,8 +53,6 @@ namespace Server
             int fileSizeLength = obtainLength(bufferData, beforeLength);
             long fileSize = convertToLong(bufferData, fileSizeLength, beforeLength);
             ReceiveFile(clientSocket, fileSize, fileName);
-            //game.CoverPath = fileName;
-            //return game;
         }
 
         public Tuple<int, string> RecieveBuyerInfo(byte[] bufferData)
@@ -94,11 +88,7 @@ namespace Server
             int descriptionLength = obtainLength(bufferData, beforeLength);
             string description = convertToString(bufferData, descriptionLength, beforeLength);
 
-            beforeLength += descriptionLength + 4;
-            int coverLength = obtainLength(bufferData, beforeLength);
-            string coverPath = convertToString(bufferData, coverLength, beforeLength);
-
-            return new GameDTO { Id = id, Name = name, Genre = genre, Description = description, CoverPath = coverPath };
+            return new GameDTO { Id = id, Name = name, Genre = genre, Description = description};
         }
 
         public Tuple<int, string, int> ReceiveSearchTerms(byte[] bufferData)
@@ -114,7 +104,7 @@ namespace Server
 
             int minRating = 0;
             if (id == 3)
-            {//aca no tengo qeu estar haciendo nameLength + beforeLength?
+            {
                 beforeLength += nameLength + 4;
                 int ratingLength = obtainLength(bufferData, beforeLength);
                 minRating = convertToInt(bufferData, ratingLength, beforeLength);
