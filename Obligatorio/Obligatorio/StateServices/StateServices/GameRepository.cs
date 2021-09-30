@@ -38,16 +38,12 @@ namespace StateServices
 
         public void Delete(int id)
         {
-            if (!ValidId(id))
-                throw new Exception("No existe un juego relacionado al id proporcionado.");
             Game game = Get(id);
             game.isDeleted = true;
         }
 
         public void QualifyGame(int id, int rating, string review)
         {
-            if (!ValidId(id))
-                throw new Exception("No existe un juego relacionado al id proporcionado.");
             Game game = Get(id);
             Review newReview = CreateReview(id, rating, review);
             var auxList = ServerState.GetInstance().Games;
@@ -69,8 +65,6 @@ namespace StateServices
 
         public Review CreateReview(int gameId, int rating, string review)
         {
-            if (!ValidId(gameId))
-                throw new Exception("No existe un juego relacionado al id proporcionado.");
             Game game = Get(gameId);
             int reviewId = game.Reviews.Count() + 1;
             Review newReview = new Review{ Id = reviewId, Rating = rating, Content =review};

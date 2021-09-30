@@ -19,41 +19,52 @@ namespace Client
                 connected = true;
                 while (connected)
                 {
-                    command = PrintMenu();
-                    switch (command)
+                    try
                     {
-                        case 1:
-                            PrintAddGame();
-                            break;
-                        case 2:
-                            PrintDeleteGame();
-                            break;
-                        case 3:
-                            PrintModifyGame();
-                            break;
-                        case 4:
-                            PrintQualifyGame();
-                            break;
-                        case 5:
-                            PrintViewGameDetails();
-                            break;
-                        case 6:
-                            PrintViewGames();
-                            break;
-                        case 7:
-                            PrintSearchForGame();
-                            break;
-                        case 8:
-                            PrintSeeMyGames();
-                            break;
-                        case 9:
-                            PrintBuyGame();
-                            break;
-                        case 0:
-                            PrintLogout();
-                            break;
-                        default:
-                            break;
+                        command = PrintMenu();
+                        switch (command)
+                        {
+                            case 1:
+                                PrintAddGame();
+                                break;
+                            case 2:
+                                PrintDeleteGame();
+                                break;
+                            case 3:
+                                PrintModifyGame();
+                                break;
+                            case 4:
+                                PrintQualifyGame();
+                                break;
+                            case 5:
+                                PrintViewGameDetails();
+                                break;
+                            case 6:
+                                PrintViewGames();
+                                break;
+                            case 7:
+                                PrintSearchForGame();
+                                break;
+                            case 8:
+                                PrintSeeMyGames();
+                                break;
+                            case 9:
+                                PrintBuyGame();
+                                break;
+                            case 0:
+                                PrintLogout();
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Hubo un problema: {0}", ex.Message);
+                    }
+                    finally
+                    {
+                        Console.WriteLine();
                     }
                 }
             }
@@ -69,7 +80,6 @@ namespace Client
 
         static int PrintMenu()
         {
-            
             Console.WriteLine("Bienvenido al Sistema Client");
             Console.WriteLine("Elija una de las siguientes opciones: ");
             Console.WriteLine("1 - Agregar juego");
@@ -86,7 +96,6 @@ namespace Client
             try
             {
                 return Int32.Parse(Console.ReadLine());
-
             }
             catch (Exception)
             {
@@ -94,7 +103,7 @@ namespace Client
                 return -1;
             }
         }
-        
+
         private static void ObtainConfiguration()
         {
             var builder = new ConfigurationBuilder().AddJsonFile($"appsettings.json", true, true);
@@ -111,12 +120,19 @@ namespace Client
 
         private static void PrintBuyGame()
         {
-            Console.Write("Comprar como usuario: ");
-            string username = Console.ReadLine();
-            Console.Write("El juego con el id: ");
-            int id = Int32.Parse(Console.ReadLine());
+            try
+            {
+                Console.Write("Comprar como usuario: ");
+                string username = Console.ReadLine();
+                Console.Write("El juego con el id: ");
+                int id = Int32.Parse(Console.ReadLine());
 
-            clientHandler.BuyGame(username, id);
+                clientHandler.BuyGame(username, id);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Por favor envíe los datos en su correspondiente tipo.");
+            }
         }
 
         private static void PrintLogout()
@@ -135,53 +151,80 @@ namespace Client
 
         private static void PrintViewGameDetails()
         {
-            Console.Write("Ver detalle del juego con el id: ");
-            int id = Int32.Parse(Console.ReadLine());
+            try
+            {
+                Console.Write("Ver detalle del juego con el id: ");
+                int id = Int32.Parse(Console.ReadLine());
 
-            clientHandler.ViewGameDetail(id);
+                clientHandler.ViewGameDetail(id);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Por favor envíe los datos en su correspondiente tipo.");
+            }
         }
 
         private static void PrintQualifyGame()
         {
-            Console.Write("Calificar juego con el id: ");
-            int id = Int32.Parse(Console.ReadLine());
+            try
+            {
+                Console.Write("Calificar juego con el id: ");
+                int id = Int32.Parse(Console.ReadLine());
 
-            Console.Write("Puntaje: ");
-            int rating = Int32.Parse(Console.ReadLine());
+                Console.Write("Puntaje: ");
+                int rating = Int32.Parse(Console.ReadLine());
 
-            Console.Write("Reseña: ");
-            string content = Console.ReadLine();
+                Console.Write("Reseña: ");
+                string content = Console.ReadLine();
 
-            clientHandler.QualifyGame(id, rating, content);
-
+                clientHandler.QualifyGame(id, rating, content);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Por favor envíe los datos en su correspondiente tipo.");
+            }
         }
 
         private static void PrintModifyGame()
         {
-            Console.Write("Modificar juego con el id: ");
-            int id = Int32.Parse(Console.ReadLine());
+            try
+            {
+                Console.Write("Modificar juego con el id: ");
+                int id = Int32.Parse(Console.ReadLine());
 
-            Console.Write("Nombre: ");
-            var title = Console.ReadLine();
+                Console.Write("Nombre: ");
+                var title = Console.ReadLine();
 
-            Console.Write("Genero: ");
-            var genre = Console.ReadLine();
+                Console.Write("Genero: ");
+                var genre = Console.ReadLine();
 
-            Console.Write("Descripcion: ");
-            var trailer = Console.ReadLine();
+                Console.Write("Descripcion: ");
+                var trailer = Console.ReadLine();
 
-            Console.Write("Ruta a la imagen: ");
-            var cover = Console.ReadLine();
+                Console.Write("Ruta a la imagen: ");
+                var cover = Console.ReadLine();
 
-            clientHandler.ModifyGame(id, title, genre, trailer, cover);
+                clientHandler.ModifyGame(id, title, genre, trailer, cover);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Por favor envíe los datos en su correspondiente tipo.");
+            }
         }
 
         private static void PrintDeleteGame()
         {
-            Console.Write("Borrar juego con el id: ");
-            int id = Int32.Parse(Console.ReadLine());
+            try
+            {
+                Console.Write("Borrar juego con el id: ");
+                int id = Int32.Parse(Console.ReadLine());
 
-            clientHandler.DeleteGame(id);
+                clientHandler.DeleteGame(id);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Por favor envíe los datos en su correspondiente tipo.");
+            }
         }
 
         private static void PrintAddGame()
@@ -205,13 +248,13 @@ namespace Client
         private static void PrintSearchForGame()
         {
             string searchMode = "", searchTerm = "", minRating = "";
-            
+
             Console.WriteLine("Buscar por:");
             Console.WriteLine("1 - Nombre");
             Console.WriteLine("2 - Genero");
             Console.WriteLine("3 - Puntaje minimo");
             Console.Write("Modo: ");
-            
+
             searchMode = Console.ReadLine();
 
             if (searchMode == "1" || searchMode == "2")
@@ -228,6 +271,5 @@ namespace Client
 
             clientHandler.SearchForGames(searchMode, searchTerm, minRating);
         }
-
     }
 }
