@@ -14,9 +14,7 @@
 3. Utilizar la aplicación
  - [Comandos disponibles](#comandos)
 
-## Alcance
-
-### Cliente
+## Alcance Cliente
 
 * Conexión y desconexión al servidor.
 
@@ -26,11 +24,27 @@
     
     Opción 1 del menú del cliente. Luego de dado de alta al juego se notifica al cliente con un mensaje del lado del servidor. Se puede chequear la adición haciendo uso de la opción 6 del menú (ver todos).
 
+    **PARAMS PUBLICACION**
+
+    | Nombre        | Genero           | Descripcion | RutaCaratula |
+    | ------------- |-------------     | -----       |------------- | 
+    | string        | string           | string      | string       |
+
     Por esta iteración, no tenemos muchos chequeos sobre los datos recibidos del lado del servidor, lo cual puede llegar a llevar a problemas con las carátulas dado que se asume que los nombres de los juegos van a ser únicos, y por lo tanto guardamos las carátulas del lado del servidor como nombreJuego.jpg .
 
 * Baja y modificación de juego.
 
     Opciones 2 y 3 del menú del cliente. Si el juego está en el sistema, modifica sus datos con los recibidos o lo marca como borrado.
+
+    **PARAMS BORRADO**
+    | Id        |
+    | --------- | 
+    | int       |
+
+    **PARAMS ACTUALIZACION**
+    | Id        | Nombre        | Genero           | Descripcion | RutaCaratula |
+    | --------- | ------------- |-------------     | -----       |------------- | 
+    | int       | string        | string           | string      | string       |
 
 * Búsqueda de juegos.
 
@@ -38,9 +52,19 @@
 
     Importante a la hora de probar búsqueda por calificación, tener en cuenta que los juegos que aún no han sido calificados tienen una calificación nula, es decir, no van a ser tenidos en cuenta a la hora de evaluar los juegos que cumplan con la condición.
 
+    **PARAMS BUSQUEDA**
+    | Modo      | Nombre(opcional) | Genero (opcional) | Rating minimo (opcional) |
+    | --------- | -------------    | -------------     | -----                    |
+    | int       | string           | string            | int                      |
+
 * Calificación de un juego.
 
     Opción 4 del menú del cliente. Se permite calificar juegos, luego podemos verificar que la calificación quedó registrada de manera exitosa en el detalle del juego calificado.
+
+    **PARAMS CALIFICACION**
+    | Id        | Rating        | Comentario   |
+    | --------- | ------------- |------------- |
+    | int       | int           | string       |
 
 * Detalle de un juego.
 
@@ -48,13 +72,28 @@
 
     La funcionalidad de la descarga de la carátula no se implementa dado que se recibió instrucción de dejarlo para próxima iteración, pero sería relativamente sencillo, replicando de manera inversa el envío realizado del cliente al servidor.
 
+    **PARAMS DETALLE**
+    | Id        |
+    | --------- |
+    | int       |
+
 * Compra de juego.
 
     Opción 9 del menú del cliente. Se le pregunta al cliente como que usuario quiere comprar el juego, y el id del juego a adquirir. Se puede chequear la compra viendo la lista de juegos del usuario.
 
+    **PARAMS COMPRA**
+    | Id        | Username |
+    | --------- |----------|
+    | int       | string |
+
 * Ver juegos del usuario.
 
     Opción 8 del menú del cliente. Se le pregunta al cliente la lista de juegos de que usuario desea ver, y se la devuelve.
+
+    **PARAMS VER**
+    | Id        |
+    | --------- |
+    | int       |
 
 ### Servidor
 
