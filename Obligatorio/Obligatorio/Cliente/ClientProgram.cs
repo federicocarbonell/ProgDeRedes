@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Sockets;
 using Microsoft.Extensions.Configuration;
 
 namespace Client
@@ -57,6 +58,12 @@ namespace Client
                             default:
                                 break;
                         }
+                    }
+                    catch (SocketException sex)
+                    {
+                        Console.WriteLine(("El servidor se ha desconectado, comuníqueselo al administrador \n e intente " +
+                                           "nuevamente más tarde."));
+                        return;
                     }
                     catch (Exception ex)
                     {
