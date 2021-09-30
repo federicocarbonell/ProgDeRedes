@@ -107,7 +107,6 @@ namespace Server
                     {
                         case CommandConstants.Login:
                         case CommandConstants.AddGame:
-                            Console.WriteLine("Agregando juego");
                             bufferData = new byte[header.IDataLength];
                             ReceiveData(clientSocket, header.IDataLength, bufferData);
 
@@ -115,20 +114,16 @@ namespace Server
                             AddGame(game, clientSocket);
                             break;
                         case CommandConstants.SendGameCover:
-                            Console.WriteLine("Agregando imagen a juego");
                             bufferData = new byte[header.IDataLength];
                             ReceiveData(clientSocket, header.IDataLength, bufferData);
 
                             serverHandler.AddCoverGame(clientSocket, bufferData);
-                            Console.WriteLine("Imagen agregada de manera exitosa");
                             break;
                         case CommandConstants.GetGames:
-                            Console.WriteLine("Mostrando juegos");
                             clientSocket.Send(Encoding.UTF8.GetBytes(gameService.GetAllGames()));
                             clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                             break;
                         case CommandConstants.DeleteGame:
-                            Console.WriteLine("Borrando juego");
                             bufferData = new byte[header.IDataLength];
                             ReceiveData(clientSocket, header.IDataLength, bufferData);
 
@@ -136,7 +131,6 @@ namespace Server
                             DeleteGame(id, clientSocket);
                             break;
                         case CommandConstants.ModifyGame:
-                            Console.WriteLine("Modificando juego");
                             bufferData = new byte[header.IDataLength];
                             ReceiveData(clientSocket, header.IDataLength, bufferData);
 
@@ -144,7 +138,6 @@ namespace Server
                             ModifyGame(modifyingGame, clientSocket);
                             break;
                         case CommandConstants.QualifyGame:
-                            Console.WriteLine("Calificando juego");
                             bufferData = new byte[header.IDataLength];
                             ReceiveData(clientSocket, header.IDataLength, bufferData);
 
@@ -152,7 +145,6 @@ namespace Server
                             QualifyGame(gameReview, clientSocket);
                             break;
                         case CommandConstants.ViewDetail:
-                            Console.WriteLine("Viendo detalle de juego");
                             bufferData = new byte[header.IDataLength];
                             ReceiveData(clientSocket, header.IDataLength, bufferData);
 
@@ -162,7 +154,6 @@ namespace Server
                             clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                             break;
                         case CommandConstants.SearchForGame:
-                            Console.WriteLine("Buscando juegos");
                             bufferData = new byte[header.IDataLength];
                             ReceiveData(clientSocket, header.IDataLength, bufferData);
 
@@ -173,7 +164,6 @@ namespace Server
                             clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                             break;
                         case CommandConstants.ViewBoughtGames:
-                            Console.WriteLine("Viendo juegos comprados");
                             bufferData = new byte[header.IDataLength];
                             ReceiveData(clientSocket, header.IDataLength, bufferData);
 
@@ -184,7 +174,6 @@ namespace Server
                             clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                             break;
                         case CommandConstants.BuyGame:
-                            Console.WriteLine("Usuario adquiriendo juego");
                             bufferData = new byte[header.IDataLength];
                             ReceiveData(clientSocket, header.IDataLength, bufferData);
 
@@ -232,8 +221,7 @@ namespace Server
             try
             {
                 gameService.AddGame(game);
-                clientSocket.Send(Encoding.UTF8.GetBytes(game.Name + "\n"));
-                Console.WriteLine("Juego agregado: " + game.Name);
+                clientSocket.Send(Encoding.UTF8.GetBytes("Juego agregado: " +game.Name + "\n"));
                 clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
             }
             catch (Exception e)
