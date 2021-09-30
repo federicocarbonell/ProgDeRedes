@@ -188,11 +188,8 @@ namespace Server
                             bufferData = new byte[header.IDataLength];
                             ReceiveData(clientSocket, header.IDataLength, bufferData);
 
-                            var purchaseData = serverHandler.RecieveBuyerInfo(bufferData);
-                            gameService.BuyGame(purchaseData);
-
-                            clientSocket.Send(Encoding.UTF8.GetBytes("Juego adquirido de manera exitosa"));
-                            clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                            Tuple<int,string> purchaseData = serverHandler.RecieveBuyerInfo(bufferData);
+                            BuyGame(purchaseData, clientSocket);
                             break;
                     }
                 }
@@ -286,6 +283,23 @@ namespace Server
                 gameService.QualifyGame(gameReview);
                 clientSocket.Send(
                     Encoding.UTF8.GetBytes("Juego con id: " + gameReview.GameId + " calificado.\n"));
+                clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                clientSocket.Send(Encoding.UTF8.GetBytes(e.Message));
+                clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+            }
+        }
+
+        private static void BuyGame(Tuple<int,string> purchaseData, Socket clientSocket)
+        {
+            try
+            {
+                gameService.BuyGame(purchaseData);
+
+                clientSocket.Send(Encoding.UTF8.GetBytes("Juego adquirido de manera exitosa"));
                 clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
             }
             catch (Exception e)

@@ -67,17 +67,14 @@ namespace StateServices
 
         public void BuyGame(Tuple<int, string> data)
         {
-            Game gameCopy = gameRepository.Get(data.Item1);
-
-            if (gameCopy.owners == null)
+            try
             {
-                gameCopy.owners = new List<string>();
+                gameRepository.BuyGame(data.Item1, data.Item2);
             }
-
-            gameCopy.owners.Add(data.Item2);
-
-            gameRepository.Update(gameCopy.Id, gameCopy);
-
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
         public string GetAllByQuery(Tuple<int, string, int> queryData)

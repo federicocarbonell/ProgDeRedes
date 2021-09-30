@@ -97,13 +97,20 @@ namespace StateServices
             return ServerState.GetInstance().Games.ToList().AsQueryable();
         }
 
+        public void BuyGame(int id, string buyer)
+        {
+            Game game = Get(id);
+            if (game.owners == null)
+            {
+                game.owners = new List<string>();
+            }
+            game.owners.Add(buyer);
+        }
+
         public void Update(int id, Game newEntity)
         {
-            if (!ValidId(id))
-                throw new Exception("No existe un juego relacionado al id proporcionado.");
-            //if(!ValidName(newEntity.Name))
-            //    throw new Exception("Ya existe un juego ese nombre, por favor seleccione otro.");
-            //tuve q comentar pq no deja actualizar el juego con su mismo nombre y quiero debuggear
+            if(!ValidName(newEntity.Name))
+                throw new Exception("Ya existe un juego ese nombre, por favor seleccione otro.");
             Game old = Get(id);
             old.Name = newEntity.Name;
             old.Genre = newEntity.Genre;
