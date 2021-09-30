@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using DTOs;
+using Microsoft.Extensions.Configuration;
 using ProtocolLibrary;
 using StateServices;
 
@@ -17,13 +19,17 @@ namespace Server
         static GameService gameService;
         static ServerHandler serverHandler;
         static byte[] bufferData;
-
+        private IConfiguration _configuration;
+        private static string ip;
+        private static int port;
+        private static int backlog;
         static void Main(string[] args)
         {
             Console.WriteLine("Starting server");
+            ObtainConfiguration();
             var socketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            socketServer.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 20000));
-            socketServer.Listen(100);
+            socketServer.Bind(new IPEndPoint(IPAddress.Parse(ip), port));
+            socketServer.Listen(backlog);
             serverHandler = new ServerHandler(socketServer);
             GameRepository gameRepository = new GameRepository();
             gameService = new GameService(gameRepository);
@@ -49,7 +55,7 @@ namespace Server
 
                             var socketTrampa = new Socket(AddressFamily.InterNetwork, SocketType.Stream,
                                 ProtocolType.Tcp);
-                            socketTrampa.Connect("127.0.0.1", 20000);
+                            socketTrampa.Connect(ip, port);
                             break;
                         default:
                             break;
@@ -68,6 +74,15 @@ namespace Server
 
         static void StartServer()
         {
+        }
+
+        private static void ObtainConfiguration()
+        {
+            var builder = new ConfigurationBuilder().AddJsonFile($"appsettings.json", true, true);
+            var config = builder.Build();
+            ip = config["Ip"];
+            port = Int32.Parse(config["Port"]);
+            backlog = Int32.Parse(config["Backlog"]);
         }
         
         private static void ListenForConnections(Socket socketServer, GameService gameService)
@@ -203,7 +218,7 @@ namespace Server
                     {
                         clientSocket.Shutdown(SocketShutdown.Both);
                         clientSocket.Close();
-                        throw new Exception("Se ha desconectado el cliente.");
+                        throw new Exception("Se ha desconectado el cliente. \n");
                     }
 
                     iRecv += localRecv;
@@ -287,7 +302,7 @@ namespace Server
             {
                 gameService.BuyGame(purchaseData);
 
-                clientSocket.Send(Encoding.UTF8.GetBytes("Juego adquirido de manera exitosa"));
+                clientSocket.Send(Encoding.UTF8.GetBytes("Juego adquirido de manera exitosa. \n"));
                 clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
             }
             catch (Exception e)

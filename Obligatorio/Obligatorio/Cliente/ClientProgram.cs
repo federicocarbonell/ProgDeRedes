@@ -1,16 +1,20 @@
 ﻿using System;
+using Microsoft.Extensions.Configuration;
+
 namespace Client
 {
     public class ClientProgram
     {
         static ClientHandler clientHandler;
         static bool connected;
+        private static IConfiguration _configuration;
 
         static void Main(string[] args)
         {
             try
             {
-                clientHandler = new ClientHandler();
+                ObtainConfiguration();
+                clientHandler = new ClientHandler(_configuration);
                 int command = -1;
                 connected = true;
                 while (connected)
@@ -89,6 +93,12 @@ namespace Client
                 Console.WriteLine("Por favor seleccione una de las opciones ofrecidas.");
                 return -1;
             }
+        }
+        
+        private static void ObtainConfiguration()
+        {
+            var builder = new ConfigurationBuilder().AddJsonFile($"appsettings.json", true, true);
+            _configuration = builder.Build();
         }
 
         private static void PrintSeeMyGames()
