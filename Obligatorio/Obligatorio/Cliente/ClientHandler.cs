@@ -263,10 +263,10 @@ namespace Client
             {
                 int bytesRec = socket.Receive(bytes);
                 var data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
-                Console.WriteLine("Texto recibido : \n {0}", data);
 
                 if (data.IndexOf("<EOF>") > -1)
                 {
+                    Console.WriteLine("Texto recibido : \n {0}", data.Replace("<EOF>", ""));
                     break;
                 }
             }
