@@ -40,10 +40,10 @@ namespace Client
                             PrintSearchForGame();
                             break;
                         case 8:
-                            PrintBuyGame();
+                            PrintSeeMyGames();
                             break;
                         case 9:
-                            PrintSeeMyGames();
+                            PrintBuyGame();
                             break;
                         case 0:
                             PrintLogout();

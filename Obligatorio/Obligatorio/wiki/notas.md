@@ -131,6 +131,8 @@ Desde el lado del cliente existen los siguientes comandos:
 5. Ver detalles de un juego.
 6. Ver todos los juegos.
 7. Buscar juegos.
+8. Ver juegos comprados.
+9. Comprar juego.
 
 Desde el lado del servidor existe un unico comando:
 
