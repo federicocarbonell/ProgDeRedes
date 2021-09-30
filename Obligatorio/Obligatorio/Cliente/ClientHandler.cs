@@ -6,28 +6,30 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 
 namespace Client
 {
     public class ClientHandler : IClientHandler
     {
 
-        private const string ServerIp = "127.0.0.1";
-        private const string ClientIp = "127.0.0.1";
-        private const int ServerPort = 20000;
-        private const int ClientPort = 0;
+        private static string ServerIp;
+        private static string ClientIp;
+        private static int ServerPort;
+        private static int ClientPort;
         public readonly Socket socket;
         private Header header;
 
-        public ClientHandler()
+        public ClientHandler(IConfiguration configuration)
         {
+            ObtainConfigParameters(configuration);
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socket.Bind(new IPEndPoint(IPAddress.Parse(ClientIp), ClientPort));
            
             ConnectToServer();
             
         }
-
+        
         public void ConnectToServer()
         {
             try
@@ -38,6 +40,14 @@ namespace Client
             {
                 throw new Exception($"No se pudo conectar al servidor, {e.Message}");
             }
+        }
+        
+        private static void ObtainConfigParameters(IConfiguration configuration)
+        {
+            ServerIp = configuration["ServerIp"];
+            ClientIp = configuration["ClientIp"];
+            ServerPort = Int32.Parse(configuration["ServerPort"]);
+            ClientPort = Int32.Parse(configuration["ClientPort"]);
         }
 
         public void AddGame(string title, string genre, string trailer, string cover)
