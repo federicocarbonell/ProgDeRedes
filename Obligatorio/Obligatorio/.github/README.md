@@ -14,67 +14,114 @@
 3. Utilizar la aplicación
  - [Comandos disponibles](#comandos)
 
-## Alcance
+## Alcance Cliente
 
-### Cliente
-
-* RF1 - Conexión y desconexión al servidor.
+* Conexión y desconexión al servidor.
 
     El cliente se conecta al servidor de manera automática al iniciarse la aplicación. Se puede desconectar con la opción 0 del menú principal, cerrando así también la aplicación.
 
-* RF2 - Publicación de juego.
+* Publicación de juego.
     
     Opción 1 del menú del cliente. Luego de dado de alta al juego se notifica al cliente con un mensaje del lado del servidor. Se puede chequear la adición haciendo uso de la opción 6 del menú (ver todos).
 
+    **PARAMS PUBLICACION**
+
+    | Nombre        | Genero           | Descripcion | RutaCaratula |
+    | ------------- |-------------     | -----       |------------- | 
+    | string        | string           | string      | string       |
+
     Por esta iteración, no tenemos muchos chequeos sobre los datos recibidos del lado del servidor, lo cual puede llegar a llevar a problemas con las carátulas dado que se asume que los nombres de los juegos van a ser únicos, y por lo tanto guardamos las carátulas del lado del servidor como nombreJuego.jpg .
 
-* RF3 - Baja y modificación de juego.
+* Baja y modificación de juego.
 
     Opciones 2 y 3 del menú del cliente. Si el juego está en el sistema, modifica sus datos con los recibidos o lo marca como borrado.
 
-* RF4 - Búsqueda de juegos.
+    **PARAMS BORRADO**
+    | Id        |
+    | --------- | 
+    | int       |
+
+    **PARAMS ACTUALIZACION**
+    | Id        | Nombre        | Genero           | Descripcion | RutaCaratula |
+    | --------- | ------------- |-------------     | -----       |------------- | 
+    | int       | string        | string           | string      | string       |
+
+* Búsqueda de juegos.
 
     Opción 7 del menú del cliente. Se puede buscar por nombre del juego, el cual retorna matches parciales. Se puede buscar por categoría, que retorna solo matches absolutos. Se puede buscar por calificación, se retornan juegos con promedio de calificaciones >= al parámetro de búsqueda.
 
     Importante a la hora de probar búsqueda por calificación, tener en cuenta que los juegos que aún no han sido calificados tienen una calificación nula, es decir, no van a ser tenidos en cuenta a la hora de evaluar los juegos que cumplan con la condición.
 
-* RF5 - Calificación de un juego.
+    **PARAMS BUSQUEDA**
+    | Modo      | Nombre(opcional) | Genero (opcional) | Rating minimo (opcional) |
+    | --------- | -------------    | -------------     | -----                    |
+    | int       | string           | string            | int                      |
+
+* Calificación de un juego.
 
     Opción 4 del menú del cliente. Se permite calificar juegos, luego podemos verificar que la calificación quedó registrada de manera exitosa en el detalle del juego calificado.
 
-* RF6 - Detalle de un juego.
+    **PARAMS CALIFICACION**
+    | Id        | Rating        | Comentario   |
+    | --------- | ------------- |------------- |
+    | int       | int           | string       |
+
+* Detalle de un juego.
 
     Opción 5 del menú del cliente. Se busca por id del juego, el cual se puede obtener utilizando la opción de listar todos. Nos trae toda la información del juego disponible en el servidor, incluida la lista de las calificaciones obtenidas con sus respectivos comentarios.
 
     La funcionalidad de la descarga de la carátula no se implementa dado que se recibió instrucción de dejarlo para próxima iteración, pero sería relativamente sencillo, replicando de manera inversa el envío realizado del cliente al servidor.
 
+    **PARAMS DETALLE**
+    | Id        |
+    | --------- |
+    | int       |
+
+* Compra de juego.
+
+    Opción 9 del menú del cliente. Se le pregunta al cliente como que usuario quiere comprar el juego, y el id del juego a adquirir. Se puede chequear la compra viendo la lista de juegos del usuario.
+
+    **PARAMS COMPRA**
+    | Id        | Username |
+    | --------- |----------|
+    | int       | string |
+
+* Ver juegos del usuario.
+
+    Opción 8 del menú del cliente. Se le pregunta al cliente la lista de juegos de que usuario desea ver, y se la devuelve.
+
+    **PARAMS VER**
+    | Id        |
+    | --------- |
+    | int       |
+
 ### Servidor
 
-* RF1 - Aceptar pedidos de conexión de un cliente.
+* Aceptar pedidos de conexión de un cliente.
 
     El servidor acepta varias conexiones en paralelo, y se maneja perfectamente respecto al acceso a datos.
 
-* RF2 - Ver catálogo de juegos.
+* Ver catálogo de juegos.
 
     El servidor permite ver el catálogo de juegos desde cualquier cliente, más allá de que se hayan realizado las adiciones en uno y la lectura en otro.
 
-* RF3 - Adquirir un juego.
+* Adquirir un juego.
 
     Este requerimiento queda para próxima iteración dado que se decidió dejar directamente el manejo de usuarios para otra iteración.
 
-* RF4 - Publicar un juego.
+* Publicar un juego.
 
     Una vez publicado un juego, se puede verificar la creación del mismo desde otro cliente sin problemas.
 
-* RF5 - Publicar una calificación de un juego.
+* Publicar una calificación de un juego.
 
     Al igual que con los juegos, una vez publicada de manera exitosa la calificación se puede verificar desde otro cliente sin problemas.
 
-* RF6 - Buscar juegos.
+* Buscar juegos.
 
     Al igual que con el resto de las funcionalidades, dado que podemos ver el catálogo también podemos filtrar el mismo.
 
-* RF7 - Ver detalle de un juego.
+* Ver detalle de un juego.
 
     Funciona de manera correcta igual que la anterior. No se permite la descarga de carátula aún pero la adición de esta funcionalidad no debería ser compleja.
 
@@ -118,6 +165,24 @@ Los ejecutables mencionados se pueden deployar en un mismo host, no es necesario
   - ProtocolLibrary.dll
 
 [<img src="../wiki/.images/architecture.png" width="500"/>](architecture.png)
+
+### RESPONSABILIDADES DE LOS PAQUETES
+
+* Paquete Server
+
+    Es el encargado del servidor, recibe las consultas, las procesa y envía mensajes al cliente.
+
+* Paquete StateServices
+
+    Es el encargado de manejar la consistencia de datos entre conexiones.
+
+* Paquete ProtocolLibrary
+
+    Es el encargado de almacenar la información necesaria para serializar-deserializar datos y enviar y recibir mensajes.
+
+* Paquete Client
+
+    Es el encargado del servicio de cliente que va a comunicarse con el Servidor. Procesa el input del usuario para luego enviarlo al servidor y tambien recibir y mostrar mensajes del mismo.
 
 ## Comandos
 
