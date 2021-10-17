@@ -119,15 +119,15 @@ namespace Client
             _configuration = builder.Build();
         }
 
-        private static void PrintSeeMyGames()
+        private static async void PrintSeeMyGames()
         {
             Console.Write("Ver los juegos del usuario: ");
             string username = Console.ReadLine();
 
-            clientHandler.ViewBoughtGames(username);
+            await clientHandler.ViewBoughtGamesAsync(username);
         }
 
-        private static void PrintBuyGame()
+        private static async void PrintBuyGame()
         {
             try
             {
@@ -136,7 +136,7 @@ namespace Client
                 Console.Write("El juego con el id: ");
                 int id = Int32.Parse(Console.ReadLine());
 
-                clientHandler.BuyGame(username, id);
+                await clientHandler.BuyGameAsync(username, id);
             }
             catch (Exception e)
             {
@@ -152,20 +152,20 @@ namespace Client
             Console.WriteLine("Conexion cerrada con exito");
         }
 
-        private static void PrintViewGames()
+        private static async void PrintViewGames()
         {
             Console.WriteLine("Juegos en el sistema: ");
-            clientHandler.ViewGames();
+            await clientHandler.ViewGamesAsync();
         }
 
-        private static void PrintViewGameDetails()
+        private static async void PrintViewGameDetails()
         {
             try
             {
                 Console.Write("Ver detalle del juego con el id: ");
                 int id = Int32.Parse(Console.ReadLine());
 
-                clientHandler.ViewGameDetail(id);
+                await clientHandler.ViewGameDetailAsync(id);
             }
             catch (Exception e)
             {
@@ -173,7 +173,7 @@ namespace Client
             }
         }
 
-        private static void PrintQualifyGame()
+        private static async void PrintQualifyGame()
         {
             try
             {
@@ -186,7 +186,7 @@ namespace Client
                 Console.Write("Reseña: ");
                 string content = Console.ReadLine();
 
-                clientHandler.QualifyGame(id, rating, content);
+                await clientHandler.QualifyGameAsync(id, rating, content);
             }
             catch (Exception e)
             {
@@ -194,7 +194,7 @@ namespace Client
             }
         }
 
-        private static void PrintModifyGame()
+        private static async void PrintModifyGame()
         {
             try
             {
@@ -213,7 +213,7 @@ namespace Client
                 Console.Write("Ruta a la imagen: ");
                 var cover = Console.ReadLine();
 
-                clientHandler.ModifyGame(id, title, genre, trailer, cover);
+                await clientHandler.ModifyGameAsync(id, title, genre, trailer, cover);
             }
             catch (Exception e)
             {
@@ -221,14 +221,14 @@ namespace Client
             }
         }
 
-        private static void PrintDeleteGame()
+        private static async void PrintDeleteGame()
         {
             try
             {
                 Console.Write("Borrar juego con el id: ");
                 int id = Int32.Parse(Console.ReadLine());
 
-                clientHandler.DeleteGame(id);
+                await clientHandler.DeleteGameAsync(id);
             }
             catch (Exception e)
             {
@@ -236,7 +236,7 @@ namespace Client
             }
         }
 
-        private static void PrintAddGame()
+        private static async void PrintAddGame()
         {
             Console.WriteLine("Agregar juego");
             Console.Write("Nombre: ");
@@ -251,10 +251,10 @@ namespace Client
             Console.Write("Ruta a la imagen: ");
             var cover = Console.ReadLine();
 
-            clientHandler.AddGame(title, genre, trailer, cover);
+            await clientHandler.AddGameAsync(title, genre, trailer, cover);
         }
 
-        private static void PrintSearchForGame()
+        private static async void PrintSearchForGame()
         {
             string searchMode = "", searchTerm = "", minRating = "";
 
@@ -278,7 +278,7 @@ namespace Client
             }
 
 
-            clientHandler.SearchForGames(searchMode, searchTerm, minRating);
+            await clientHandler.SearchForGamesAsync(searchMode, searchTerm, minRating);
         }
     }
 }

@@ -7,10 +7,11 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
 
 namespace Client
 {
-    public class ClientHandler : IClientHandler
+    public class ClientHandler //: IClientHandler
     {
 
         private static string ServerIp;
@@ -50,7 +51,7 @@ namespace Client
             ClientPort = Int32.Parse(configuration["ClientPort"]);
         }
 
-        public void AddGame(string title, string genre, string trailer, string cover)
+        public async Task AddGameAsync(string title, string genre, string trailer, string cover)
         {
             
             List<byte> data = new List<byte>();
@@ -59,11 +60,11 @@ namespace Client
             AddStringData(data, genre);
             AddStringData(data, trailer);
 
-            SendData(data, CommandConstants.AddGame);
+            await SendDataAsync(data, CommandConstants.AddGame);
             
             try
             {
-                SendFileData(cover, title);
+                await SendFileDataAsync(cover, title);
             }
             catch(Exception e)
             {
@@ -73,37 +74,37 @@ namespace Client
             Recieve();
         }
 
-        public void ViewBoughtGames(string username)
+        public async Task ViewBoughtGamesAsync(string username)
         {
             List<byte> data = new List<byte>();
 
             AddStringData(data, username);
 
-            SendData(data, CommandConstants.ViewBoughtGames);
+            await SendDataAsync(data, CommandConstants.ViewBoughtGames);
             Recieve();
         }
 
-        public void BuyGame(string username, int id)
+        public async Task BuyGameAsync(string username, int id)
         {
             List<byte> data = new List<byte>();
 
             AddIntData(data, id);
             AddStringData(data, username);
 
-            SendData(data, CommandConstants.BuyGame);
+            await SendDataAsync(data, CommandConstants.BuyGame);
             Recieve();
         }
 
-        public void DeleteGame(int id)
+        public async Task DeleteGameAsync(int id)
         {
             List<byte> data = new List<byte>();
 
             AddIntData(data, id);
-            SendData(data, CommandConstants.DeleteGame);
+            await SendDataAsync(data, CommandConstants.DeleteGame);
             Recieve();
         }
 
-        public void ModifyGame(int id, string title, string genre, string trailer, string cover)
+        public async Task ModifyGameAsync(int id, string title, string genre, string trailer, string cover)
         {
             List<byte> data = new List<byte>();
 
@@ -112,10 +113,10 @@ namespace Client
             AddStringData(data, genre);
             AddStringData(data, trailer);
 
-            SendData(data, CommandConstants.ModifyGame);
+            await SendDataAsync(data, CommandConstants.ModifyGame);
             try
             {
-                SendFileData(cover, title);
+                await SendFileDataAsync(cover, title);
             }
             catch(Exception e)
             {
@@ -124,7 +125,7 @@ namespace Client
             Recieve();
         }
 
-        public void QualifyGame(int id, int rating, string review)
+        public async Task QualifyGameAsync(int id, int rating, string review)
         {
             List<byte> data = new List<byte>();
 
@@ -132,31 +133,31 @@ namespace Client
             AddIntData(data, rating);
             AddStringData(data, review);
 
-            SendData(data, CommandConstants.QualifyGame);
+            await SendDataAsync(data, CommandConstants.QualifyGame);
             Recieve();
         }
 
-        public void ViewGameDetail(int id)
+        public async Task ViewGameDetailAsync(int id)
         {
 
             List<byte> data = new List<byte>();
 
             AddIntData(data, id);
 
-            SendData(data, CommandConstants.ViewDetail);
+            await SendDataAsync(data, CommandConstants.ViewDetail);
             Recieve();
         }
 
-        public void ViewGames()
+        public async Task ViewGamesAsync()
         {
 
             List<byte> data = new List<byte>();
 
-            SendData(data, CommandConstants.GetGames);
+            await SendDataAsync(data, CommandConstants.GetGames);
             Recieve();
         }
 
-        public void SearchForGames(string searchMode, string searchTerm, string minRating)
+        public async Task SearchForGamesAsync(string searchMode, string searchTerm, string minRating)
         {
             List<byte> data = new List<byte>();
             int mode = Int32.Parse(searchMode);
@@ -167,11 +168,11 @@ namespace Client
             AddIntData(data, Int32.Parse(minRating));
             
 
-            SendData(data, CommandConstants.SearchForGame);
+            await SendDataAsync(data, CommandConstants.SearchForGame);
             Recieve();
         }
 
-        private void SendData(List<byte> data, int command)
+        private async Task SendDataAsync(List<byte> data, int command)
         {
 
             header = new Header(HeaderConstants.Request, command, data.Count);
@@ -195,7 +196,7 @@ namespace Client
 
         }
 
-        private void SendFileData(string path, string gameName)
+        private async Task SendFileDataAsync(string path, string gameName)
         {
             //envio nombre y largo de la imagen
             List<byte> req = new List<byte>();
@@ -205,7 +206,7 @@ namespace Client
 
             AddStringData(req, gameName + ext);
             AddLongData(req, fileSize);
-            SendData(req, CommandConstants.SendGameCover);
+            await SendDataAsync(req, CommandConstants.SendGameCover);
             //envio nombre y largo de la imagen
 
             //envio la imagen
