@@ -35,9 +35,9 @@ namespace Server
             GameRepository gameRepository = new GameRepository();
             gameService = new GameService(gameRepository);
 
-            var threadServer = new Thread(() => ListenForConnections(socketServer, gameService));
-            threadServer.Start();
-            StartServer();
+            // abro un hilo
+            Task.Run(() => ListenForConnections(socketServer, gameService));
+
             int command = -1;
             while (!_exit)
             {
@@ -74,10 +74,6 @@ namespace Server
             }
         }
 
-        static void StartServer()
-        {
-        }
-
         private static void ObtainConfiguration()
         {
             var builder = new ConfigurationBuilder().AddJsonFile($"appsettings.json", true, true);
@@ -87,7 +83,7 @@ namespace Server
             backlog = Int32.Parse(config["Backlog"]);
         }
         
-        private static async Task ListenForConnections(Socket socketServer, GameService gameService)
+        private static void ListenForConnections(Socket socketServer, GameService gameService)
         {
             while (!_exit)
             {
@@ -95,10 +91,8 @@ namespace Server
                 {
                     var clientConnected = socketServer.Accept();
                     _clients.Add(clientConnected);
-                    //aca cambiar a una task
-                    //HandleClient(clientConnected, gameService);
-                    var threacClient = new Thread(() => HandleClient(clientConnected, gameService));
-                    threacClient.Start();
+                    // abro un hilo por cliente
+                    Task.Run(() => HandleClient(clientConnected, gameService));
                 }
                 catch (Exception e)
                 {
