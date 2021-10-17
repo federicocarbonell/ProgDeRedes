@@ -120,16 +120,11 @@ namespace Server
                     {
                         case CommandConstants.Login:
                         case CommandConstants.AddGame:
-                            bufferData = new byte[header.IDataLength];
-                            await ReceiveData(clientSocket, header.IDataLength, bufferData);
-
-                            GameDTO game = serverHandler.ReceiveGame(bufferData);
-                            await AddGame(game, clientSocket);
+                            await AddGame(header, clientSocket);
                             break;
                         case CommandConstants.SendGameCover:
                             bufferData = new byte[header.IDataLength];
                             await ReceiveData(clientSocket, header.IDataLength, bufferData);
-
                             serverHandler.AddCoverGame(clientSocket, bufferData);
                             break;
                         case CommandConstants.GetGames:
@@ -137,25 +132,13 @@ namespace Server
                             clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                             break;
                         case CommandConstants.DeleteGame:
-                            bufferData = new byte[header.IDataLength];
-                            await ReceiveData(clientSocket, header.IDataLength, bufferData);
-
-                            int id = serverHandler.ReceiveId(bufferData);
-                            await DeleteGame(id, clientSocket);
+                            await DeleteGame(header, clientSocket);
                             break;
                         case CommandConstants.ModifyGame:
-                            bufferData = new byte[header.IDataLength];
-                            await ReceiveData(clientSocket, header.IDataLength, bufferData);
-
-                            GameDTO modifyingGame = serverHandler.ReceiveGameForModifying(bufferData);
-                            await ModifyGame(modifyingGame, clientSocket);
+                            await ModifyGame(header, clientSocket);
                             break;
                         case CommandConstants.QualifyGame:
-                            bufferData = new byte[header.IDataLength];
-                            await ReceiveData(clientSocket, header.IDataLength, bufferData);
-
-                            ReviewDTO gameReview = serverHandler.ReceiveQualification(bufferData);
-                            await QualifyGame(gameReview, clientSocket);
+                            await QualifyGame(header, clientSocket);
                             break;
                         case CommandConstants.ViewDetail:
                             bufferData = new byte[header.IDataLength];
@@ -211,7 +194,6 @@ namespace Server
             {
                 try
                 {
-                    //var localRecv = clientSocket.ReceiveAsync(buffer, iRecv, Length - iRecv, SocketFlags.None);
                     var localRecv = await clientSocket.ReceiveAsync(buffer, SocketFlags.None);
                     if (localRecv == 0)
                     {
@@ -230,8 +212,12 @@ namespace Server
             }
         }
 
-        private static async Task AddGame(GameDTO game, Socket clientSocket)
+        private static async Task AddGame(Header header, Socket clientSocket)
         {
+            bufferData = new byte[header.IDataLength];
+            await ReceiveData(clientSocket, header.IDataLength, bufferData);
+            GameDTO game = serverHandler.ReceiveGame(bufferData);
+
             try
             {
                 gameService.AddGame(game);
@@ -246,8 +232,12 @@ namespace Server
             }
         }
 
-        private static async Task DeleteGame(int id, Socket clientSocket)
+        private static async Task DeleteGame(Header header, Socket clientSocket)
         {
+            bufferData = new byte[header.IDataLength];
+            await ReceiveData(clientSocket, header.IDataLength, bufferData);
+            int id = serverHandler.ReceiveId(bufferData);
+
             try
             {
                 gameService.DeleteGame(id);
@@ -262,8 +252,12 @@ namespace Server
             }
         }
 
-        private static async Task ModifyGame(GameDTO game, Socket clientSocket)
+        private static async Task ModifyGame(Header header, Socket clientSocket)
         {
+            bufferData = new byte[header.IDataLength];
+            await ReceiveData(clientSocket, header.IDataLength, bufferData);
+            GameDTO game = serverHandler.ReceiveGameForModifying(bufferData);
+
             try
             {
                 gameService.ModifyGame(game.Id, game);
@@ -278,8 +272,12 @@ namespace Server
             }
         }
 
-        private static async Task QualifyGame(ReviewDTO gameReview, Socket clientSocket)
+        private static async Task QualifyGame(Header header, Socket clientSocket)
         {
+            bufferData = new byte[header.IDataLength];
+            await ReceiveData(clientSocket, header.IDataLength, bufferData);
+            ReviewDTO gameReview = serverHandler.ReceiveQualification(bufferData);
+
             try
             {
                 gameService.QualifyGame(gameReview);
