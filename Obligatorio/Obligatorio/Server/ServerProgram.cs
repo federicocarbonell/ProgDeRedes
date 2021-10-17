@@ -120,7 +120,7 @@ namespace Server
                     {
                         case CommandConstants.Login:
                         case CommandConstants.AddGame:
-                            await AddGame(header, clientSocket);
+                            await AddGameAsync(header, clientSocket);
                             break;
                         case CommandConstants.SendGameCover:
                             bufferData = new byte[header.IDataLength];
@@ -132,13 +132,13 @@ namespace Server
                             clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                             break;
                         case CommandConstants.DeleteGame:
-                            await DeleteGame(header, clientSocket);
+                            await DeleteGameAsync(header, clientSocket);
                             break;
                         case CommandConstants.ModifyGame:
-                            await ModifyGame(header, clientSocket);
+                            await ModifyGameAsync(header, clientSocket);
                             break;
                         case CommandConstants.QualifyGame:
-                            await QualifyGame(header, clientSocket);
+                            await QualifyGameAsync(header, clientSocket);
                             break;
                         case CommandConstants.ViewDetail:
                             bufferData = new byte[header.IDataLength];
@@ -170,11 +170,7 @@ namespace Server
                             clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
                             break;
                         case CommandConstants.BuyGame:
-                            bufferData = new byte[header.IDataLength];
-                            await ReceiveData(clientSocket, header.IDataLength, bufferData);
-
-                            Tuple<int,string> purchaseData = serverHandler.RecieveBuyerInfo(bufferData);
-                            await BuyGame(purchaseData, clientSocket);
+                            await BuyGameAsync(header, clientSocket);
                             break;
                     }
                 }
@@ -212,7 +208,7 @@ namespace Server
             }
         }
 
-        private static async Task AddGame(Header header, Socket clientSocket)
+        private static async Task AddGameAsync(Header header, Socket clientSocket)
         {
             bufferData = new byte[header.IDataLength];
             await ReceiveData(clientSocket, header.IDataLength, bufferData);
@@ -232,7 +228,7 @@ namespace Server
             }
         }
 
-        private static async Task DeleteGame(Header header, Socket clientSocket)
+        private static async Task DeleteGameAsync(Header header, Socket clientSocket)
         {
             bufferData = new byte[header.IDataLength];
             await ReceiveData(clientSocket, header.IDataLength, bufferData);
@@ -252,7 +248,7 @@ namespace Server
             }
         }
 
-        private static async Task ModifyGame(Header header, Socket clientSocket)
+        private static async Task ModifyGameAsync(Header header, Socket clientSocket)
         {
             bufferData = new byte[header.IDataLength];
             await ReceiveData(clientSocket, header.IDataLength, bufferData);
@@ -272,7 +268,7 @@ namespace Server
             }
         }
 
-        private static async Task QualifyGame(Header header, Socket clientSocket)
+        private static async Task QualifyGameAsync(Header header, Socket clientSocket)
         {
             bufferData = new byte[header.IDataLength];
             await ReceiveData(clientSocket, header.IDataLength, bufferData);
@@ -293,8 +289,12 @@ namespace Server
             }
         }
 
-        private static async Task BuyGame(Tuple<int,string> purchaseData, Socket clientSocket)
+        private static async Task BuyGameAsync(Header header, Socket clientSocket)
         {
+            bufferData = new byte[header.IDataLength];
+            await ReceiveData(clientSocket, header.IDataLength, bufferData);
+            Tuple<int, string> purchaseData = serverHandler.RecieveBuyerInfo(bufferData);
+
             try
             {
                 gameService.BuyGame(purchaseData);
