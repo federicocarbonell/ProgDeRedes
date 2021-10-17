@@ -113,7 +113,7 @@ namespace Server
                 var buffer = new byte[headerLength];
                 try
                 {
-                    ReceiveData(clientSocket, headerLength, buffer);
+                    await ReceiveData(clientSocket, headerLength, buffer);
                     var header = new Header();
                     header.DecodeData(buffer);
                     switch (header.ICommand)
@@ -121,14 +121,14 @@ namespace Server
                         case CommandConstants.Login:
                         case CommandConstants.AddGame:
                             bufferData = new byte[header.IDataLength];
-                            ReceiveData(clientSocket, header.IDataLength, bufferData);
+                            await ReceiveData(clientSocket, header.IDataLength, bufferData);
 
                             GameDTO game = serverHandler.ReceiveGame(bufferData);
                             await AddGame(game, clientSocket);
                             break;
                         case CommandConstants.SendGameCover:
                             bufferData = new byte[header.IDataLength];
-                            ReceiveData(clientSocket, header.IDataLength, bufferData);
+                            await ReceiveData(clientSocket, header.IDataLength, bufferData);
 
                             serverHandler.AddCoverGame(clientSocket, bufferData);
                             break;
@@ -138,28 +138,28 @@ namespace Server
                             break;
                         case CommandConstants.DeleteGame:
                             bufferData = new byte[header.IDataLength];
-                            ReceiveData(clientSocket, header.IDataLength, bufferData);
+                            await ReceiveData(clientSocket, header.IDataLength, bufferData);
 
                             int id = serverHandler.ReceiveId(bufferData);
                             await DeleteGame(id, clientSocket);
                             break;
                         case CommandConstants.ModifyGame:
                             bufferData = new byte[header.IDataLength];
-                            ReceiveData(clientSocket, header.IDataLength, bufferData);
+                            await ReceiveData(clientSocket, header.IDataLength, bufferData);
 
                             GameDTO modifyingGame = serverHandler.ReceiveGameForModifying(bufferData);
                             await ModifyGame(modifyingGame, clientSocket);
                             break;
                         case CommandConstants.QualifyGame:
                             bufferData = new byte[header.IDataLength];
-                            ReceiveData(clientSocket, header.IDataLength, bufferData);
+                            await ReceiveData(clientSocket, header.IDataLength, bufferData);
 
                             ReviewDTO gameReview = serverHandler.ReceiveQualification(bufferData);
                             await QualifyGame(gameReview, clientSocket);
                             break;
                         case CommandConstants.ViewDetail:
                             bufferData = new byte[header.IDataLength];
-                            ReceiveData(clientSocket, header.IDataLength, bufferData);
+                            await ReceiveData(clientSocket, header.IDataLength, bufferData);
 
                             int gameId = serverHandler.ReceiveId(bufferData);
 
@@ -168,7 +168,7 @@ namespace Server
                             break;
                         case CommandConstants.SearchForGame:
                             bufferData = new byte[header.IDataLength];
-                            ReceiveData(clientSocket, header.IDataLength, bufferData);
+                            await ReceiveData(clientSocket, header.IDataLength, bufferData);
 
                             var data = serverHandler.ReceiveSearchTerms(bufferData);
                             string result = gameService.GetAllByQuery(data);
@@ -178,7 +178,7 @@ namespace Server
                             break;
                         case CommandConstants.ViewBoughtGames:
                             bufferData = new byte[header.IDataLength];
-                            ReceiveData(clientSocket, header.IDataLength, bufferData);
+                            await ReceiveData(clientSocket, header.IDataLength, bufferData);
 
                             string username = serverHandler.ReceiveOwnerName(bufferData);
                             string aux = gameService.GetAllBoughtGames(username);
@@ -188,7 +188,7 @@ namespace Server
                             break;
                         case CommandConstants.BuyGame:
                             bufferData = new byte[header.IDataLength];
-                            ReceiveData(clientSocket, header.IDataLength, bufferData);
+                            await ReceiveData(clientSocket, header.IDataLength, bufferData);
 
                             Tuple<int,string> purchaseData = serverHandler.RecieveBuyerInfo(bufferData);
                             await BuyGame(purchaseData, clientSocket);
@@ -204,14 +204,15 @@ namespace Server
         }
 
 
-        private static void ReceiveData(Socket clientSocket, int Length, byte[] buffer)
+        private static async Task ReceiveData(Socket clientSocket, int Length, byte[] buffer)
         {
             var iRecv = 0;
             while (iRecv < Length)
             {
                 try
                 {
-                    var localRecv = clientSocket.Receive(buffer, iRecv, Length - iRecv, SocketFlags.None);
+                    //var localRecv = clientSocket.ReceiveAsync(buffer, iRecv, Length - iRecv, SocketFlags.None);
+                    var localRecv = await clientSocket.ReceiveAsync(buffer, SocketFlags.None);
                     if (localRecv == 0)
                     {
                         clientSocket.Shutdown(SocketShutdown.Both);
