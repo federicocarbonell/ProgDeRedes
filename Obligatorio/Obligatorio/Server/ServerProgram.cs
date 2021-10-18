@@ -123,13 +123,10 @@ namespace Server
                             await AddGameAsync(header, clientSocket);
                             break;
                         case CommandConstants.SendGameCover:
-                            bufferData = new byte[header.IDataLength];
-                            await ReceiveData(clientSocket, header.IDataLength, bufferData);
-                            serverHandler.AddCoverGame(clientSocket, bufferData);
+                            await SendGameCoverAsync(header, clientSocket);
                             break;
                         case CommandConstants.GetGames:
-                            clientSocket.Send(Encoding.UTF8.GetBytes(gameService.GetAllGames()));
-                            clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                            await GetGamesAsync(header, clientSocket);
                             break;
                         case CommandConstants.DeleteGame:
                             await DeleteGameAsync(header, clientSocket);
@@ -141,33 +138,13 @@ namespace Server
                             await QualifyGameAsync(header, clientSocket);
                             break;
                         case CommandConstants.ViewDetail:
-                            bufferData = new byte[header.IDataLength];
-                            await ReceiveData(clientSocket, header.IDataLength, bufferData);
-
-                            int gameId = serverHandler.ReceiveId(bufferData);
-
-                            clientSocket.Send(Encoding.UTF8.GetBytes(gameService.GetGameDetail(gameId)));
-                            clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                            await ViewGameDetailAsync(header, clientSocket);
                             break;
                         case CommandConstants.SearchForGame:
-                            bufferData = new byte[header.IDataLength];
-                            await ReceiveData(clientSocket, header.IDataLength, bufferData);
-
-                            var data = serverHandler.ReceiveSearchTerms(bufferData);
-                            string result = gameService.GetAllByQuery(data);
-
-                            clientSocket.Send(Encoding.UTF8.GetBytes(result));
-                            clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                            await SearchForGameAsync(header, clientSocket);
                             break;
                         case CommandConstants.ViewBoughtGames:
-                            bufferData = new byte[header.IDataLength];
-                            await ReceiveData(clientSocket, header.IDataLength, bufferData);
-
-                            string username = serverHandler.ReceiveOwnerName(bufferData);
-                            string aux = gameService.GetAllBoughtGames(username);
-
-                            clientSocket.Send(Encoding.UTF8.GetBytes(aux));
-                            clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                            await ViewBoughtGamesAsync(header, clientSocket);
                             break;
                         case CommandConstants.BuyGame:
                             await BuyGameAsync(header, clientSocket);
@@ -206,6 +183,19 @@ namespace Server
                     return;
                 }
             }
+        }
+
+        private static async Task SendGameCoverAsync(Header header, Socket clientSocket)
+        {
+            bufferData = new byte[header.IDataLength];
+            await ReceiveData(clientSocket, header.IDataLength, bufferData);
+            serverHandler.AddCoverGame(clientSocket, bufferData);
+        }
+
+        private static async Task GetGamesAsync(Header header, Socket clientSocket)
+        {
+            await clientSocket.SendAsync(Encoding.UTF8.GetBytes(gameService.GetAllGames()), SocketFlags.None);
+            await clientSocket.SendAsync(Encoding.UTF8.GetBytes("<EOF>"), SocketFlags.None);
         }
 
         private static async Task AddGameAsync(Header header, Socket clientSocket)
@@ -287,6 +277,40 @@ namespace Server
                 await clientSocket.SendAsync(Encoding.UTF8.GetBytes(e.Message), SocketFlags.None);
                 await clientSocket.SendAsync(Encoding.UTF8.GetBytes("<EOF>"), SocketFlags.None);
             }
+        }
+
+        private static async Task ViewGameDetailAsync(Header header, Socket clientSocket)
+        {
+            bufferData = new byte[header.IDataLength];
+            await ReceiveData(clientSocket, header.IDataLength, bufferData);
+
+            int gameId = serverHandler.ReceiveId(bufferData);
+
+            await clientSocket.SendAsync(Encoding.UTF8.GetBytes(gameService.GetGameDetail(gameId)), SocketFlags.None);
+            await clientSocket.SendAsync(Encoding.UTF8.GetBytes("<EOF>"), SocketFlags.None);
+        }
+
+        private static async Task SearchForGameAsync(Header header, Socket clientSocket)
+        {
+            bufferData = new byte[header.IDataLength];
+            await ReceiveData(clientSocket, header.IDataLength, bufferData);
+
+            var data = serverHandler.ReceiveSearchTerms(bufferData);
+            string result = gameService.GetAllByQuery(data);
+
+            await clientSocket.SendAsync(Encoding.UTF8.GetBytes(result), SocketFlags.None);
+            await clientSocket.SendAsync(Encoding.UTF8.GetBytes("<EOF>"), SocketFlags.None);
+        }
+        private static async Task ViewBoughtGamesAsync(Header header, Socket clientSocket)
+        {
+            bufferData = new byte[header.IDataLength];
+            await ReceiveData(clientSocket, header.IDataLength, bufferData);
+
+            string username = serverHandler.ReceiveOwnerName(bufferData);
+            string aux = gameService.GetAllBoughtGames(username);
+
+            await clientSocket.SendAsync(Encoding.UTF8.GetBytes(aux), SocketFlags.None);
+            await clientSocket.SendAsync(Encoding.UTF8.GetBytes("<EOF>"), SocketFlags.None);
         }
 
         private static async Task BuyGameAsync(Header header, Socket clientSocket)
