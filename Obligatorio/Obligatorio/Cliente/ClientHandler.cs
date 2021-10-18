@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Client
 {
@@ -19,23 +20,28 @@ namespace Client
         private static int ServerPort;
         private static int ClientPort;
         public readonly Socket socket;
+        private static TcpClient tcpClient;
+        private static IPEndPoint clientIpEndPoint;
         private Header header;
 
         public ClientHandler(IConfiguration configuration)
         {
             ObtainConfigParameters(configuration);
-            socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            socket.Bind(new IPEndPoint(IPAddress.Parse(ClientIp), ClientPort));
+            //socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            //socket.Bind(new IPEndPoint(IPAddress.Parse(ClientIp), ClientPort));
+
+            clientIpEndPoint = new IPEndPoint(IPAddress.Parse(ClientIp), ClientPort);
+            tcpClient = new TcpClient(clientIpEndPoint);
            
             ConnectToServer();
-            
         }
         
         public void ConnectToServer()
         {
             try
             {
-                socket.Connect(ServerIp, ServerPort);
+                //socket.Connect(ServerIp, ServerPort);
+                tcpClient.ConnectAsync(IPAddress.Parse(ServerIp), ServerPort);
             }
             catch (Exception e)
             {
@@ -62,14 +68,14 @@ namespace Client
 
             await SendDataAsync(data, CommandConstants.AddGame);
             
-            try
-            {
-                await SendFileDataAsync(cover, title);
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine("No se pudo enviar el archivo de portada");
-            }
+            //try
+            //{
+            //    await SendFileDataAsync(cover, title);
+            //}
+            //catch(Exception e)
+            //{
+            //    Console.WriteLine("No se pudo enviar el archivo de portada");
+            //}
             
             Recieve();
         }
@@ -180,18 +186,21 @@ namespace Client
             byte[] headerBytes = header.GetRequest();
 
             int sentHeaderBytes = 0;
-            while (sentHeaderBytes < headerBytes.Length)
-            {
-                sentHeaderBytes += await socket.SendAsync(headerBytes, SocketFlags.None);
-            }
+            //TODO: Luego de confirmar que es asi, borrar codigo comentado.
+            //while (sentHeaderBytes < headerBytes.Length)
+            //{
+                //sentHeaderBytes += await socket.SendAsync(headerBytes, SocketFlags.None);
+                await tcpClient.GetStream().WriteAsync(headerBytes, sentHeaderBytes, headerBytes.Length - sentHeaderBytes, CancellationToken.None);
+            //}
 
             if(data.Count != 0)
             {
                 int sentBodyBytes = 0;
-                while (sentBodyBytes < data.Count)
-                {
-                    sentBodyBytes += await socket.SendAsync(data.ToArray(), SocketFlags.None);
-                }
+                //while (sentBodyBytes < data.Count)
+                //{
+                    //sentBodyBytes += await socket.SendAsync(data.ToArray(), SocketFlags.None);
+                    await tcpClient.GetStream().WriteAsync(data.ToArray(), sentBodyBytes, data.Count - sentBodyBytes, CancellationToken.None);
+                //}
             }
 
         }
@@ -272,8 +281,9 @@ namespace Client
 
             while (true)
             {
-                int bytesRec = socket.Receive(bytes);
-                var data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+                //int bytesRec = socket.Receive(bytes);
+                int bytesRect = tcpClient.GetStream().Read(bytes);
+                var data = Encoding.UTF8.GetString(bytes, 0, bytesRect);
                 Console.WriteLine("Texto recibido : \n {0}", data); 
 
                 if (data.IndexOf("<EOF>") > -1)
