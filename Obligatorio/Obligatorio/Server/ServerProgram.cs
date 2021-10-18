@@ -113,7 +113,7 @@ namespace Server
                 var buffer = new byte[headerLength];
                 try
                 {
-                    await ReceiveData(clientSocket, headerLength, buffer);
+                    await ReceiveDataAsync(clientSocket, headerLength, buffer);
                     var header = new Header();
                     header.DecodeData(buffer);
                     switch (header.ICommand)
@@ -160,7 +160,7 @@ namespace Server
         }
 
 
-        private static async Task ReceiveData(Socket clientSocket, int Length, byte[] buffer)
+        private static async Task ReceiveDataAsync(Socket clientSocket, int Length, byte[] buffer)
         {
             var iRecv = 0;
             while (iRecv < Length)
@@ -188,7 +188,7 @@ namespace Server
         private static async Task SendGameCoverAsync(Header header, Socket clientSocket)
         {
             bufferData = new byte[header.IDataLength];
-            await ReceiveData(clientSocket, header.IDataLength, bufferData);
+            await ReceiveDataAsync(clientSocket, header.IDataLength, bufferData);
             serverHandler.AddCoverGame(clientSocket, bufferData);
         }
 
@@ -201,7 +201,7 @@ namespace Server
         private static async Task AddGameAsync(Header header, Socket clientSocket)
         {
             bufferData = new byte[header.IDataLength];
-            await ReceiveData(clientSocket, header.IDataLength, bufferData);
+            await ReceiveDataAsync(clientSocket, header.IDataLength, bufferData);
             GameDTO game = serverHandler.ReceiveGame(bufferData);
 
             try
@@ -221,7 +221,7 @@ namespace Server
         private static async Task DeleteGameAsync(Header header, Socket clientSocket)
         {
             bufferData = new byte[header.IDataLength];
-            await ReceiveData(clientSocket, header.IDataLength, bufferData);
+            await ReceiveDataAsync(clientSocket, header.IDataLength, bufferData);
             int id = serverHandler.ReceiveId(bufferData);
 
             try
@@ -241,7 +241,7 @@ namespace Server
         private static async Task ModifyGameAsync(Header header, Socket clientSocket)
         {
             bufferData = new byte[header.IDataLength];
-            await ReceiveData(clientSocket, header.IDataLength, bufferData);
+            await ReceiveDataAsync(clientSocket, header.IDataLength, bufferData);
             GameDTO game = serverHandler.ReceiveGameForModifying(bufferData);
 
             try
@@ -261,7 +261,7 @@ namespace Server
         private static async Task QualifyGameAsync(Header header, Socket clientSocket)
         {
             bufferData = new byte[header.IDataLength];
-            await ReceiveData(clientSocket, header.IDataLength, bufferData);
+            await ReceiveDataAsync(clientSocket, header.IDataLength, bufferData);
             ReviewDTO gameReview = serverHandler.ReceiveQualification(bufferData);
 
             try
@@ -282,7 +282,7 @@ namespace Server
         private static async Task ViewGameDetailAsync(Header header, Socket clientSocket)
         {
             bufferData = new byte[header.IDataLength];
-            await ReceiveData(clientSocket, header.IDataLength, bufferData);
+            await ReceiveDataAsync(clientSocket, header.IDataLength, bufferData);
 
             int gameId = serverHandler.ReceiveId(bufferData);
 
@@ -293,7 +293,7 @@ namespace Server
         private static async Task SearchForGameAsync(Header header, Socket clientSocket)
         {
             bufferData = new byte[header.IDataLength];
-            await ReceiveData(clientSocket, header.IDataLength, bufferData);
+            await ReceiveDataAsync(clientSocket, header.IDataLength, bufferData);
 
             var data = serverHandler.ReceiveSearchTerms(bufferData);
             string result = gameService.GetAllByQuery(data);
@@ -304,7 +304,7 @@ namespace Server
         private static async Task ViewBoughtGamesAsync(Header header, Socket clientSocket)
         {
             bufferData = new byte[header.IDataLength];
-            await ReceiveData(clientSocket, header.IDataLength, bufferData);
+            await ReceiveDataAsync(clientSocket, header.IDataLength, bufferData);
 
             string username = serverHandler.ReceiveOwnerName(bufferData);
             string aux = gameService.GetAllBoughtGames(username);
@@ -316,7 +316,7 @@ namespace Server
         private static async Task BuyGameAsync(Header header, Socket clientSocket)
         {
             bufferData = new byte[header.IDataLength];
-            await ReceiveData(clientSocket, header.IDataLength, bufferData);
+            await ReceiveDataAsync(clientSocket, header.IDataLength, bufferData);
             Tuple<int, string> purchaseData = serverHandler.RecieveBuyerInfo(bufferData);
 
             try
