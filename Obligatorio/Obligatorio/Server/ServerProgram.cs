@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using DTOs;
 using Microsoft.Extensions.Configuration;
 using ProtocolLibrary;
@@ -33,9 +34,10 @@ namespace Server
             serverHandler = new ServerHandler(socketServer);
             GameRepository gameRepository = new GameRepository();
             gameService = new GameService(gameRepository);
-            var threadServer = new Thread(() => ListenForConnections(socketServer, gameService));
-            threadServer.Start();
-            StartServer();
+
+            // abro un hilo
+            Task.Run(() => ListenForConnections(socketServer, gameService));
+
             int command = -1;
             while (!_exit)
             {
@@ -72,10 +74,6 @@ namespace Server
             }
         }
 
-        static void StartServer()
-        {
-        }
-
         private static void ObtainConfiguration()
         {
             var builder = new ConfigurationBuilder().AddJsonFile($"appsettings.json", true, true);
@@ -93,8 +91,8 @@ namespace Server
                 {
                     var clientConnected = socketServer.Accept();
                     _clients.Add(clientConnected);
-                    var threacClient = new Thread(() => HandleClient(clientConnected, gameService));
-                    threacClient.Start();
+                    // abro un hilo por cliente
+                    Task.Run(() => HandleClient(clientConnected, gameService));
                 }
                 catch (Exception e)
                 {
@@ -106,7 +104,7 @@ namespace Server
             Console.WriteLine("Exiting....");
         }
 
-        private static void HandleClient(Socket clientSocket, GameService gameService)
+        private static async Task HandleClient(Socket clientSocket, GameService gameService)
         {
             while (!_exit)
             {
@@ -115,85 +113,41 @@ namespace Server
                 var buffer = new byte[headerLength];
                 try
                 {
-                    ReceiveData(clientSocket, headerLength, buffer);
+                    await ReceiveDataAsync(clientSocket, headerLength, buffer);
                     var header = new Header();
                     header.DecodeData(buffer);
                     switch (header.ICommand)
                     {
                         case CommandConstants.Login:
                         case CommandConstants.AddGame:
-                            bufferData = new byte[header.IDataLength];
-                            ReceiveData(clientSocket, header.IDataLength, bufferData);
-
-                            GameDTO game = serverHandler.ReceiveGame(bufferData);
-                            AddGame(game, clientSocket);
+                            await AddGameAsync(header, clientSocket);
                             break;
                         case CommandConstants.SendGameCover:
-                            bufferData = new byte[header.IDataLength];
-                            ReceiveData(clientSocket, header.IDataLength, bufferData);
-
-                            serverHandler.AddCoverGame(clientSocket, bufferData);
+                            await SendGameCoverAsync(header, clientSocket);
                             break;
                         case CommandConstants.GetGames:
-                            clientSocket.Send(Encoding.UTF8.GetBytes(gameService.GetAllGames()));
-                            clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                            await GetGamesAsync(header, clientSocket);
                             break;
                         case CommandConstants.DeleteGame:
-                            bufferData = new byte[header.IDataLength];
-                            ReceiveData(clientSocket, header.IDataLength, bufferData);
-
-                            int id = serverHandler.ReceiveId(bufferData);
-                            DeleteGame(id, clientSocket);
+                            await DeleteGameAsync(header, clientSocket);
                             break;
                         case CommandConstants.ModifyGame:
-                            bufferData = new byte[header.IDataLength];
-                            ReceiveData(clientSocket, header.IDataLength, bufferData);
-
-                            GameDTO modifyingGame = serverHandler.ReceiveGameForModifying(bufferData);
-                            ModifyGame(modifyingGame, clientSocket);
+                            await ModifyGameAsync(header, clientSocket);
                             break;
                         case CommandConstants.QualifyGame:
-                            bufferData = new byte[header.IDataLength];
-                            ReceiveData(clientSocket, header.IDataLength, bufferData);
-
-                            ReviewDTO gameReview = serverHandler.ReceiveQualification(bufferData);
-                            QualifyGame(gameReview, clientSocket);
+                            await QualifyGameAsync(header, clientSocket);
                             break;
                         case CommandConstants.ViewDetail:
-                            bufferData = new byte[header.IDataLength];
-                            ReceiveData(clientSocket, header.IDataLength, bufferData);
-
-                            int gameId = serverHandler.ReceiveId(bufferData);
-
-                            clientSocket.Send(Encoding.UTF8.GetBytes(gameService.GetGameDetail(gameId)));
-                            clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                            await ViewGameDetailAsync(header, clientSocket);
                             break;
                         case CommandConstants.SearchForGame:
-                            bufferData = new byte[header.IDataLength];
-                            ReceiveData(clientSocket, header.IDataLength, bufferData);
-
-                            var data = serverHandler.ReceiveSearchTerms(bufferData);
-                            string result = gameService.GetAllByQuery(data);
-
-                            clientSocket.Send(Encoding.UTF8.GetBytes(result));
-                            clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                            await SearchForGameAsync(header, clientSocket);
                             break;
                         case CommandConstants.ViewBoughtGames:
-                            bufferData = new byte[header.IDataLength];
-                            ReceiveData(clientSocket, header.IDataLength, bufferData);
-
-                            string username = serverHandler.ReceiveOwnerName(bufferData);
-                            string aux = gameService.GetAllBoughtGames(username);
-
-                            clientSocket.Send(Encoding.UTF8.GetBytes(aux));
-                            clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                            await ViewBoughtGamesAsync(header, clientSocket);
                             break;
                         case CommandConstants.BuyGame:
-                            bufferData = new byte[header.IDataLength];
-                            ReceiveData(clientSocket, header.IDataLength, bufferData);
-
-                            Tuple<int,string> purchaseData = serverHandler.RecieveBuyerInfo(bufferData);
-                            BuyGame(purchaseData, clientSocket);
+                            await BuyGameAsync(header, clientSocket);
                             break;
                     }
                 }
@@ -206,14 +160,14 @@ namespace Server
         }
 
 
-        private static void ReceiveData(Socket clientSocket, int Length, byte[] buffer)
+        private static async Task ReceiveDataAsync(Socket clientSocket, int Length, byte[] buffer)
         {
             var iRecv = 0;
             while (iRecv < Length)
             {
                 try
                 {
-                    var localRecv = clientSocket.Receive(buffer, iRecv, Length - iRecv, SocketFlags.None);
+                    var localRecv = await clientSocket.ReceiveAsync(buffer, SocketFlags.None);
                     if (localRecv == 0)
                     {
                         clientSocket.Shutdown(SocketShutdown.Both);
@@ -231,85 +185,152 @@ namespace Server
             }
         }
 
-        private static void AddGame(GameDTO game, Socket clientSocket)
+        private static async Task SendGameCoverAsync(Header header, Socket clientSocket)
         {
+            bufferData = new byte[header.IDataLength];
+            await ReceiveDataAsync(clientSocket, header.IDataLength, bufferData);
+            serverHandler.AddCoverGame(clientSocket, bufferData);
+        }
+
+        private static async Task GetGamesAsync(Header header, Socket clientSocket)
+        {
+            await clientSocket.SendAsync(Encoding.UTF8.GetBytes(gameService.GetAllGames()), SocketFlags.None);
+            await clientSocket.SendAsync(Encoding.UTF8.GetBytes("<EOF>"), SocketFlags.None);
+        }
+
+        private static async Task AddGameAsync(Header header, Socket clientSocket)
+        {
+            bufferData = new byte[header.IDataLength];
+            await ReceiveDataAsync(clientSocket, header.IDataLength, bufferData);
+            GameDTO game = serverHandler.ReceiveGame(bufferData);
+
             try
             {
                 gameService.AddGame(game);
-                clientSocket.Send(Encoding.UTF8.GetBytes("Juego agregado: " +game.Name + "\n"));
-                clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                await clientSocket.SendAsync(Encoding.UTF8.GetBytes("Juego agregado: " + game.Name + "\n"), SocketFlags.None);
+                await clientSocket.SendAsync(Encoding.UTF8.GetBytes("<EOF>"), SocketFlags.None);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                clientSocket.Send(Encoding.UTF8.GetBytes(e.Message));
-                clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                await clientSocket.SendAsync(Encoding.UTF8.GetBytes(e.Message), SocketFlags.None);
+                await clientSocket.SendAsync(Encoding.UTF8.GetBytes("<EOF>"), SocketFlags.None);
             }
         }
 
-        private static void DeleteGame(int id, Socket clientSocket)
+        private static async Task DeleteGameAsync(Header header, Socket clientSocket)
         {
+            bufferData = new byte[header.IDataLength];
+            await ReceiveDataAsync(clientSocket, header.IDataLength, bufferData);
+            int id = serverHandler.ReceiveId(bufferData);
+
             try
             {
                 gameService.DeleteGame(id);
-                clientSocket.Send(Encoding.UTF8.GetBytes("Juego con id: " + id + " borrado \n"));
-                clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                await clientSocket.SendAsync(Encoding.UTF8.GetBytes("Juego con id: " + id + " borrado \n"), SocketFlags.None);
+                await clientSocket.SendAsync(Encoding.UTF8.GetBytes("<EOF>"), SocketFlags.None);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                clientSocket.Send(Encoding.UTF8.GetBytes(e.Message));
-                clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                await clientSocket.SendAsync(Encoding.UTF8.GetBytes(e.Message), SocketFlags.None);
+                await clientSocket.SendAsync(Encoding.UTF8.GetBytes("<EOF>"), SocketFlags.None);
             }
         }
 
-        private static void ModifyGame(GameDTO game, Socket clientSocket)
+        private static async Task ModifyGameAsync(Header header, Socket clientSocket)
         {
+            bufferData = new byte[header.IDataLength];
+            await ReceiveDataAsync(clientSocket, header.IDataLength, bufferData);
+            GameDTO game = serverHandler.ReceiveGameForModifying(bufferData);
+
             try
             {
                 gameService.ModifyGame(game.Id, game);
-                clientSocket.Send(Encoding.UTF8.GetBytes("Juego modificado: " + game.Name + "\n"));
-                clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                await clientSocket.SendAsync(Encoding.UTF8.GetBytes("Juego modificado: " + game.Name + "\n"), SocketFlags.None);
+                await clientSocket.SendAsync(Encoding.UTF8.GetBytes("<EOF>"), SocketFlags.None);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                clientSocket.Send(Encoding.UTF8.GetBytes(e.Message));
-                clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                await clientSocket.SendAsync(Encoding.UTF8.GetBytes(e.Message), SocketFlags.None);
+                await clientSocket.SendAsync(Encoding.UTF8.GetBytes("<EOF>"), SocketFlags.None);
             }
         }
 
-        private static void QualifyGame(ReviewDTO gameReview, Socket clientSocket)
+        private static async Task QualifyGameAsync(Header header, Socket clientSocket)
         {
+            bufferData = new byte[header.IDataLength];
+            await ReceiveDataAsync(clientSocket, header.IDataLength, bufferData);
+            ReviewDTO gameReview = serverHandler.ReceiveQualification(bufferData);
+
             try
             {
                 gameService.QualifyGame(gameReview);
-                clientSocket.Send(
-                    Encoding.UTF8.GetBytes("Juego con id: " + gameReview.GameId + " calificado.\n"));
-                clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                await clientSocket.SendAsync(
+                    Encoding.UTF8.GetBytes("Juego con id: " + gameReview.GameId + " calificado.\n"), SocketFlags.None);
+                await clientSocket.SendAsync(Encoding.UTF8.GetBytes("<EOF>"), SocketFlags.None);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                clientSocket.Send(Encoding.UTF8.GetBytes(e.Message));
-                clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                await clientSocket.SendAsync(Encoding.UTF8.GetBytes(e.Message), SocketFlags.None);
+                await clientSocket.SendAsync(Encoding.UTF8.GetBytes("<EOF>"), SocketFlags.None);
             }
         }
 
-        private static void BuyGame(Tuple<int,string> purchaseData, Socket clientSocket)
+        private static async Task ViewGameDetailAsync(Header header, Socket clientSocket)
         {
+            bufferData = new byte[header.IDataLength];
+            await ReceiveDataAsync(clientSocket, header.IDataLength, bufferData);
+
+            int gameId = serverHandler.ReceiveId(bufferData);
+
+            await clientSocket.SendAsync(Encoding.UTF8.GetBytes(gameService.GetGameDetail(gameId)), SocketFlags.None);
+            await clientSocket.SendAsync(Encoding.UTF8.GetBytes("<EOF>"), SocketFlags.None);
+        }
+
+        private static async Task SearchForGameAsync(Header header, Socket clientSocket)
+        {
+            bufferData = new byte[header.IDataLength];
+            await ReceiveDataAsync(clientSocket, header.IDataLength, bufferData);
+
+            var data = serverHandler.ReceiveSearchTerms(bufferData);
+            string result = gameService.GetAllByQuery(data);
+
+            await clientSocket.SendAsync(Encoding.UTF8.GetBytes(result), SocketFlags.None);
+            await clientSocket.SendAsync(Encoding.UTF8.GetBytes("<EOF>"), SocketFlags.None);
+        }
+        private static async Task ViewBoughtGamesAsync(Header header, Socket clientSocket)
+        {
+            bufferData = new byte[header.IDataLength];
+            await ReceiveDataAsync(clientSocket, header.IDataLength, bufferData);
+
+            string username = serverHandler.ReceiveOwnerName(bufferData);
+            string aux = gameService.GetAllBoughtGames(username);
+
+            await clientSocket.SendAsync(Encoding.UTF8.GetBytes(aux), SocketFlags.None);
+            await clientSocket.SendAsync(Encoding.UTF8.GetBytes("<EOF>"), SocketFlags.None);
+        }
+
+        private static async Task BuyGameAsync(Header header, Socket clientSocket)
+        {
+            bufferData = new byte[header.IDataLength];
+            await ReceiveDataAsync(clientSocket, header.IDataLength, bufferData);
+            Tuple<int, string> purchaseData = serverHandler.RecieveBuyerInfo(bufferData);
+
             try
             {
                 gameService.BuyGame(purchaseData);
 
-                clientSocket.Send(Encoding.UTF8.GetBytes("Juego adquirido de manera exitosa. \n"));
-                clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                await clientSocket.SendAsync(Encoding.UTF8.GetBytes("Juego adquirido de manera exitosa. \n"), SocketFlags.None);
+                await clientSocket.SendAsync(Encoding.UTF8.GetBytes("<EOF>"), SocketFlags.None);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                clientSocket.Send(Encoding.UTF8.GetBytes(e.Message));
-                clientSocket.Send(Encoding.UTF8.GetBytes("<EOF>"));
+                await clientSocket.SendAsync(Encoding.UTF8.GetBytes(e.Message), SocketFlags.None);
+                await clientSocket.SendAsync(Encoding.UTF8.GetBytes("<EOF>"), SocketFlags.None);
             }
         }
 

@@ -76,11 +76,11 @@ namespace Server
             int beforeLength = 0;
             int id = convertToInt(bufferData, idLength, beforeLength);
 
-            beforeLength = idLength + 4;
+            beforeLength += idLength + 4;
             int nameLength = obtainLength(bufferData, beforeLength);
             string name = convertToString(bufferData, nameLength, beforeLength);
 
-            beforeLength = nameLength + 4;
+            beforeLength += nameLength + 4;
             int genreLength = obtainLength(bufferData, beforeLength);
             string genre = convertToString(bufferData, genreLength, beforeLength);
 
