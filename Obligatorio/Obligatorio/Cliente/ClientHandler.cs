@@ -182,7 +182,7 @@ namespace Client
             int sentHeaderBytes = 0;
             while (sentHeaderBytes < headerBytes.Length)
             {
-                sentHeaderBytes += socket.Send(headerBytes, sentHeaderBytes, headerBytes.Length - sentHeaderBytes, SocketFlags.None);
+                sentHeaderBytes += await socket.SendAsync(headerBytes, SocketFlags.None);
             }
 
             if(data.Count != 0)
@@ -190,7 +190,7 @@ namespace Client
                 int sentBodyBytes = 0;
                 while (sentBodyBytes < data.Count)
                 {
-                    sentBodyBytes += socket.Send(data.ToArray(), sentBodyBytes, data.Count - sentBodyBytes, SocketFlags.None);
+                    sentBodyBytes += await socket.SendAsync(data.ToArray(), SocketFlags.None);
                 }
             }
 
