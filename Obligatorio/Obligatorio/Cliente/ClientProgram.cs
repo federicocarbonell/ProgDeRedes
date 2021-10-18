@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 namespace Client
@@ -10,7 +11,7 @@ namespace Client
         static bool connected;
         private static IConfiguration _configuration;
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             try
             {
@@ -26,31 +27,31 @@ namespace Client
                         switch (command)
                         {
                             case 1:
-                                PrintAddGame();
+                                await PrintAddGameAsync();
                                 break;
                             case 2:
-                                PrintDeleteGame();
+                                await PrintDeleteGameAsync();
                                 break;
                             case 3:
-                                PrintModifyGame();
+                                await PrintModifyGameAsync();
                                 break;
                             case 4:
-                                PrintQualifyGame();
+                                await PrintQualifyGameAsync();
                                 break;
                             case 5:
-                                PrintViewGameDetails();
+                                await PrintViewGameDetailsAsync();
                                 break;
                             case 6:
-                                PrintViewGames();
+                                await PrintViewGames();
                                 break;
                             case 7:
-                                PrintSearchForGame();
+                                await PrintSearchForGameAsync();
                                 break;
                             case 8:
-                                PrintSeeMyGames();
+                                await PrintSeeMyGamesAsync();
                                 break;
                             case 9:
-                                PrintBuyGame();
+                                await PrintBuyGameAsync();
                                 break;
                             case 0:
                                 PrintLogout();
@@ -119,7 +120,7 @@ namespace Client
             _configuration = builder.Build();
         }
 
-        private static async void PrintSeeMyGames()
+        private static async Task PrintSeeMyGamesAsync()
         {
             Console.Write("Ver los juegos del usuario: ");
             string username = Console.ReadLine();
@@ -127,7 +128,7 @@ namespace Client
             await clientHandler.ViewBoughtGamesAsync(username);
         }
 
-        private static async void PrintBuyGame()
+        private static async Task PrintBuyGameAsync()
         {
             try
             {
@@ -152,13 +153,13 @@ namespace Client
             Console.WriteLine("Conexion cerrada con exito");
         }
 
-        private static async void PrintViewGames()
+        private static async Task PrintViewGames()
         {
             Console.WriteLine("Juegos en el sistema: ");
             await clientHandler.ViewGamesAsync();
         }
 
-        private static async void PrintViewGameDetails()
+        private static async Task PrintViewGameDetailsAsync()
         {
             try
             {
@@ -173,7 +174,7 @@ namespace Client
             }
         }
 
-        private static async void PrintQualifyGame()
+        private static async Task PrintQualifyGameAsync()
         {
             try
             {
@@ -194,7 +195,7 @@ namespace Client
             }
         }
 
-        private static async void PrintModifyGame()
+        private static async Task PrintModifyGameAsync()
         {
             try
             {
@@ -221,7 +222,7 @@ namespace Client
             }
         }
 
-        private static async void PrintDeleteGame()
+        private static async Task PrintDeleteGameAsync()
         {
             try
             {
@@ -236,7 +237,7 @@ namespace Client
             }
         }
 
-        private static async void PrintAddGame()
+        private static async Task PrintAddGameAsync()
         {
             Console.WriteLine("Agregar juego");
             Console.Write("Nombre: ");
@@ -254,7 +255,7 @@ namespace Client
             await clientHandler.AddGameAsync(title, genre, trailer, cover);
         }
 
-        private static async void PrintSearchForGame()
+        private static async Task PrintSearchForGameAsync()
         {
             string searchMode = "", searchTerm = "", minRating = "";
 
