@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using DTOs;
 using ProtocolLibrary;
 
@@ -8,13 +9,13 @@ namespace Server
 {
     public class ServerHandler
     {
-        private readonly Socket socket;
-        private readonly SocketStreamHandler socketStreamHandler;
+        private readonly TcpClient tcpClient;
+        private readonly NetworkStreamHandler networkStreamHandler;
 
-        public ServerHandler(Socket socket)
+        public ServerHandler(TcpClient tcpClient)
         {
-            this.socket = socket;
-            socketStreamHandler = new SocketStreamHandler(this.socket);
+            this.tcpClient = tcpClient;
+            networkStreamHandler = new NetworkStreamHandler(this.tcpClient);
         }
 
         public GameDTO ReceiveGame(byte[] bufferData)
@@ -43,7 +44,7 @@ namespace Server
             return name;
         }
 
-        public void AddCoverGame(Socket clientSocket, byte[] bufferData)
+        public async Task AddCoverGame(byte[] bufferData)
         {
             int fileNameLength = obtainLength(bufferData, 0);
             int beforeLength = 0;
@@ -52,7 +53,7 @@ namespace Server
             beforeLength += fileNameLength + 4;
             int fileSizeLength = obtainLength(bufferData, beforeLength);
             long fileSize = convertToLong(bufferData, fileSizeLength, beforeLength);
-            ReceiveFile(clientSocket, fileSize, fileName);
+            await ReceiveFile(fileSize, fileName);
         }
 
         public Tuple<int, string> RecieveBuyerInfo(byte[] bufferData)
@@ -136,7 +137,7 @@ namespace Server
             return convertToInt(bufferData, idLength, 0);
         }
 
-        private void ReceiveFile(Socket clientSocket, long fileSize, string fileName)
+        private async Task ReceiveFile(long fileSize, string fileName)
         {
             long fileParts = FileTransferProtocol.CalculateParts(fileSize);
             long offset = 0;
@@ -146,13 +147,13 @@ namespace Server
                 byte[] data;
                 if (currentPart != fileParts)
                 {
-                    data = socketStreamHandler.ReceiveData(clientSocket, FileTransferProtocol.MaxPacketSize);
+                    data = await networkStreamHandler.ReceiveDataAsync(FileTransferProtocol.MaxPacketSize);
                     offset += FileTransferProtocol.MaxPacketSize;
                 }
                 else
                 {
                     int lastPartSize = (int)(fileSize - offset);
-                    data = socketStreamHandler.ReceiveData(clientSocket, lastPartSize);
+                    data = await networkStreamHandler.ReceiveDataAsync(lastPartSize);
                     offset += lastPartSize;
                 }
                 FileStreamHandler.WriteData(fileName, data);

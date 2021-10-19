@@ -1,25 +1,26 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace ProtocolLibrary
 {
-    public class SocketStreamHandler
+    public class NetworkStreamHandler
     {
-        private readonly Socket _socket;
+        private readonly TcpClient client;
 
-        public SocketStreamHandler(Socket socket)
+        public NetworkStreamHandler(TcpClient client)
         {
-            _socket = socket;
+            this.client = client;
         }
 
-        public byte[] ReceiveData(Socket clientSocket, int length)
+        public async Task<byte[]> ReceiveDataAsync(int length)
         {
             int offset = 0;
             byte[] response = new byte[length];
             while (offset < length)
             {
-                int received = clientSocket.Receive(response, offset, length - offset, SocketFlags.None);
+                int received = await client.Client.ReceiveAsync(response, SocketFlags.None);
                 if (received == 0)
                 {
                     throw new SocketException();
@@ -30,13 +31,13 @@ namespace ProtocolLibrary
             return response;
         }
 
-        public void SendData(byte[] data)
+        public async Task SendDataAsync(byte[] data)
         {
             int offset = 0;
             int size = data.Length;
             while (offset < data.Length)
             {
-                int sent = _socket.Send(data, offset, size - offset, SocketFlags.None);
+                int sent = await client.Client.SendAsync(data, SocketFlags.None);
                 if (sent == 0)
                 {
                     throw new SocketException();
