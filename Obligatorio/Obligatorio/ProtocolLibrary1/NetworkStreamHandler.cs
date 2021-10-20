@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ProtocolLibrary
@@ -20,7 +21,7 @@ namespace ProtocolLibrary
             byte[] response = new byte[length];
             while (offset < length)
             {
-                int received = await client.Client.ReceiveAsync(response, SocketFlags.None);
+                int received = await client.GetStream().ReadAsync(response, offset, length - offset, CancellationToken.None);
                 if (received == 0)
                 {
                     throw new SocketException();
@@ -35,15 +36,7 @@ namespace ProtocolLibrary
         {
             int offset = 0;
             int size = data.Length;
-            while (offset < data.Length)
-            {
-                int sent = await client.Client.SendAsync(data, SocketFlags.None);
-                if (sent == 0)
-                {
-                    throw new SocketException();
-                }
-                offset += sent;
-            }
+            await client.GetStream().WriteAsync(data, offset, size - offset, CancellationToken.None);
         }
     }
 }
