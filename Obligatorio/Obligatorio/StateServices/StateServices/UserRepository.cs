@@ -10,15 +10,7 @@ namespace StateServices
 
         public void Add(User entity)
         {
-            if (ValidUsername(entity.Username))
-                ServerState.GetInstance().Users.Add(entity);
-        }
-
-        private bool ValidUsername(string username)
-        {
-            List<string> usernameList = ServerState.GetInstance().Users.Select(x => x.Username).ToList();
-
-            return ! usernameList.Contains(username);
+            ServerState.GetInstance().Users.Add(entity);
         }
 
         public void Delete(int id)

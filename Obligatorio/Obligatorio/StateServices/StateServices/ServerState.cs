@@ -12,7 +12,7 @@ namespace StateServices
         private static readonly object ReviewsLocker = new Object();
         private static readonly object GamesLocker = new Object();
 
-        //aca no se si no hacer lockers auxiliares para cada lista y en los gets lockear tambien, pregunta para Luis.
+        // TODO lockear los gets tambien.
         private static ServerState Instance { get; set; }
         private List<Game> _Games { get; set; }
 
