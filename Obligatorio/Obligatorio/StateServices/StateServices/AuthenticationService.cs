@@ -13,10 +13,16 @@ namespace StateServices
     {
 
         private UserRepository userRepository;
+        private User loggedUser;
 
         public AuthenticationService(UserRepository repository)
         {
             userRepository = repository;
+        }
+
+        public User GetLoggedUser()
+        {
+            return loggedUser;
         }
 
         public User AddUser(UserDTO user)
@@ -34,13 +40,16 @@ namespace StateServices
             return newUser;
         }
 
-        public bool Login(UserDTO user)
+        public bool Login(string username, string password)
         {
-            User aux = GetByName(user.Username);
+            User aux = GetByName(username);
             if (aux == null)
                 throw new Exception("No hay usuario con ese nombre en el sistema.");
-            if (aux.Password.Equals(user.Password))
+            if (aux.Password.Equals(password))
+            {
+                loggedUser = aux;
                 return true;
+            }
             return false;
         }
 
