@@ -285,8 +285,9 @@ namespace Client
 
         internal void Logout()
         {
-            socket.Shutdown(SocketShutdown.Both);
-            socket.Close();
+            tcpClient.Close();
+            //socket.Shutdown(SocketShutdown.Both);
+            //socket.Close();
         }
 
     }
