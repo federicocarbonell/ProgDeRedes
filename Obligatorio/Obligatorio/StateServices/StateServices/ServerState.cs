@@ -18,14 +18,18 @@ namespace StateServices
         private static ServerState Instance { get; set; }
         private List<Game> _Games { get; set; }
 
+        private List<User> _Users { get; set; }
+
         public List<User> Users 
         { 
             get
             {
                 lock (UsersWriteLocker)
                 {
-                    if (Users == null) return new List<User>();
-                    return Users;
+                    User admin = new User { Id = 1, IsDeleted = false, Username = "admin", Password = "admin" };
+                    List<User> users = new List<User>() { admin };
+                    if (_Users == null) return users;
+                    return _Users;
                 }
                 
             }
