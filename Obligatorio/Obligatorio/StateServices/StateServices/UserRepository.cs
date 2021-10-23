@@ -45,6 +45,7 @@ namespace StateServices
             old.Password = newEntity.Password;
             old.Username = newEntity.Password;
             old.OwnedGames = newEntity.OwnedGames;
+            old.IsDeleted = newEntity.IsDeleted;
         }
     }
 }
