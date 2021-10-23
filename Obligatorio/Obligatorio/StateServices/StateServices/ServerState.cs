@@ -12,7 +12,6 @@ namespace StateServices
         private static readonly object ReviewsLocker = new Object();
         private static readonly object GamesLocker = new Object();
 
-        // TODO lockear los gets tambien.
         private static ServerState Instance { get; set; }
         private List<Game> _Games { get; set; }
 
@@ -20,8 +19,11 @@ namespace StateServices
         { 
             get
             {
-                if (Users == null) return new List<User>();
-                return Users;
+                lock (UsersLocker)
+                {
+                    if (Users == null) return new List<User>();
+                    return Users;
+                }
                 
             }
             set
@@ -37,8 +39,11 @@ namespace StateServices
         {
             get
             {
-                if (Reviews == null) return new List<Review>();
-                return Reviews;
+                lock (ReviewsLocker)
+                {
+                    if (Reviews == null) return new List<Review>();
+                    return Reviews;
+                }
             }
             set
             {
@@ -53,8 +58,11 @@ namespace StateServices
         {
             get
             {
-                if (_Games == null) return new List<Game>();
-                return _Games;
+                lock (GamesLocker)
+                {
+                    if (_Games == null) return new List<Game>();
+                    return _Games;
+                }
             }
             set
             {
