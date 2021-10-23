@@ -9,6 +9,7 @@ namespace Client
     {
         static ClientHandler clientHandler;
         static bool connected;
+        static bool authenticated;
         private static IConfiguration _configuration;
 
         static async Task Main(string[] args)
@@ -21,6 +22,21 @@ namespace Client
                 connected = true;
                 while (connected)
                 {
+                    while (! authenticated)
+                    {
+                        try
+                        {
+                            command = PrintLogin();
+                            if (command == 1)
+                                authenticated = await DoLogin();
+                            else
+                                PrintLogout();
+                        }
+                        catch (Exception e)
+                        {
+
+                        }
+                    }
                     try
                     {
                         command = PrintMenu();
@@ -112,6 +128,33 @@ namespace Client
                 Console.WriteLine("Por favor seleccione una de las opciones ofrecidas.");
                 return -1;
             }
+        }
+
+        static int PrintLogin()
+        {
+            Console.WriteLine("Bienvenido al Sistema Client");
+            Console.WriteLine("Elija una de las siguientes opciones: ");
+            Console.WriteLine("1 - Iniciar sesion");
+            Console.WriteLine("0 - Salir");
+            try
+            {
+                return Int32.Parse(Console.ReadLine());
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Por favor seleccione una de las opciones ofrecidas.");
+                return -1;
+            }
+        }
+
+        static async Task<bool> DoLogin()
+        {
+            Console.Write("Username: ");
+            string username = Console.ReadLine();
+            Console.Write("Password: ");
+            string pass = Console.ReadLine();
+
+            return await clientHandler.LoginAsync(username, pass);
         }
 
         private static void ObtainConfiguration()

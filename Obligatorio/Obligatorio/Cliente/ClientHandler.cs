@@ -57,6 +57,18 @@ namespace Client
             ClientPort = Int32.Parse(configuration["ClientPort"]);
         }
 
+        public async Task<bool> LoginAsync(string username, string password)
+        {
+            List<byte> data = new List<byte>();
+
+            AddStringData(data, username);
+            AddStringData(data, password);
+
+            await SendDataAsync(data, CommandConstants.Login);
+
+            return ReceiveLogin();
+        }
+
         public async Task AddGameAsync(string title, string genre, string trailer, string cover)
         {
             
@@ -292,6 +304,24 @@ namespace Client
                 }
             }
 
+        }
+
+        private bool ReceiveLogin()
+        {
+            byte[] bytes = new byte[1024];
+
+            while (true)
+            {
+                int bytesRect = tcpClient.GetStream().Read(bytes);
+                var data = Encoding.UTF8.GetString(bytes, 0, bytesRect);
+
+                if (data.IndexOf("TokenAuth") > -1)
+                {
+                    return true;
+                }
+
+                return false;
+            }
         }
 
         internal void Logout()
