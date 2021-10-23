@@ -44,6 +44,21 @@ namespace StateServices
             return false;
         }
 
+        public void DeleteUser(int userId)
+        {
+            User user = userRepository.Get(userId);
+            user.IsDeleted = true;
+            userRepository.Update(userId, user);
+        }
+
+        public void UpdateUser(int userId, string username, string password)
+        {
+            User user = userRepository.Get(userId);
+            user.Username = username;
+            user.Password = password;
+            userRepository.Update(userId, user);
+        }
+
         private bool ValidUsername(string username)
         {
             List<string> usernameList = userRepository.GetAll().Select(x => x.Username).ToList();
