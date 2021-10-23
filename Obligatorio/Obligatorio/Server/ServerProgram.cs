@@ -60,7 +60,8 @@ namespace Server
                             _exit = true;
                             tcpListener.Server.Close(0);
                             foreach (var client in _clients)
-                            { //aca creo que no esta bien andar usando asi el socket
+                            {
+                                //aca creo que no esta bien andar usando asi el socket
                                 client.Client.Shutdown(SocketShutdown.Both);
                                 client.Close();
                             }
@@ -102,7 +103,7 @@ namespace Server
                     var connectedClient = await tcpListener.AcceptTcpClientAsync();
                     _clients.Add(connectedClient);
                     // abro un hilo por cliente
-                    Task.Run(() => HandleClient(connectedClient, gameService));
+                    await Task.Run(() => HandleClientAsync(connectedClient, gameService));
                 }
                 catch (Exception e)
                 {
@@ -114,7 +115,7 @@ namespace Server
             Console.WriteLine("Exiting....");
         }
 
-        private static async Task HandleClient(TcpClient tcpClient, GameService gameService)
+        private static async Task HandleClientAsync(TcpClient tcpClient, GameService gameService)
         {
             while (!_exit)
             {
@@ -199,7 +200,7 @@ namespace Server
         {
             bufferData = new byte[header.IDataLength];
             await ReceiveDataAsync(client, header.IDataLength, bufferData);
-            await serverHandler.AddCoverGame(bufferData);
+            await serverHandler.AddCoverGameAsync(bufferData);
         }
 
         private static async Task GetGamesAsync(TcpClient client)
