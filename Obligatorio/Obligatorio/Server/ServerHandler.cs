@@ -57,7 +57,7 @@ namespace Server
             return name;
         }
 
-        public async Task AddCoverGame(byte[] bufferData)
+        public async Task AddCoverGameAsync(byte[] bufferData)
         {
             int fileNameLength = obtainLength(bufferData, 0);
             int beforeLength = 0;
@@ -66,7 +66,7 @@ namespace Server
             beforeLength += fileNameLength + 4;
             int fileSizeLength = obtainLength(bufferData, beforeLength);
             long fileSize = convertToLong(bufferData, fileSizeLength, beforeLength);
-            await ReceiveFile(fileSize, fileName);
+            await ReceiveFileAsync(fileSize, fileName);
         }
 
         public Tuple<int, string> RecieveBuyerInfo(byte[] bufferData)
@@ -150,7 +150,7 @@ namespace Server
             return convertToInt(bufferData, idLength, 0);
         }
 
-        private async Task ReceiveFile(long fileSize, string fileName)
+        private async Task ReceiveFileAsync(long fileSize, string fileName)
         {
             long fileParts = FileTransferProtocol.CalculateParts(fileSize);
             long offset = 0;

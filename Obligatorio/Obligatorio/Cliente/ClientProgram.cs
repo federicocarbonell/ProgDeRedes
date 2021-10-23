@@ -58,7 +58,7 @@ namespace Client
                                 await PrintViewGameDetailsAsync();
                                 break;
                             case 6:
-                                await PrintViewGames();
+                                await PrintViewGamesAsync();
                                 break;
                             case 7:
                                 await PrintSearchForGameAsync();
@@ -196,7 +196,7 @@ namespace Client
             Console.WriteLine("Conexion cerrada con exito");
         }
 
-        private static async Task PrintViewGames()
+        private static async Task PrintViewGamesAsync()
         {
             Console.WriteLine("Juegos en el sistema: ");
             await clientHandler.ViewGamesAsync();

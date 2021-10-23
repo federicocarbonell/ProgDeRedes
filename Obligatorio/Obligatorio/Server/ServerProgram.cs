@@ -61,7 +61,8 @@ namespace Server
                             _exit = true;
                             tcpListener.Server.Close(0);
                             foreach (var client in _clients)
-                            { //aca creo que no esta bien andar usando asi el socket
+                            {
+                                //aca creo que no esta bien andar usando asi el socket
                                 client.Client.Shutdown(SocketShutdown.Both);
                                 client.Close();
                             }
@@ -214,7 +215,7 @@ namespace Server
         {
             bufferData = new byte[header.IDataLength];
             await ReceiveDataAsync(client, header.IDataLength, bufferData);
-            await serverHandler.AddCoverGame(bufferData);
+            await serverHandler.AddCoverGameAsync(bufferData);
         }
 
         private static async Task GetGamesAsync(TcpClient client)

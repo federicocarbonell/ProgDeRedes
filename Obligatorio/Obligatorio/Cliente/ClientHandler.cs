@@ -27,8 +27,6 @@ namespace Client
         public ClientHandler(IConfiguration configuration)
         {
             ObtainConfigParameters(configuration);
-            //socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            //socket.Bind(new IPEndPoint(IPAddress.Parse(ClientIp), ClientPort));
 
             clientIpEndPoint = new IPEndPoint(IPAddress.Parse(ClientIp), ClientPort);
             tcpClient = new TcpClient(clientIpEndPoint);
@@ -40,7 +38,6 @@ namespace Client
         {
             try
             {
-                //socket.Connect(ServerIp, ServerPort);
                 tcpClient.ConnectAsync(IPAddress.Parse(ServerIp), ServerPort);
             }
             catch (Exception e)
@@ -198,21 +195,13 @@ namespace Client
             byte[] headerBytes = header.GetRequest();
 
             int sentHeaderBytes = 0;
-            //TODO: Luego de confirmar que es asi, borrar codigo comentado.
-            //while (sentHeaderBytes < headerBytes.Length)
-            //{
-                //sentHeaderBytes += await socket.SendAsync(headerBytes, SocketFlags.None);
-                await tcpClient.GetStream().WriteAsync(headerBytes, sentHeaderBytes, headerBytes.Length - sentHeaderBytes, CancellationToken.None);
-            //}
+            
+            await tcpClient.GetStream().WriteAsync(headerBytes, sentHeaderBytes, headerBytes.Length - sentHeaderBytes, CancellationToken.None);
 
             if(data.Count != 0)
             {
                 int sentBodyBytes = 0;
-                //while (sentBodyBytes < data.Count)
-                //{
-                    //sentBodyBytes += await socket.SendAsync(data.ToArray(), SocketFlags.None);
-                    await tcpClient.GetStream().WriteAsync(data.ToArray(), sentBodyBytes, data.Count - sentBodyBytes, CancellationToken.None);
-                //}
+                await tcpClient.GetStream().WriteAsync(data.ToArray(), sentBodyBytes, data.Count - sentBodyBytes, CancellationToken.None);
             }
 
         }
@@ -326,8 +315,9 @@ namespace Client
 
         internal void Logout()
         {
-            socket.Shutdown(SocketShutdown.Both);
-            socket.Close();
+            tcpClient.Close();
+            //socket.Shutdown(SocketShutdown.Both);
+            //socket.Close();
         }
 
     }
