@@ -8,11 +8,13 @@ namespace StateServices
     {
 
         private static readonly object Locker = new Object();
-        private static readonly object UsersLocker = new Object();
-        private static readonly object ReviewsLocker = new Object();
-        private static readonly object GamesLocker = new Object();
+        private static readonly object UsersWriteLocker = new Object();
+        private static readonly object ReviewsWriterLocker = new Object();
+        private static readonly object GamesWriterLocker = new Object();
+        private static readonly object UsersReadLocker = new Object();
+        private static readonly object ReviewsReadLocker = new Object();
+        private static readonly object GamesReadLocker = new Object();
 
-        // TODO lockear los gets tambien.
         private static ServerState Instance { get; set; }
         private List<Game> _Games { get; set; }
 
@@ -20,13 +22,16 @@ namespace StateServices
         { 
             get
             {
-                if (Users == null) return new List<User>();
-                return Users;
+                lock (UsersWriteLocker)
+                {
+                    if (Users == null) return new List<User>();
+                    return Users;
+                }
                 
             }
             set
             {
-                lock (UsersLocker)
+                lock (UsersReadLocker)
                 {
                     Users = value;
                 }
@@ -37,12 +42,15 @@ namespace StateServices
         {
             get
             {
-                if (Reviews == null) return new List<Review>();
-                return Reviews;
+                lock (ReviewsWriterLocker)
+                {
+                    if (Reviews == null) return new List<Review>();
+                    return Reviews;
+                }
             }
             set
             {
-                lock (ReviewsLocker)
+                lock (ReviewsReadLocker)
                 {
                     Reviews = value;
                 }
@@ -53,12 +61,15 @@ namespace StateServices
         {
             get
             {
-                if (_Games == null) return new List<Game>();
-                return _Games;
+                lock (GamesWriterLocker)
+                {
+                    if (_Games == null) return new List<Game>();
+                    return _Games;
+                }
             }
             set
             {
-                lock (GamesLocker)
+                lock (GamesReadLocker)
                 {
                     _Games = value;
                 }
