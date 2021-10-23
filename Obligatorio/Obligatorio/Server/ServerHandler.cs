@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using DTOs;
 using ProtocolLibrary;
+using StateServices;
 
 namespace Server
 {
@@ -15,6 +16,19 @@ namespace Server
         {
             this.tcpClient = tcpClient;
             networkStreamHandler = new NetworkStreamHandler(this.tcpClient);
+        }
+
+        public async Task DoLoginAsync(byte[] bufferData, AuthenticationService authService)
+        {
+            int usernameLength = obtainLength(bufferData, 0);
+            int beforeLength = 0;
+            string username = convertToString(bufferData, usernameLength, beforeLength);
+
+            beforeLength += usernameLength + 4;
+            int passwordLength = obtainLength(bufferData, beforeLength);
+            string pass = convertToString(bufferData, passwordLength, beforeLength);
+
+            authService.Login(username, pass);
         }
 
         public GameDTO ReceiveGame(byte[] bufferData)

@@ -16,6 +16,7 @@ namespace Server
         static bool _exit = false;
         static List<TcpClient> _clients = new List<TcpClient>();
         static GameService gameService;
+        static AuthenticationService authService;
         static ServerHandler serverHandler;
         static byte[] bufferData;
         private IConfiguration _configuration;
@@ -38,15 +39,15 @@ namespace Server
             tcpListener = new TcpListener(listenerEndPoint);
             tcpListener.Start();
             // abro un hilo
-            Task.Run(() => ListenForConnectionsAsync(tcpListener, gameService));
+            GameRepository gameRepository = new GameRepository();
+            gameService = new GameService(gameRepository);
+            Task.Run(() => ListenForConnectionsAsync(tcpListener));
+            UserRepository userRepo = new UserRepository();
+            authService = new AuthenticationService(userRepo);
 
             clientEndPoint = new IPEndPoint(IPAddress.Parse(ip), port + 1);
             tcpClient = new TcpClient(clientEndPoint);
             serverHandler = new ServerHandler(tcpClient);
-            GameRepository gameRepository = new GameRepository();
-            gameService = new GameService(gameRepository);
-
-            
 
             int command = -1;
             while (!_exit)
@@ -93,7 +94,7 @@ namespace Server
             backlog = Int32.Parse(config["Backlog"]);
         }
         
-        private static async Task ListenForConnectionsAsync(TcpListener tcpListener, GameService gameService)
+        private static async Task ListenForConnectionsAsync(TcpListener tcpListener)
         {
             while (!_exit)
             {
@@ -102,7 +103,9 @@ namespace Server
                     var connectedClient = await tcpListener.AcceptTcpClientAsync();
                     _clients.Add(connectedClient);
                     // abro un hilo por cliente
-                    Task.Run(() => HandleClient(connectedClient, gameService));
+                    UserRepository repo = new UserRepository();
+                    AuthenticationService clientService = new AuthenticationService(repo);
+                    Task.Run(() => HandleClient(connectedClient, clientService));
                 }
                 catch (Exception e)
                 {
@@ -114,7 +117,7 @@ namespace Server
             Console.WriteLine("Exiting....");
         }
 
-        private static async Task HandleClient(TcpClient tcpClient, GameService gameService)
+        private static async Task HandleClient(TcpClient tcpClient, AuthenticationService clientService)
         {
             while (!_exit)
             {
@@ -129,6 +132,8 @@ namespace Server
                     switch (header.ICommand)
                     {
                         case CommandConstants.Login:
+                            await LoginAsync(header, tcpClient, clientService);
+                            break;
                         case CommandConstants.AddGame:
                             await AddGameAsync(header, tcpClient);
                             break;
@@ -193,6 +198,16 @@ namespace Server
                     return;
                 }
             }
+        }
+
+        private static async Task LoginAsync(Header header, TcpClient client, AuthenticationService authService)
+        {
+            bufferData = new byte[header.IDataLength];
+            await ReceiveDataAsync(client, header.IDataLength, bufferData);
+            await serverHandler.DoLoginAsync(bufferData, authService);
+            Console.WriteLine($"Usuario autenticado : {authService.GetLoggedUser().Username}");
+            var gameNameBytes = Encoding.UTF8.GetBytes("TokenAuth");
+            await client.GetStream().WriteAsync(gameNameBytes, 0, gameNameBytes.Length);
         }
 
         private static async Task SendGameCoverAsync(Header header, TcpClient client)
