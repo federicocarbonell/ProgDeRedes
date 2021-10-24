@@ -49,7 +49,7 @@ namespace Server
 
             clientEndPoint = new IPEndPoint(IPAddress.Parse(ip), port + 1);
             tcpClient = new TcpClient(clientEndPoint);
-            serverHandler = new ServerHandler(tcpClient);
+            serverHandler = new ServerHandler(tcpClient, tcpListener);
 
             int command = -1;
             while (!_exit)
@@ -305,7 +305,7 @@ namespace Server
             //refactorear
             bufferData = new byte[header.IDataLength];
             await ReceiveDataAsync(client, header.IDataLength, bufferData);
-            await serverHandler.AddCoverGameAsync(bufferData);
+            await serverHandler.AddCoverGameAsync(bufferData, client);
         }
 
         private static async Task GetGamesAsync(TcpClient client)
