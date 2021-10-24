@@ -73,6 +73,9 @@ namespace Client
                             case 9:
                                 await PrintBuyGameAsync();
                                 break;
+                            case 10:
+                                await PrintDownloadGameCover();
+                                break;
                             case 0:
                                 PrintLogout();
                                 break;
@@ -121,6 +124,7 @@ namespace Client
             Console.WriteLine("7 - Buscar juego");
             Console.WriteLine("8 - Ver juegos comprados");
             Console.WriteLine("9 - Comprar juego");
+            Console.WriteLine("10 - Descargar caratula de juego");
             Console.WriteLine("0 - Salir");
 
             try
@@ -322,6 +326,21 @@ namespace Client
 
 
             await clientHandler.SearchForGamesAsync(searchMode, searchTerm, minRating);
+        }
+
+        private static async Task PrintDownloadGameCover()
+        {
+            try
+            {
+                Console.Write("Ver caratula de juego con el id: ");
+                int id = Int32.Parse(Console.ReadLine());
+
+                await clientHandler.DownloadGameCoverAsync(id);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Por favor envíe los datos en su correspondiente tipo.");
+            }
         }
     }
 }

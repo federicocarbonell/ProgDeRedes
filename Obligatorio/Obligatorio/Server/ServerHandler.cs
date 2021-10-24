@@ -138,6 +138,12 @@ namespace Server
             return convertToInt(bufferData, idLength, 0);
         }
 
+        public async Task SendFileAsync(string path, TcpClient tcpClient)
+        {
+            var fileCommunication = new FileCommunicationHandler(tcpClient);
+            await fileCommunication.SendFileAsync(path);
+        }
+
         private async Task ReceiveFileAsync(string fileName, TcpClient tcpClient)
         {
             var fileCommunication = new FileCommunicationHandler(tcpClient);

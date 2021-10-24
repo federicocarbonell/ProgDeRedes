@@ -184,6 +184,16 @@ namespace Client
             Recieve();
         }
 
+        public async Task DownloadGameCoverAsync(int gameId)
+        {
+            List<byte> data = new List<byte>();
+
+            AddIntData(data, gameId);
+
+            await SendDataAsync(data, CommandConstants.DownloadCover);
+            await ReceiveCoverAsync();
+        }
+
         private async Task SendDataAsync(List<byte> data, int command)
         {
 
@@ -278,6 +288,12 @@ namespace Client
 
                 return false;
             }
+        }
+
+        private async Task ReceiveCoverAsync()
+        {
+            var fileCommunication = new FileCommunicationHandler(tcpClient);
+            await fileCommunication.ReceiveFileAsync("");
         }
 
         internal void Logout()

@@ -50,6 +50,8 @@ namespace Common
             // 3.- Recibo el largo del archivo
             byte[] fileSizeDataLength = await _networkStreamHandler.ReadDataAsync(ProtocolSpecification.FileSize);
             long fileSize = BitConverter.ToInt64(fileSizeDataLength);
+
+            if (fileName == "") fileName = fileName1;
             await ReceiveFileAsync(fileSize, fileName);
         }
 

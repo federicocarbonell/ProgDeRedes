@@ -186,5 +186,18 @@ namespace StateServices
                 throw new Exception(e.Message);
             }
         }
+
+        public string GetGameName (int gameId)
+        {
+            try
+            {
+                Game game = gameRepository.Get(gameId);
+                return game.Name;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
     }
 }
