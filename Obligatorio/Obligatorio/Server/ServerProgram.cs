@@ -61,17 +61,6 @@ namespace Server
                     {
                         case 0:
                             _exit = true;
-                            tcpListener.Server.Close(0);
-                            foreach (var client in _clients)
-                            {
-                                //aca creo que no esta bien andar usando asi el socket
-                                client.Client.Shutdown(SocketShutdown.Both);
-                                client.Close();
-                            }
-
-                            var socketTrampa = new Socket(AddressFamily.InterNetwork, SocketType.Stream,
-                                ProtocolType.Tcp);
-                            socketTrampa.Connect(ip, port);
                             break;
                         case 1:
                             PrintAddUser();
@@ -98,6 +87,8 @@ namespace Server
                     Console.WriteLine();
                 }
             }
+            tcpListener.Stop();
+            Console.WriteLine("Exiting....");
         }
 
         private static void PrintViewUsers()
@@ -195,8 +186,6 @@ namespace Server
                     _exit = true;
                 }
             }
-
-            Console.WriteLine("Exiting....");
         }
 
         private static async Task HandleClient(TcpClient tcpClient, AuthenticationService clientService)
@@ -477,8 +466,8 @@ namespace Server
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                var messageBytes = Encoding.UTF8.GetBytes(e.Message);
+                string message = "NoImage";
+                var messageBytes = Encoding.UTF8.GetBytes(message);
                 await client.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
                 await client.GetStream().WriteAsync(endMessageBytes, 0, endMessageBytes.Length);
             }
