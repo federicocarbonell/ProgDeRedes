@@ -203,12 +203,20 @@ namespace Server
 
         private static async Task LoginAsync(Header header, TcpClient client, AuthenticationService authService)
         {
+            byte[] messageBytes;
             bufferData = new byte[header.IDataLength];
             await ReceiveDataAsync(client, header.IDataLength, bufferData);
             await serverHandler.DoLoginAsync(bufferData, authService);
-            Console.WriteLine($"Usuario autenticado : {authService.GetLoggedUser().Username}");
-            var gameNameBytes = Encoding.UTF8.GetBytes("TokenAuth");
-            await client.GetStream().WriteAsync(gameNameBytes, 0, gameNameBytes.Length);
+            if (authService.GetLoggedUser() != null)
+            {
+                Console.WriteLine($"Usuario autenticado : {authService.GetLoggedUser().Username}");
+                messageBytes = Encoding.UTF8.GetBytes("TokenAuth");
+            }
+            else
+            {
+                messageBytes = Encoding.UTF8.GetBytes("Wrong credentials");
+            }
+            await client.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
         }
 
         private static async Task SendGameCoverAsync(Header header, TcpClient client)
