@@ -165,22 +165,17 @@ namespace Client
 
         private static async Task PrintSeeMyGamesAsync()
         {
-            Console.Write("Ver los juegos del usuario: ");
-            string username = Console.ReadLine();
-
-            await clientHandler.ViewBoughtGamesAsync(username);
+            await clientHandler.ViewBoughtGamesAsync();
         }
 
         private static async Task PrintBuyGameAsync()
         {
             try
             {
-                Console.Write("Comprar como usuario: ");
-                string username = Console.ReadLine();
-                Console.Write("El juego con el id: ");
+                Console.Write("Comprar el juego con el id: ");
                 int id = Int32.Parse(Console.ReadLine());
 
-                await clientHandler.BuyGameAsync(username, id);
+                await clientHandler.BuyGameAsync(id);
             }
             catch (Exception e)
             {

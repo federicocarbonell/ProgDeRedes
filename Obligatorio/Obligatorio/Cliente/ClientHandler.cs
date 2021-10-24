@@ -89,22 +89,18 @@ namespace Client
             Recieve();
         }
 
-        public async Task ViewBoughtGamesAsync(string username)
+        public async Task ViewBoughtGamesAsync()
         {
             List<byte> data = new List<byte>();
-
-            AddStringData(data, username);
-
             await SendDataAsync(data, CommandConstants.ViewBoughtGames);
             Recieve();
         }
 
-        public async Task BuyGameAsync(string username, int id)
+        public async Task BuyGameAsync(int id)
         {
             List<byte> data = new List<byte>();
 
             AddIntData(data, id);
-            AddStringData(data, username);
 
             await SendDataAsync(data, CommandConstants.BuyGame);
             Recieve();

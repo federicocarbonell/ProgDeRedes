@@ -48,15 +48,6 @@ namespace Server
             return new GameDTO { Name = name , Genre = genre, Description = description};
         }
 
-        public string ReceiveOwnerName(byte[] bufferData)
-        {
-            int nameLength = obtainLength(bufferData, 0);
-            int beforeLength = 0;
-            string name = convertToString(bufferData, nameLength, beforeLength);
-
-            return name;
-        }
-
         public async Task AddCoverGameAsync(byte[] bufferData)
         {
             int fileNameLength = obtainLength(bufferData, 0);
@@ -69,17 +60,13 @@ namespace Server
             await ReceiveFileAsync(fileSize, fileName);
         }
 
-        public Tuple<int, string> RecieveBuyerInfo(byte[] bufferData)
+        public int RecieveBuyerInfo(byte[] bufferData)
         {
-            int nameLength = obtainLength(bufferData, 0);
+            int idLength = obtainLength(bufferData, 0);
             int beforeLength = 0;
-            int gameId = convertToInt(bufferData, nameLength, beforeLength);
+            int gameId = convertToInt(bufferData, idLength, beforeLength);
 
-            beforeLength = nameLength + 4;
-            int genreLength = obtainLength(bufferData, beforeLength);
-            string username = convertToString(bufferData, genreLength, beforeLength);
-
-            return new Tuple<int, string>(gameId, username);
+            return gameId;
         }
 
 

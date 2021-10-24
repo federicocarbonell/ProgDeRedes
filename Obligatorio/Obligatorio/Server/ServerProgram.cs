@@ -160,10 +160,10 @@ namespace Server
                             await SearchForGameAsync(header, tcpClient);
                             break;
                         case CommandConstants.ViewBoughtGames:
-                            await ViewBoughtGamesAsync(header, tcpClient);
+                            await ViewBoughtGamesAsync(tcpClient, clientService);
                             break;
                         case CommandConstants.BuyGame:
-                            await BuyGameAsync(header, tcpClient);
+                            await BuyGameAsync(header, tcpClient, clientService);
                             break;
                     }
                 }
@@ -336,27 +336,23 @@ namespace Server
             await client.GetStream().WriteAsync(resultBytes, 0, resultBytes.Length);
             await client.GetStream().WriteAsync(endMessageBytes, 0, endMessageBytes.Length);
         }
-        private static async Task ViewBoughtGamesAsync(Header header, TcpClient client)
+        private static async Task ViewBoughtGamesAsync(TcpClient client, AuthenticationService authService)
         {
-            bufferData = new byte[header.IDataLength];
-            await ReceiveDataAsync(client, header.IDataLength, bufferData);
-
-            string username = serverHandler.ReceiveOwnerName(bufferData);
-            var resultBytes = Encoding.UTF8.GetBytes(gameService.GetAllBoughtGames(username));
+            var resultBytes = Encoding.UTF8.GetBytes(gameService.GetAllBoughtGames(authService.GetLoggedUser().Username));
 
             await client.GetStream().WriteAsync(resultBytes, 0, resultBytes.Length);
             await client.GetStream().WriteAsync(endMessageBytes, 0, endMessageBytes.Length);
         }
 
-        private static async Task BuyGameAsync(Header header, TcpClient client)
+        private static async Task BuyGameAsync(Header header, TcpClient client, AuthenticationService authService)
         {
             bufferData = new byte[header.IDataLength];
             await ReceiveDataAsync(client, header.IDataLength, bufferData);
-            Tuple<int, string> purchaseData = serverHandler.RecieveBuyerInfo(bufferData);
+            int gameId = serverHandler.RecieveBuyerInfo(bufferData);
 
             try
             {
-                gameService.BuyGame(purchaseData);
+                gameService.BuyGame(gameId, authService.GetLoggedUser().Username);
                 var purchaseMessage = Encoding.UTF8.GetBytes("Juego adquirido de manera exitosa. \n");
                 await client.GetStream().WriteAsync(purchaseMessage, 0, purchaseMessage.Length);
                 await client.GetStream().WriteAsync(endMessageBytes, 0, endMessageBytes.Length);

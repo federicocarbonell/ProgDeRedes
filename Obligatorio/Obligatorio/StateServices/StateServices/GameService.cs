@@ -65,11 +65,11 @@ namespace StateServices
             return games;
         }
 
-        public void BuyGame(Tuple<int, string> data)
+        public void BuyGame(int gameId, string owner)
         {
             try
             {
-                gameRepository.BuyGame(data.Item1, data.Item2);
+                gameRepository.BuyGame(gameId, owner);
             }
             catch (Exception e)
             {
