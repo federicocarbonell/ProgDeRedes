@@ -44,14 +44,15 @@ namespace Common
             byte[] fileNameLengthData = await _networkStreamHandler.ReadDataAsync(ProtocolSpecification.FileNameSize);
             int fileNameLength = BitConverter.ToInt32(fileNameLengthData);
             // 2.- Recibir el nombre del archivo original, se va a descartar igual para ponerle el nombre del juego.
-            byte[] fileNameData = await _networkStreamHandler.ReadDataAsync(fileNameLength);
-            string fileName1 = Encoding.UTF8.GetString(fileNameData);
+            // Cuando se le envia al cliente si se obtiene el nombre real.
+            byte[] realFileNameData = await _networkStreamHandler.ReadDataAsync(fileNameLength);
+            string realFileName = Encoding.UTF8.GetString(realFileNameData);
 
             // 3.- Recibo el largo del archivo
             byte[] fileSizeDataLength = await _networkStreamHandler.ReadDataAsync(ProtocolSpecification.FileSize);
             long fileSize = BitConverter.ToInt64(fileSizeDataLength);
 
-            if (fileName == "") fileName = fileName1;
+            if (fileName == "") fileName = realFileName;
             await ReceiveFileAsync(fileSize, fileName);
         }
 

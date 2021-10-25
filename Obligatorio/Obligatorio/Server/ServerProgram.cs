@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -459,15 +460,21 @@ namespace Server
             try
             {
                 string path = gameService.GetGameName(gameId) + ".png";
+                string returnMessage = "La caratula se ha enviado correctamente. \n";
+                if (!File.Exists(path))
+                {
+                    path = "Files/NoImage.png";
+                    returnMessage = "La caratula solicitada no existe. \n";
+                }
                 await serverHandler.SendFileAsync(path, client);
-                var downloadCover = Encoding.UTF8.GetBytes("La caratula se ha enviado correctamente. \n");
+                var downloadCover = Encoding.UTF8.GetBytes(returnMessage);
                 await client.GetStream().WriteAsync(downloadCover, 0, downloadCover.Length);
                 await client.GetStream().WriteAsync(endMessageBytes, 0, endMessageBytes.Length);
             }
             catch (Exception e)
             {
-                string message = "NoImage";
-                var messageBytes = Encoding.UTF8.GetBytes(message);
+                Console.WriteLine(e.Message);
+                var messageBytes = Encoding.UTF8.GetBytes(e.Message);
                 await client.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
                 await client.GetStream().WriteAsync(endMessageBytes, 0, endMessageBytes.Length);
             }

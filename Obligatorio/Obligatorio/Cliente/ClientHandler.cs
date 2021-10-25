@@ -192,6 +192,7 @@ namespace Client
 
             await SendDataAsync(data, CommandConstants.DownloadCover);
             await ReceiveCoverAsync();
+            Recieve();
         }
 
         private async Task SendDataAsync(List<byte> data, int command)
