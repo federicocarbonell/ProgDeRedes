@@ -48,7 +48,7 @@ namespace StateServices
         {
             User aux = GetByName(username);
             if (aux == null)
-                throw new Exception("No hay usuario con ese nombre en el sistema.");
+                return false;
             if (aux.Password.Equals(password))
             {
                 loggedUser = aux;

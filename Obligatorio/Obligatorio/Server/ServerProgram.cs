@@ -287,8 +287,8 @@ namespace Server
             byte[] messageBytes;
             bufferData = new byte[header.IDataLength];
             await ReceiveDataAsync(client, header.IDataLength, bufferData);
-            await serverHandler.DoLoginAsync(bufferData, authService);
-            if (authService.GetLoggedUser() != null)
+            bool logged = await serverHandler.DoLoginAsync(bufferData, authService);
+            if (logged)
             {
                 Console.WriteLine($"Usuario autenticado : {authService.GetLoggedUser().Username}");
                 messageBytes = Encoding.UTF8.GetBytes("TokenAuth");

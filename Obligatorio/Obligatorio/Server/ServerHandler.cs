@@ -18,7 +18,7 @@ namespace Server
             networkStreamHandler = new NetworkStreamHandler(this.tcpClient);
         }
 
-        public async Task DoLoginAsync(byte[] bufferData, AuthenticationService authService)
+        public async Task<bool> DoLoginAsync(byte[] bufferData, AuthenticationService authService)
         {
             int usernameLength = obtainLength(bufferData, 0);
             int beforeLength = 0;
@@ -28,7 +28,7 @@ namespace Server
             int passwordLength = obtainLength(bufferData, beforeLength);
             string pass = convertToString(bufferData, passwordLength, beforeLength);
 
-            authService.Login(username, pass);
+            return authService.Login(username, pass);
         }
 
         public GameDTO ReceiveGame(byte[] bufferData)

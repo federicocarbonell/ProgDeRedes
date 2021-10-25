@@ -28,7 +28,11 @@ namespace Client
                         {
                             command = PrintLogin();
                             if (command == 1)
+                            {
                                 authenticated = await DoLogin();
+                                if(! authenticated)
+                                    Console.WriteLine("Error de autenticacion, por favor chequee sus credenciales");
+                            }
                             else
                                 PrintLogout();
                         }
