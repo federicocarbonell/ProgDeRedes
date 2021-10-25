@@ -13,6 +13,8 @@ namespace StateServices.DomainEntities
 
         public string Password { get; set; }
 
+        public bool IsDeleted { get; set; }
+
         public List<Game> OwnedGames { get; set; } 
 
     }

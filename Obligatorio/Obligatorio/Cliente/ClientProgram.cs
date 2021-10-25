@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -9,6 +10,7 @@ namespace Client
     {
         static ClientHandler clientHandler;
         static bool connected;
+        static bool authenticated;
         private static IConfiguration _configuration;
 
         static async Task Main(string[] args)
@@ -21,6 +23,25 @@ namespace Client
                 connected = true;
                 while (connected)
                 {
+                    while (! authenticated)
+                    {
+                        try
+                        {
+                            command = PrintLogin();
+                            if (command == 1)
+                            {
+                                authenticated = await DoLogin();
+                                if(! authenticated)
+                                    Console.WriteLine("Error de autenticacion, por favor chequee sus credenciales");
+                            }
+                            else
+                                PrintLogout();
+                        }
+                        catch (Exception e)
+                        {
+
+                        }
+                    }
                     try
                     {
                         command = PrintMenu();
@@ -42,7 +63,7 @@ namespace Client
                                 await PrintViewGameDetailsAsync();
                                 break;
                             case 6:
-                                await PrintViewGames();
+                                await PrintViewGamesAsync();
                                 break;
                             case 7:
                                 await PrintSearchForGameAsync();
@@ -53,6 +74,9 @@ namespace Client
                             case 9:
                                 await PrintBuyGameAsync();
                                 break;
+                            case 10:
+                                await PrintDownloadGameCover();
+                                break;
                             case 0:
                                 PrintLogout();
                                 break;
@@ -60,7 +84,7 @@ namespace Client
                                 break;
                         }
                     }
-                    catch (SocketException sex)
+                    catch (IOException ioex)
                     {
                         Console.WriteLine(("El servidor se ha desconectado, comuníqueselo al administrador \n e intente " +
                                            "nuevamente más tarde."));
@@ -101,6 +125,7 @@ namespace Client
             Console.WriteLine("7 - Buscar juego");
             Console.WriteLine("8 - Ver juegos comprados");
             Console.WriteLine("9 - Comprar juego");
+            Console.WriteLine("10 - Descargar carátula de juego");
             Console.WriteLine("0 - Salir");
 
             try
@@ -114,6 +139,33 @@ namespace Client
             }
         }
 
+        static int PrintLogin()
+        {
+            Console.WriteLine("Bienvenido al Sistema Client");
+            Console.WriteLine("Elija una de las siguientes opciones: ");
+            Console.WriteLine("1 - Iniciar sesion");
+            Console.WriteLine("0 - Salir");
+            try
+            {
+                return Int32.Parse(Console.ReadLine());
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Por favor seleccione una de las opciones ofrecidas.");
+                return -1;
+            }
+        }
+
+        static async Task<bool> DoLogin()
+        {
+            Console.Write("Username: ");
+            string username = Console.ReadLine();
+            Console.Write("Password: ");
+            string pass = Console.ReadLine();
+
+            return await clientHandler.LoginAsync(username, pass);
+        }
+
         private static void ObtainConfiguration()
         {
             var builder = new ConfigurationBuilder().AddJsonFile($"appsettings.json", true, true);
@@ -122,22 +174,17 @@ namespace Client
 
         private static async Task PrintSeeMyGamesAsync()
         {
-            Console.Write("Ver los juegos del usuario: ");
-            string username = Console.ReadLine();
-
-            await clientHandler.ViewBoughtGamesAsync(username);
+            await clientHandler.ViewBoughtGamesAsync();
         }
 
         private static async Task PrintBuyGameAsync()
         {
             try
             {
-                Console.Write("Comprar como usuario: ");
-                string username = Console.ReadLine();
-                Console.Write("El juego con el id: ");
+                Console.Write("Comprar el juego con el id: ");
                 int id = Int32.Parse(Console.ReadLine());
 
-                await clientHandler.BuyGameAsync(username, id);
+                await clientHandler.BuyGameAsync(id);
             }
             catch (Exception e)
             {
@@ -153,7 +200,7 @@ namespace Client
             Console.WriteLine("Conexion cerrada con exito");
         }
 
-        private static async Task PrintViewGames()
+        private static async Task PrintViewGamesAsync()
         {
             Console.WriteLine("Juegos en el sistema: ");
             await clientHandler.ViewGamesAsync();
@@ -280,6 +327,21 @@ namespace Client
 
 
             await clientHandler.SearchForGamesAsync(searchMode, searchTerm, minRating);
+        }
+
+        private static async Task PrintDownloadGameCover()
+        {
+            try
+            {
+                Console.Write("Ver carátula de juego con el id: ");
+                int id = Int32.Parse(Console.ReadLine());
+
+                await clientHandler.DownloadGameCoverAsync(id);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Por favor envíe los datos en su correspondiente tipo.");
+            }
         }
     }
 }

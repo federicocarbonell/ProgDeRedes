@@ -10,15 +10,9 @@ namespace StateServices
 
         public void Add(User entity)
         {
-            if (ValidUsername(entity.Username))
-                ServerState.GetInstance().Users.Add(entity);
-        }
-
-        private bool ValidUsername(string username)
-        {
-            List<string> usernameList = ServerState.GetInstance().Users.Select(x => x.Username).ToList();
-
-            return ! usernameList.Contains(username);
+            var auxList = ServerState.GetInstance().Users;
+            auxList.Add(entity);
+            ServerState.GetInstance().Users = auxList;
         }
 
         public void Delete(int id)
@@ -53,6 +47,7 @@ namespace StateServices
             old.Password = newEntity.Password;
             old.Username = newEntity.Password;
             old.OwnedGames = newEntity.OwnedGames;
+            old.IsDeleted = newEntity.IsDeleted;
         }
     }
 }

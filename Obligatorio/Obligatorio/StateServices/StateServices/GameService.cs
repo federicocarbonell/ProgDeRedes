@@ -65,11 +65,11 @@ namespace StateServices
             return games;
         }
 
-        public void BuyGame(Tuple<int, string> data)
+        public void BuyGame(int gameId, string owner)
         {
             try
             {
-                gameRepository.BuyGame(data.Item1, data.Item2);
+                gameRepository.BuyGame(gameId, owner);
             }
             catch (Exception e)
             {
@@ -180,6 +180,19 @@ namespace StateServices
             try
             {
                 gameRepository.QualifyGame(reviewDTO.GameId, reviewDTO.Rating, reviewDTO.Content);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public string GetGameName (int gameId)
+        {
+            try
+            {
+                Game game = gameRepository.Get(gameId);
+                return game.Name;
             }
             catch (Exception e)
             {

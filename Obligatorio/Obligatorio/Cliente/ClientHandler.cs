@@ -8,6 +8,8 @@ using System.Net.Sockets;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
+using System.Threading;
+using Common;
 
 namespace Client
 {
@@ -19,23 +21,25 @@ namespace Client
         private static int ServerPort;
         private static int ClientPort;
         public readonly Socket socket;
+        private static TcpClient tcpClient;
+        private static IPEndPoint clientIpEndPoint;
         private Header header;
 
         public ClientHandler(IConfiguration configuration)
         {
             ObtainConfigParameters(configuration);
-            socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            socket.Bind(new IPEndPoint(IPAddress.Parse(ClientIp), ClientPort));
+
+            clientIpEndPoint = new IPEndPoint(IPAddress.Parse(ClientIp), ClientPort);
+            tcpClient = new TcpClient(clientIpEndPoint);
            
             ConnectToServer();
-            
         }
         
         public void ConnectToServer()
         {
             try
             {
-                socket.Connect(ServerIp, ServerPort);
+                tcpClient.ConnectAsync(IPAddress.Parse(ServerIp), ServerPort);
             }
             catch (Exception e)
             {
@@ -51,6 +55,18 @@ namespace Client
             ClientPort = Int32.Parse(configuration["ClientPort"]);
         }
 
+        public async Task<bool> LoginAsync(string username, string password)
+        {
+            List<byte> data = new List<byte>();
+
+            AddStringData(data, username);
+            AddStringData(data, password);
+
+            await SendDataAsync(data, CommandConstants.Login);
+
+            return ReceiveLogin();
+        }
+
         public async Task AddGameAsync(string title, string genre, string trailer, string cover)
         {
             
@@ -61,35 +77,31 @@ namespace Client
             AddStringData(data, trailer);
 
             await SendDataAsync(data, CommandConstants.AddGame);
-            
+
             try
             {
                 await SendFileDataAsync(cover, title);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine("No se pudo enviar el archivo de portada");
             }
-            
+
             Recieve();
         }
 
-        public async Task ViewBoughtGamesAsync(string username)
+        public async Task ViewBoughtGamesAsync()
         {
             List<byte> data = new List<byte>();
-
-            AddStringData(data, username);
-
             await SendDataAsync(data, CommandConstants.ViewBoughtGames);
             Recieve();
         }
 
-        public async Task BuyGameAsync(string username, int id)
+        public async Task BuyGameAsync(int id)
         {
             List<byte> data = new List<byte>();
 
             AddIntData(data, id);
-            AddStringData(data, username);
 
             await SendDataAsync(data, CommandConstants.BuyGame);
             Recieve();
@@ -172,6 +184,17 @@ namespace Client
             Recieve();
         }
 
+        public async Task DownloadGameCoverAsync(int gameId)
+        {
+            List<byte> data = new List<byte>();
+
+            AddIntData(data, gameId);
+
+            await SendDataAsync(data, CommandConstants.DownloadCover);
+            await ReceiveCoverAsync();
+            Recieve();
+        }
+
         private async Task SendDataAsync(List<byte> data, int command)
         {
 
@@ -180,18 +203,13 @@ namespace Client
             byte[] headerBytes = header.GetRequest();
 
             int sentHeaderBytes = 0;
-            while (sentHeaderBytes < headerBytes.Length)
-            {
-                sentHeaderBytes += await socket.SendAsync(headerBytes, SocketFlags.None);
-            }
+            
+            await tcpClient.GetStream().WriteAsync(headerBytes, sentHeaderBytes, headerBytes.Length - sentHeaderBytes, CancellationToken.None);
 
             if(data.Count != 0)
             {
                 int sentBodyBytes = 0;
-                while (sentBodyBytes < data.Count)
-                {
-                    sentBodyBytes += await socket.SendAsync(data.ToArray(), SocketFlags.None);
-                }
+                await tcpClient.GetStream().WriteAsync(data.ToArray(), sentBodyBytes, data.Count - sentBodyBytes, CancellationToken.None);
             }
 
         }
@@ -210,38 +228,8 @@ namespace Client
             //envio nombre y largo de la imagen
 
             //envio la imagen
-            long fileParts = FileTransferProtocol.CalculateParts(fileSize);
-            long offset = 0;
-            long currentPart = 1;
-
-            while (fileSize > offset)
-            {
-                byte[] data;
-                if (currentPart != fileParts)
-                {
-                    data = FileStreamHandler.ReadData(path, FileTransferProtocol.MaxPacketSize, offset);
-                    offset += FileTransferProtocol.MaxPacketSize;
-                }
-                else
-                {
-                    int lastPartSize = (int)(fileSize - offset);
-                    data = FileStreamHandler.ReadData(path, lastPartSize, offset);
-                    offset += lastPartSize;
-                }
-
-                int auxOffset = 0;
-                int auxSize = data.Length;
-                while(auxOffset < data.Length)
-                {
-                    int sent = socket.Send(data, auxOffset, auxSize - auxOffset, SocketFlags.None);
-                    if(sent == 0)
-                    {
-                        throw new SocketException();
-                    }
-                    auxOffset += sent;
-                }
-                currentPart++;
-            }
+            var fileCommunication = new FileCommunicationHandler(tcpClient);
+            await fileCommunication.SendFileAsync(path);
         }
 
         private void AddIntData(List<byte> data, int info)
@@ -272,8 +260,9 @@ namespace Client
 
             while (true)
             {
-                int bytesRec = socket.Receive(bytes);
-                var data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+                //int bytesRec = socket.Receive(bytes);
+                int bytesRect = tcpClient.GetStream().Read(bytes);
+                var data = Encoding.UTF8.GetString(bytes, 0, bytesRect);
                 Console.WriteLine("Texto recibido : \n {0}", data); 
 
                 if (data.IndexOf("<EOF>") > -1)
@@ -284,10 +273,35 @@ namespace Client
 
         }
 
+        private bool ReceiveLogin()
+        {
+            byte[] bytes = new byte[1024];
+
+            while (true)
+            {
+                int bytesRect = tcpClient.GetStream().Read(bytes);
+                var data = Encoding.UTF8.GetString(bytes, 0, bytesRect);
+
+                if (data.IndexOf("TokenAuth") > -1)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        private async Task ReceiveCoverAsync()
+        {
+            var fileCommunication = new FileCommunicationHandler(tcpClient);
+            await fileCommunication.ReceiveFileAsync("");
+        }
+
         internal void Logout()
         {
-            socket.Shutdown(SocketShutdown.Both);
-            socket.Close();
+            tcpClient.Close();
+            //socket.Shutdown(SocketShutdown.Both);
+            //socket.Close();
         }
 
     }

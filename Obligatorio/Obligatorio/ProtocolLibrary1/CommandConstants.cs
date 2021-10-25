@@ -14,6 +14,7 @@
         public const int SearchForGame = 9;
         public const int ViewBoughtGames = 10;
         public const int BuyGame = 11;
+        public const int DownloadCover = 12;
     }
 
 }
