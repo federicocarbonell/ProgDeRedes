@@ -125,7 +125,7 @@ namespace Client
             Console.WriteLine("7 - Buscar juego");
             Console.WriteLine("8 - Ver juegos comprados");
             Console.WriteLine("9 - Comprar juego");
-            Console.WriteLine("10 - Descargar caratula de juego");
+            Console.WriteLine("10 - Descargar carátula de juego");
             Console.WriteLine("0 - Salir");
 
             try
@@ -333,7 +333,7 @@ namespace Client
         {
             try
             {
-                Console.Write("Ver caratula de juego con el id: ");
+                Console.Write("Ver carátula de juego con el id: ");
                 int id = Int32.Parse(Console.ReadLine());
 
                 await clientHandler.DownloadGameCoverAsync(id);

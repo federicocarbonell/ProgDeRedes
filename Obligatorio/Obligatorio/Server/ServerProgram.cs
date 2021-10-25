@@ -460,11 +460,11 @@ namespace Server
             try
             {
                 string path = gameService.GetGameName(gameId) + ".png";
-                string returnMessage = "La caratula se ha enviado correctamente. \n";
+                string returnMessage = "La carátula se ha enviado correctamente. \n";
                 if (!File.Exists(path))
                 {
                     path = "Files/NoImage.png";
-                    returnMessage = "La caratula solicitada no existe. \n";
+                    returnMessage = "La carátula solicitada no existe. \n";
                 }
                 await serverHandler.SendFileAsync(path, client);
                 var downloadCover = Encoding.UTF8.GetBytes(returnMessage);
