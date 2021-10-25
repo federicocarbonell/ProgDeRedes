@@ -1,18 +1,19 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 
-namespace ProtocolLibrary
+namespace Common
 {
-    public static class FileStreamHandler
+    public class FileStreamHandler
     {
-        public static byte[] ReadData(string path, int length, long position)
+        public async Task<byte[]> ReadDataAsync(string path, int length, long position)
         {
             byte[] response = new byte[length];
-            using FileStream fileStream = new FileStream(path, FileMode.Open) { Position = position };
+            await using FileStream fileStream = new FileStream(path, FileMode.Open) { Position = position };
             int offset = 0;
             while (offset < length)
             {
-                int read = fileStream.Read(response, offset, length - offset);
+                int read = await fileStream.ReadAsync(response, offset, length - offset);
                 if (read == 0)
                 {
                     throw new Exception("Can not read file");
@@ -24,19 +25,18 @@ namespace ProtocolLibrary
             return response;
         }
 
-        public static void WriteData(string path, byte[] data)
+        public async Task WriteDataAsync(string path, byte[] data)
         {
             if (File.Exists(path))
             {
-                using FileStream fileStream = new FileStream(path, FileMode.Append);
-                fileStream.Write(data, 0, data.Length);
+                await using FileStream fileStream = new FileStream(path, FileMode.Append);
+                await fileStream.WriteAsync(data, 0, data.Length);
             }
             else
             {
-                using FileStream fileStream = new FileStream(path, FileMode.Create);
-                fileStream.Write(data, 0, data.Length);
+                await using FileStream fileStream = new FileStream(path, FileMode.Create);
+                await fileStream.WriteAsync(data, 0, data.Length);
             }
         }
-
     }
 }

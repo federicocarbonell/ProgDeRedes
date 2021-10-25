@@ -9,6 +9,7 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using System.Threading;
+using Common;
 
 namespace Client
 {
@@ -76,16 +77,16 @@ namespace Client
             AddStringData(data, trailer);
 
             await SendDataAsync(data, CommandConstants.AddGame);
-            
-            //try
-            //{
-            //    await SendFileDataAsync(cover, title);
-            //}
-            //catch(Exception e)
-            //{
-            //    Console.WriteLine("No se pudo enviar el archivo de portada");
-            //}
-            
+
+            try
+            {
+                await SendFileDataAsync(cover, title);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("No se pudo enviar el archivo de portada");
+            }
+
             Recieve();
         }
 
@@ -183,6 +184,17 @@ namespace Client
             Recieve();
         }
 
+        public async Task DownloadGameCoverAsync(int gameId)
+        {
+            List<byte> data = new List<byte>();
+
+            AddIntData(data, gameId);
+
+            await SendDataAsync(data, CommandConstants.DownloadCover);
+            await ReceiveCoverAsync();
+            Recieve();
+        }
+
         private async Task SendDataAsync(List<byte> data, int command)
         {
 
@@ -216,38 +228,8 @@ namespace Client
             //envio nombre y largo de la imagen
 
             //envio la imagen
-            long fileParts = FileTransferProtocol.CalculateParts(fileSize);
-            long offset = 0;
-            long currentPart = 1;
-
-            while (fileSize > offset)
-            {
-                byte[] data;
-                if (currentPart != fileParts)
-                {
-                    data = FileStreamHandler.ReadData(path, FileTransferProtocol.MaxPacketSize, offset);
-                    offset += FileTransferProtocol.MaxPacketSize;
-                }
-                else
-                {
-                    int lastPartSize = (int)(fileSize - offset);
-                    data = FileStreamHandler.ReadData(path, lastPartSize, offset);
-                    offset += lastPartSize;
-                }
-
-                int auxOffset = 0;
-                int auxSize = data.Length;
-                while(auxOffset < data.Length)
-                {
-                    int sent = socket.Send(data, auxOffset, auxSize - auxOffset, SocketFlags.None);
-                    if(sent == 0)
-                    {
-                        throw new SocketException();
-                    }
-                    auxOffset += sent;
-                }
-                currentPart++;
-            }
+            var fileCommunication = new FileCommunicationHandler(tcpClient);
+            await fileCommunication.SendFileAsync(path);
         }
 
         private void AddIntData(List<byte> data, int info)
@@ -307,6 +289,12 @@ namespace Client
 
                 return false;
             }
+        }
+
+        private async Task ReceiveCoverAsync()
+        {
+            var fileCommunication = new FileCommunicationHandler(tcpClient);
+            await fileCommunication.ReceiveFileAsync("");
         }
 
         internal void Logout()

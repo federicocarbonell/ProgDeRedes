@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -49,7 +50,7 @@ namespace Server
 
             clientEndPoint = new IPEndPoint(IPAddress.Parse(ip), port + 1);
             tcpClient = new TcpClient(clientEndPoint);
-            serverHandler = new ServerHandler(tcpClient);
+            serverHandler = new ServerHandler(tcpClient, tcpListener);
 
             int command = -1;
             while (!_exit)
@@ -61,17 +62,6 @@ namespace Server
                     {
                         case 0:
                             _exit = true;
-                            tcpListener.Server.Close(0);
-                            foreach (var client in _clients)
-                            {
-                                //aca creo que no esta bien andar usando asi el socket
-                                client.Client.Shutdown(SocketShutdown.Both);
-                                client.Close();
-                            }
-
-                            var socketTrampa = new Socket(AddressFamily.InterNetwork, SocketType.Stream,
-                                ProtocolType.Tcp);
-                            socketTrampa.Connect(ip, port);
                             break;
                         case 1:
                             PrintAddUser();
@@ -98,6 +88,8 @@ namespace Server
                     Console.WriteLine();
                 }
             }
+            tcpListener.Stop();
+            Console.WriteLine("Exiting....");
         }
 
         private static void PrintViewUsers()
@@ -195,8 +187,6 @@ namespace Server
                     _exit = true;
                 }
             }
-
-            Console.WriteLine("Exiting....");
         }
 
         private static async Task HandleClient(TcpClient tcpClient, AuthenticationService clientService)
@@ -220,7 +210,7 @@ namespace Server
                             await AddGameAsync(header, tcpClient);
                             break;
                         case CommandConstants.SendGameCover:
-                            await SendGameCoverAsync(header, tcpClient);
+                            await ReceiveGameCoverAsync(header, tcpClient);
                             break;
                         case CommandConstants.GetGames:
                             await GetGamesAsync(tcpClient);
@@ -245,6 +235,9 @@ namespace Server
                             break;
                         case CommandConstants.BuyGame:
                             await BuyGameAsync(header, tcpClient, clientService);
+                            break;
+                        case CommandConstants.DownloadCover:
+                            await SendGameConverAsync(header, tcpClient);
                             break;
                     }
                 }
@@ -300,12 +293,12 @@ namespace Server
             await client.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
         }
 
-        private static async Task SendGameCoverAsync(Header header, TcpClient client)
+        private static async Task ReceiveGameCoverAsync(Header header, TcpClient client)
         {
             //refactorear
             bufferData = new byte[header.IDataLength];
             await ReceiveDataAsync(client, header.IDataLength, bufferData);
-            await serverHandler.AddCoverGameAsync(bufferData);
+            await serverHandler.AddCoverGameAsync(bufferData, client);
         }
 
         private static async Task GetGamesAsync(TcpClient client)
@@ -448,6 +441,34 @@ namespace Server
                 gameService.BuyGame(gameId, authService.GetLoggedUser().Username);
                 var purchaseMessage = Encoding.UTF8.GetBytes("Juego adquirido de manera exitosa. \n");
                 await client.GetStream().WriteAsync(purchaseMessage, 0, purchaseMessage.Length);
+                await client.GetStream().WriteAsync(endMessageBytes, 0, endMessageBytes.Length);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                var messageBytes = Encoding.UTF8.GetBytes(e.Message);
+                await client.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
+                await client.GetStream().WriteAsync(endMessageBytes, 0, endMessageBytes.Length);
+            }
+        }
+
+        private static async Task SendGameConverAsync(Header header, TcpClient client)
+        {
+            bufferData = new byte[header.IDataLength];
+            await ReceiveDataAsync(client, header.IDataLength, bufferData);
+            int gameId = serverHandler.ReceiveId(bufferData);
+            try
+            {
+                string path = gameService.GetGameName(gameId) + ".png";
+                string returnMessage = "La carátula se ha enviado correctamente. \n";
+                if (!File.Exists(path))
+                {
+                    path = "Files/NoImage.png";
+                    returnMessage = "La carátula solicitada no existe. \n";
+                }
+                await serverHandler.SendFileAsync(path, client);
+                var downloadCover = Encoding.UTF8.GetBytes(returnMessage);
+                await client.GetStream().WriteAsync(downloadCover, 0, downloadCover.Length);
                 await client.GetStream().WriteAsync(endMessageBytes, 0, endMessageBytes.Length);
             }
             catch (Exception e)

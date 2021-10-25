@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -73,6 +74,9 @@ namespace Client
                             case 9:
                                 await PrintBuyGameAsync();
                                 break;
+                            case 10:
+                                await PrintDownloadGameCover();
+                                break;
                             case 0:
                                 PrintLogout();
                                 break;
@@ -80,7 +84,7 @@ namespace Client
                                 break;
                         }
                     }
-                    catch (SocketException sex)
+                    catch (IOException ioex)
                     {
                         Console.WriteLine(("El servidor se ha desconectado, comuníqueselo al administrador \n e intente " +
                                            "nuevamente más tarde."));
@@ -121,6 +125,7 @@ namespace Client
             Console.WriteLine("7 - Buscar juego");
             Console.WriteLine("8 - Ver juegos comprados");
             Console.WriteLine("9 - Comprar juego");
+            Console.WriteLine("10 - Descargar carátula de juego");
             Console.WriteLine("0 - Salir");
 
             try
@@ -322,6 +327,21 @@ namespace Client
 
 
             await clientHandler.SearchForGamesAsync(searchMode, searchTerm, minRating);
+        }
+
+        private static async Task PrintDownloadGameCover()
+        {
+            try
+            {
+                Console.Write("Ver carátula de juego con el id: ");
+                int id = Int32.Parse(Console.ReadLine());
+
+                await clientHandler.DownloadGameCoverAsync(id);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Por favor envíe los datos en su correspondiente tipo.");
+            }
         }
     }
 }

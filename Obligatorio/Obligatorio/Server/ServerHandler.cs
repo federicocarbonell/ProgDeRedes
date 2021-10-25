@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using Common;
 using DTOs;
 using ProtocolLibrary;
 using StateServices;
@@ -9,13 +10,13 @@ namespace Server
 {
     public class ServerHandler
     {
-        private readonly TcpClient tcpClient;
-        private readonly NetworkStreamHandler networkStreamHandler;
+        private TcpClient tcpClient;
+        private readonly TcpListener tcpListener;
 
-        public ServerHandler(TcpClient tcpClient)
+        public ServerHandler(TcpClient tcpClient, TcpListener tcpListener)
         {
             this.tcpClient = tcpClient;
-            networkStreamHandler = new NetworkStreamHandler(this.tcpClient);
+            this.tcpListener = tcpListener;
         }
 
         public async Task<bool> DoLoginAsync(byte[] bufferData, AuthenticationService authService)
@@ -48,7 +49,7 @@ namespace Server
             return new GameDTO { Name = name , Genre = genre, Description = description};
         }
 
-        public async Task AddCoverGameAsync(byte[] bufferData)
+        public async Task AddCoverGameAsync(byte[] bufferData, TcpClient tcpClient)
         {
             int fileNameLength = obtainLength(bufferData, 0);
             int beforeLength = 0;
@@ -57,7 +58,7 @@ namespace Server
             beforeLength += fileNameLength + 4;
             int fileSizeLength = obtainLength(bufferData, beforeLength);
             long fileSize = convertToLong(bufferData, fileSizeLength, beforeLength);
-            await ReceiveFileAsync(fileSize, fileName);
+            await ReceiveFileAsync(fileName, tcpClient);
         }
 
         public int RecieveBuyerInfo(byte[] bufferData)
@@ -137,28 +138,16 @@ namespace Server
             return convertToInt(bufferData, idLength, 0);
         }
 
-        private async Task ReceiveFileAsync(long fileSize, string fileName)
+        public async Task SendFileAsync(string path, TcpClient tcpClient)
         {
-            long fileParts = FileTransferProtocol.CalculateParts(fileSize);
-            long offset = 0;
-            long currentPart = 1;
-            while (fileSize > offset)
-            {
-                byte[] data;
-                if (currentPart != fileParts)
-                {
-                    data = await networkStreamHandler.ReceiveDataAsync(FileTransferProtocol.MaxPacketSize);
-                    offset += FileTransferProtocol.MaxPacketSize;
-                }
-                else
-                {
-                    int lastPartSize = (int)(fileSize - offset);
-                    data = await networkStreamHandler.ReceiveDataAsync(lastPartSize);
-                    offset += lastPartSize;
-                }
-                FileStreamHandler.WriteData(fileName, data);
-                currentPart++;
-            }
+            var fileCommunication = new FileCommunicationHandler(tcpClient);
+            await fileCommunication.SendFileAsync(path);
+        }
+
+        private async Task ReceiveFileAsync(string fileName, TcpClient tcpClient)
+        {
+            var fileCommunication = new FileCommunicationHandler(tcpClient);
+            await fileCommunication.ReceiveFileAsync(fileName);
         }
 
         public int obtainLength(byte[] bufferData, int start)
