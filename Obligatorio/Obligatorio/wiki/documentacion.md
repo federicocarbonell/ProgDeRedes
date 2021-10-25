@@ -16,11 +16,27 @@
 3. Utilizar la aplicación
  - [Comandos disponibles](#comandos)
 
+## Requisistos del sistema
+
+El unico requisito del sistema es que las carátulas de los juegos deben ser en formato **png**.
+
 ## Alcance Cliente
 
 * Conexión y desconexión al servidor.
 
     El cliente se conecta al servidor de manera automática al iniciarse la aplicación. Se puede desconectar con la opción 0 del menú principal, cerrando así también la aplicación.
+
+* Login
+
+    El cliente se autentifica contra el servidor.
+
+    **PARAMS LOGIN**
+
+    | Usuario       | Contraseña       |
+    | ------------- |-------------     |
+    | string        | string           |
+
+    Por esta iteración, la contraseña ira en claro. Esto podria generar problemas de seguridad que debemos mejorar en un futuro.
 
 * Publicación de juego.
     
@@ -32,7 +48,7 @@
     | ------------- |-------------     | -----       |------------- | 
     | string        | string           | string      | string       |
 
-    Por esta iteración, no tenemos muchos chequeos sobre los datos recibidos del lado del servidor, lo cual puede llegar a llevar a problemas con las carátulas dado que se asume que los nombres de los juegos van a ser únicos, y por lo tanto guardamos las carátulas del lado del servidor como nombreJuego.jpg . La ruta es relativa desde el directorio del ejecutable.
+    Por esta iteración, no tenemos muchos chequeos sobre los datos recibidos del lado del servidor, lo cual puede llegar a llevar a problemas con las carátulas dado que se asume que los nombres de los juegos van a ser únicos, y por lo tanto guardamos las carátulas del lado del servidor como nombreJuego.png . La ruta es relativa desde el directorio del ejecutable.
 
 * Baja y modificación de juego.
 
@@ -97,6 +113,15 @@
     | --------- |
     | int       |
 
+* Descargar carátula de juego.
+
+    Opción 10 del menu del cliente. Se le pregunta al cliente de que juego desea descargar su carátula, de existir se le envia.
+
+     **PARAMS DESCARGAR CARÁTULA**
+    | Id        |
+    | --------- |
+    | int       |
+
 ### Servidor
 
 * Aceptar pedidos de conexión de un cliente.
@@ -126,6 +151,10 @@
 * Ver detalle de un juego.
 
     Funciona de manera correcta igual que la anterior. No se permite la descarga de carátula aún pero la adición de esta funcionalidad no debería ser compleja.
+
+* Alta, baja y modificación de usuarios.
+
+    El servidor permite crear, modificar, borrar y listar todos los usuarios existentes en el sistema.
 
 
 ## Manejo de paralelismo y concurrencia
@@ -181,6 +210,7 @@ Los ejecutables mencionados se pueden deployar en un mismo host, no es necesario
 * Paquete ProtocolLibrary
 
     Es el encargado de almacenar la información necesaria para serializar-deserializar datos y enviar y recibir mensajes.
+    Tambien es el encargado de manejar el envio y recibo de archivos.
 
 * Paquete Client
 
@@ -200,6 +230,7 @@ Desde el lado del cliente existen los siguientes comandos:
 7. Buscar juegos.
 8. Ver juegos comprados.
 9. Comprar juego.
+10. Descargar carátula de juego
 
 Desde el lado del servidor existe un unico comando:
 
