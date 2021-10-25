@@ -10,7 +10,9 @@ namespace StateServices
 
         public void Add(User entity)
         {
-            ServerState.GetInstance().Users.Add(entity);
+            var auxList = ServerState.GetInstance().Users;
+            auxList.Add(entity);
+            ServerState.GetInstance().Users = auxList;
         }
 
         public void Delete(int id)

@@ -37,7 +37,7 @@ namespace StateServices
             {
                 lock (UsersReadLocker)
                 {
-                    Users = value;
+                    _Users = value;
                 }
             }
         }

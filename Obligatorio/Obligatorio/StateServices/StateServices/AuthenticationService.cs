@@ -25,12 +25,16 @@ namespace StateServices
             return loggedUser;
         }
 
-        public User AddUser(UserDTO user)
+        public List<User> GetUsers()
         {
-            User newUser = FromDto(user);
-            
-            if (!ValidUsername(user.Username))
-                throw new Exception($"Error agregando usuario, el nombre {user.Username} no esta disponible.");
+            return userRepository.GetAll().ToList();
+        }
+
+        public User AddUser(string username, string password)
+        {
+            User newUser = new User() { Username = username, Password = password };
+            if (!ValidUsername(username))
+                throw new Exception($"Error agregando usuario, el nombre {username} no esta disponible.");
 
             newUser.Id = userRepository.GetAll().Count() + 1;
             newUser.OwnedGames = new List<Game>();

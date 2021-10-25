@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -8,6 +9,7 @@ using DTOs;
 using Microsoft.Extensions.Configuration;
 using ProtocolLibrary;
 using StateServices;
+using StateServices.DomainEntities;
 
 namespace Server
 {
@@ -71,6 +73,18 @@ namespace Server
                                 ProtocolType.Tcp);
                             socketTrampa.Connect(ip, port);
                             break;
+                        case 1:
+                            PrintAddUser();
+                            break;
+                        case 2:
+                            PrintDeleteUser();
+                            break;
+                        case 3:
+                            PrintModifyUser();
+                            break;
+                        case 4:
+                            PrintViewUsers();
+                            break;
                         default:
                             break;
                     }
@@ -83,6 +97,73 @@ namespace Server
                 {
                     Console.WriteLine();
                 }
+            }
+        }
+
+        private static void PrintViewUsers()
+        {
+            var users = authService.GetUsers();
+
+            foreach(User u in users.Where(x => x.IsDeleted == false))
+            {
+                Console.WriteLine($"Id: {u.Id}, username: {u.Username}");
+            }                
+        }
+
+        private static void PrintModifyUser()
+        {
+            Console.Write("Modificar usuario con el id: ");
+            int id = Int32.Parse(Console.ReadLine());
+
+            Console.Write("Username: ");
+            var user = Console.ReadLine();
+
+            Console.Write("Password: ");
+            var pass = Console.ReadLine();
+
+            try
+            {
+                authService.UpdateUser(id, user, pass);
+                Console.WriteLine($"Usuario {user} modificado con exito");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"{e.Message}");
+            }
+        }
+
+        private static void PrintDeleteUser()
+        {
+            Console.Write("Borrar usuario con el id: ");
+            int id = Int32.Parse(Console.ReadLine());
+
+            try
+            {
+                authService.DeleteUser(id);
+                Console.WriteLine($"Usuario con el id {id} borrado con exito");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"{e.Message}");
+            }
+        }
+
+        private static void PrintAddUser()
+        {
+            Console.Write("Username: ");
+            var user = Console.ReadLine();
+
+            Console.Write("Password: ");
+            var pass = Console.ReadLine();
+
+            try
+            {
+                User u = authService.AddUser(user, pass);
+                Console.WriteLine($"Usuario {user} dado de alta con exito");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"{e.Message}");
             }
         }
 
@@ -221,6 +302,7 @@ namespace Server
 
         private static async Task SendGameCoverAsync(Header header, TcpClient client)
         {
+            //refactorear
             bufferData = new byte[header.IDataLength];
             await ReceiveDataAsync(client, header.IDataLength, bufferData);
             await serverHandler.AddCoverGameAsync(bufferData);
@@ -228,6 +310,7 @@ namespace Server
 
         private static async Task GetGamesAsync(TcpClient client)
         {
+            //refactorear
             var gameBytes = Encoding.UTF8.GetBytes(gameService.GetAllGames());
             await client.GetStream().WriteAsync(gameBytes, 0, gameBytes.Length);
             await client.GetStream().WriteAsync(endMessageBytes, 0, endMessageBytes.Length);
@@ -242,6 +325,7 @@ namespace Server
             try
             {
                 gameService.AddGame(game);
+                //refactorear
                 var gameNameBytes = Encoding.UTF8.GetBytes("Juego agregado: " + game.Name + "\n");
                 await client.GetStream().WriteAsync(gameNameBytes, 0, gameNameBytes.Length);
                 await client.GetStream().WriteAsync(endMessageBytes, 0, endMessageBytes.Length);
@@ -249,6 +333,7 @@ namespace Server
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+                //refactorear
                 var messageBytes = Encoding.UTF8.GetBytes(e.Message);
                 await client.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
                 await client.GetStream().WriteAsync(endMessageBytes, 0, endMessageBytes.Length);
@@ -380,6 +465,10 @@ namespace Server
             Console.WriteLine("----------------");
             Console.WriteLine();
             Console.WriteLine("0 - Salir");
+            Console.WriteLine("1 - Crear usuario");
+            Console.WriteLine("2 - Borrar usuario");
+            Console.WriteLine("3 - Modificar usuario");
+            Console.WriteLine("4 - Ver usuarios");
             string command = Console.ReadLine();
             try
             {
