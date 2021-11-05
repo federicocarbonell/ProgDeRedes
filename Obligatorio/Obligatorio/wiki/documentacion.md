@@ -28,7 +28,7 @@ El unico requisito del sistema es que las carátulas de los juegos deben ser en 
 
 * Login
 
-    El cliente se autentifica contra el servidor.
+    El cliente se autentifica contra el servidor. Dejamos un usuario por defecto con credenciales admin/admin para facilitar el primer uso.
 
     **PARAMS LOGIN**
 
