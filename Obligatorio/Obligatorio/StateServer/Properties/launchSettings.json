@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "StateServer": {
+      "commandName": "Project",
+      "applicationUrl": "http://localhost:60032;https://localhost:14881",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
