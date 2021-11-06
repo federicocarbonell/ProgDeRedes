@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using ProtocolLibrary;
 using StateServices;
 using StateServices.DomainEntities;
+using RabbitMQ.Client;
 
 namespace Server
 {
@@ -32,9 +33,18 @@ namespace Server
         private static IPEndPoint listenerEndPoint;
         private static IPEndPoint clientEndPoint;
 
+        private static string QueueName = "logsQueue";
+        private static IModel channel;
+
         private static byte[] endMessageBytes = Encoding.UTF8.GetBytes("<EOF>");
         static void Main(string[] args)
         {
+            //EMPIEZA CONFIG QUEUE
+            var factory = new ConnectionFactory { HostName = "localhost" };
+            using IConnection connection = factory.CreateConnection();
+            channel = connection.CreateModel();
+            DeclareQueue(channel);
+            //TERMINA CONFIG QUEUE
             Console.WriteLine("Starting server");
             ObtainConfiguration();
 
@@ -91,6 +101,31 @@ namespace Server
             tcpListener.Stop();
             Console.WriteLine("Exiting....");
         }
+
+        // FUNCIONES QUEUE START
+
+        private static void DeclareQueue(IModel channel)
+        {
+            channel.QueueDeclare(
+                queue: QueueName,
+                durable: false,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null);
+        }
+
+        private static void PublishMessage(IModel channel, string message)
+        {
+            byte[] body = Encoding.UTF8.GetBytes(message);
+
+            channel.BasicPublish(
+                exchange: "",
+                routingKey: QueueName,
+                basicProperties: null,
+                body: body);
+        }
+
+        // FUNCIONES QUEUE FIN
 
         private static void PrintViewUsers()
         {
@@ -304,6 +339,7 @@ namespace Server
         private static async Task GetGamesAsync(TcpClient client)
         {
             //refactorear
+            PublishMessage(channel, gameService.GetAllGames());
             var gameBytes = Encoding.UTF8.GetBytes(gameService.GetAllGames());
             await client.GetStream().WriteAsync(gameBytes, 0, gameBytes.Length);
             await client.GetStream().WriteAsync(endMessageBytes, 0, endMessageBytes.Length);
