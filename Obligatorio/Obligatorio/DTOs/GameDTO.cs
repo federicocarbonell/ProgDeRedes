@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DTOs
+﻿namespace DTOs
 {
     public class GameDTO
     {
         public int Id { get; set; }
 
         public string Name { get; set; }
+
+        public bool IsDeleted { get; set; }
 
         public string Genre { get; set; }
 
