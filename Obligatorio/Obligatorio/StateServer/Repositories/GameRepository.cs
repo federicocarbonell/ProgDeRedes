@@ -22,7 +22,7 @@ namespace StateServer.Repositories
             Games = new Dictionary<int, GameDTO>();
         }
 
-        public static GameRepository GetInstanceAsync()
+        public static GameRepository GetInstance()
         {
             if (Instance == null)
             {
