@@ -6,6 +6,10 @@
 
   <ItemGroup>
     <Protobuf Include="Protos\greet.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\game.proto" GrpcServices="Server">
+      <OutputDir>obj\Debug\net5.0\</OutputDir>
+      <Link>Protos\game.proto</Link>
+    </Protobuf>
   </ItemGroup>
 
   <ItemGroup>
@@ -16,4 +20,7 @@
     <ProjectReference Include="..\DTOs\DTOs.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Protos\game.proto" />
+  </ItemGroup>
 </Project>
