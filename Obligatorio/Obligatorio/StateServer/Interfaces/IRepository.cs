@@ -2,9 +2,10 @@
 
 namespace StateServer.Interfaces
 {
-    interface IRepository<T>
+    public interface IRepository<T>
     {
         IQueryable<T> GetAll();
+        IRepository<T> GetInstance();
         T Get(int id);
         void Add(T entity);
         void Update(int id, T newEntity);
