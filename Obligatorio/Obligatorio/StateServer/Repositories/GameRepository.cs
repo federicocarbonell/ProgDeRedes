@@ -35,6 +35,8 @@ namespace StateServer.Repositories
 
         public void Add(GameDTO entity)
         {
+            if (!ValidName(entity.Name))
+                throw new Exception("Ya existe un juego ese nombre, por favor seleccione otro.");
             lock (GamesLocker)
             {
                 entity.Id = NextId++;
@@ -44,6 +46,8 @@ namespace StateServer.Repositories
 
         public void Delete(int id)
         {
+            if (!ValidId(id))
+                throw new Exception("No hay un juego asociado al id recibido.");
             lock (GamesLocker)
             {
                 GameDTO game = Games[id];
@@ -53,6 +57,8 @@ namespace StateServer.Repositories
 
         public GameDTO Get(int id)
         {
+            if (!ValidId(id))
+                throw new Exception("No hay un juego asociado al id recibido.");
             lock (GamesLocker)
             {
                 return Games[id];
@@ -69,6 +75,10 @@ namespace StateServer.Repositories
 
         public void Update(int id, GameDTO newEntity)
         {
+            if (!ValidId(id))
+                throw new Exception("No hay un juego asociado al id recibido.");
+            if (!ValidName(newEntity.Name))
+                throw new Exception("Ya existe un juego ese nombre, por favor seleccione otro.");
             lock (GamesLocker)
             {
                 GameDTO game = Games[id];
@@ -78,6 +88,19 @@ namespace StateServer.Repositories
                 game.Description = newEntity.Description;
             }
         }
+
+        private bool ValidName(string name)
+        {
+            var games = GetAll().ToList();
+            GameDTO g = games.Find(x => x.Name.Equals(name));
+            return g == null || g.IsDeleted;
+        }
+
+        private bool ValidId(int id)
+        {
+            return id <= GetAll().ToList().Count;
+        }
+
     }
 
 }
