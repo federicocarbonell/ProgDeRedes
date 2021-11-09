@@ -70,11 +70,11 @@ namespace StateServer.Repositories
             }
         }
 
-        public IQueryable<UserDTO> GetAll()
+        public List<UserDTO> GetAll()
         {
             lock (UsersLocker)
             {
-                return (IQueryable<UserDTO>)Users.Values;
+                return Users.Values.ToList();
             }
         }
 

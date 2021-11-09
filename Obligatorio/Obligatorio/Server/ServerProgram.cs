@@ -73,18 +73,18 @@ namespace Server
                         case 0:
                             _exit = true;
                             break;
-                        case 1:
-                            PrintAddUser();
-                            break;
-                        case 2:
-                            PrintDeleteUser();
-                            break;
-                        case 3:
-                            PrintModifyUser();
-                            break;
-                        case 4:
-                            PrintViewUsers();
-                            break;
+                        //case 1:
+                        //    PrintAddUser();
+                        //    break;
+                        //case 2:
+                        //    PrintDeleteUser();
+                        //    break;
+                        //case 3:
+                        //    PrintModifyUser();
+                        //    break;
+                        //case 4:
+                        //    PrintViewUsers();
+                        //    break;
                         default:
                             break;
                     }
@@ -127,72 +127,72 @@ namespace Server
 
         // FUNCIONES QUEUE FIN
 
-        private static void PrintViewUsers()
-        {
-            var users = authService.GetUsers();
+        //private static void PrintViewUsers()
+        //{
+        //    var users = authService.GetUsers();
 
-            foreach(User u in users.Where(x => x.IsDeleted == false))
-            {
-                Console.WriteLine($"Id: {u.Id}, username: {u.Username}");
-            }                
-        }
+        //    foreach(User u in users.Where(x => x.IsDeleted == false))
+        //    {
+        //        Console.WriteLine($"Id: {u.Id}, username: {u.Username}");
+        //    }                
+        //}
 
-        private static void PrintModifyUser()
-        {
-            Console.Write("Modificar usuario con el id: ");
-            int id = Int32.Parse(Console.ReadLine());
+        //private static void PrintModifyUser()
+        //{
+        //    Console.Write("Modificar usuario con el id: ");
+        //    int id = Int32.Parse(Console.ReadLine());
 
-            Console.Write("Username: ");
-            var user = Console.ReadLine();
+        //    Console.Write("Username: ");
+        //    var user = Console.ReadLine();
 
-            Console.Write("Password: ");
-            var pass = Console.ReadLine();
+        //    Console.Write("Password: ");
+        //    var pass = Console.ReadLine();
 
-            try
-            {
-                authService.UpdateUser(id, user, pass);
-                Console.WriteLine($"Usuario {user} modificado con exito");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"{e.Message}");
-            }
-        }
+        //    try
+        //    {
+        //        authService.UpdateUser(id, user, pass);
+        //        Console.WriteLine($"Usuario {user} modificado con exito");
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine($"{e.Message}");
+        //    }
+        //}
 
-        private static void PrintDeleteUser()
-        {
-            Console.Write("Borrar usuario con el id: ");
-            int id = Int32.Parse(Console.ReadLine());
+        //private static void PrintDeleteUser()
+        //{
+        //    Console.Write("Borrar usuario con el id: ");
+        //    int id = Int32.Parse(Console.ReadLine());
 
-            try
-            {
-                authService.DeleteUser(id);
-                Console.WriteLine($"Usuario con el id {id} borrado con exito");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"{e.Message}");
-            }
-        }
+        //    try
+        //    {
+        //        authService.DeleteUser(id);
+        //        Console.WriteLine($"Usuario con el id {id} borrado con exito");
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine($"{e.Message}");
+        //    }
+        //}
 
-        private static void PrintAddUser()
-        {
-            Console.Write("Username: ");
-            var user = Console.ReadLine();
+        //private static void PrintAddUser()
+        //{
+        //    Console.Write("Username: ");
+        //    var user = Console.ReadLine();
 
-            Console.Write("Password: ");
-            var pass = Console.ReadLine();
+        //    Console.Write("Password: ");
+        //    var pass = Console.ReadLine();
 
-            try
-            {
-                User u = authService.AddUser(user, pass);
-                Console.WriteLine($"Usuario {user} dado de alta con exito");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"{e.Message}");
-            }
-        }
+        //    try
+        //    {
+        //        User u = authService.AddUser(user, pass);
+        //        Console.WriteLine($"Usuario {user} dado de alta con exito");
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine($"{e.Message}");
+        //    }
+        //}
 
         private static void ObtainConfiguration()
         {
@@ -338,8 +338,9 @@ namespace Server
 
         private static async Task GetGamesAsync(TcpClient client, AuthenticationService authService)
         {
-            PublishMessage(channel, $"Juegos {gameService.GetAllGames()} obtenidos por el usuario {authService.GetLoggedUser().Username}");
-            await SendMessage(client, Encoding.UTF8.GetBytes(gameService.GetAllGames()));
+            string games = await serverHandler.GetGamesAsync();
+            PublishMessage(channel, $"Juegos {games} obtenidos por el usuario {authService.GetLoggedUser().Username}");
+            await SendMessage(client, Encoding.UTF8.GetBytes(games));
         }
 
         private static async Task AddGameAsync(Header header, TcpClient client, AuthenticationService authService)
@@ -350,9 +351,10 @@ namespace Server
 
             try
             {
-                gameService.AddGame(game);
+                string response = await serverHandler.AddGameAsync(game);
+                //gameService.AddGame(game);
                 PublishMessage(channel, $"Juego {game.Name} agregado por el usuario {authService.GetLoggedUser().Username}");
-                await SendMessage(client, Encoding.UTF8.GetBytes("Juego agregado: " + game.Name + "\n"));
+                await SendMessage(client, Encoding.UTF8.GetBytes("Juego agregado: " + game.Name + "\n" + response));
             }
             catch (Exception e)
             {

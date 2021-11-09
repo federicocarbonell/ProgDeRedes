@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using Common;
 using DTOs;
+using Grpc.Net.Client;
 using ProtocolLibrary;
 using StateServices;
 
@@ -12,11 +13,42 @@ namespace Server
     {
         private TcpClient tcpClient;
         private readonly TcpListener tcpListener;
+        private GrpcChannel channel;
+        private Game.GameClient client;
 
         public ServerHandler(TcpClient tcpClient, TcpListener tcpListener)
         {
+            AppContext.SetSwitch(
+                "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             this.tcpClient = tcpClient;
             this.tcpListener = tcpListener;
+            channel = GrpcChannel.ForAddress("http://localhost:5000");
+            client = new Game.GameClient(channel);
+        }
+
+        public async Task<string> AddGameAsync(GameDTO game)
+        {
+            var reply = await client.AddGameAsync(new GameMessage { Id = 0, Name = game.Name, CoverPath = game.Name + ".png", Genre = game.Genre, Description = game.Description });
+            return reply.Message;
+        }
+
+        public async Task<string> GetGamesAsync()
+        {
+            var request = new Google.Protobuf.WellKnownTypes.Empty();
+            var gamesList = await client.GetAllGamesAsync(request).ResponseAsync;
+            return ConvertToString(gamesList);
+        }
+
+        private string ConvertToString(GamesList list)
+        {
+            string aux = "";
+
+            foreach (GameMessage game in list.Games)
+            {
+                aux += $"Id: {game.Id} Nombre: {game.Name} \n";
+            }
+
+            return aux;
         }
 
         public async Task<bool> DoLoginAsync(byte[] bufferData, AuthenticationService authService)

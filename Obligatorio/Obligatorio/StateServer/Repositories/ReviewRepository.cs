@@ -76,11 +76,11 @@ namespace StateServer.Repositories
             }
         }
 
-        public IQueryable<ReviewDTO> GetAll()
+        public List<ReviewDTO> GetAll()
         {
             lock (ReviewsLocker)
             {
-                return (IQueryable<ReviewDTO>)Reviews.Values;
+                return Reviews.Values.ToList();
             }
         }
 

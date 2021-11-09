@@ -12,6 +12,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.19.1" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.40.0" />
+    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.40.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.41.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0-rc.1.21451.13" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="6.0.0-rc.1.21451.13" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0-rc.1.21451.13" />
@@ -22,6 +29,7 @@
   <ItemGroup>
     <None Remove="Files\" />
     <None Remove="Files\NoImage.png" />
+    <None Remove="Protos\game.proto" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">
@@ -35,5 +43,11 @@
     <Content Include="Files\NoImage.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Protobuf Include="Protos\game.proto" GrpcServices="Client">
+      <OutputDir>obj\Debug\netcoreapp3.1\</OutputDir>
+      <Link>Protos\game.proto</Link>
+    </Protobuf>
   </ItemGroup>
 </Project>

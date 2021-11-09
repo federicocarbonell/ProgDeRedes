@@ -66,11 +66,11 @@ namespace StateServer.Repositories
             }
         }
 
-        public IQueryable<GameDTO> GetAll()
+        public List<GameDTO> GetAll()
         {
             lock (GamesLocker)
             {
-                return (IQueryable<GameDTO>)Games.Values;
+                return Games.Values.ToList();
             }
         }
 
