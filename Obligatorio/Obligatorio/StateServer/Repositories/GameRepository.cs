@@ -22,7 +22,8 @@ namespace StateServer.Repositories
             Games = new Dictionary<int, GameDTO>();
         }
 
-        public static GameRepository GetInstance()
+        // No se por que no usa este y usa el de abajo.
+        public GameRepository GetInstance()
         {
             if (Instance == null)
             {
@@ -35,8 +36,8 @@ namespace StateServer.Repositories
 
         public void Add(GameDTO entity)
         {
-            if (!ValidName(entity.Name))
-                throw new Exception("Ya existe un juego ese nombre, por favor seleccione otro.");
+            //if (!ValidName(entity.Name))
+            //    throw new Exception("Ya existe un juego ese nombre, por favor seleccione otro.");
             lock (GamesLocker)
             {
                 entity.Id = NextId++;
@@ -89,6 +90,7 @@ namespace StateServer.Repositories
             }
         }
 
+        // TODO: Ver de arreglar este metódo que se esta rompiendo.
         private bool ValidName(string name)
         {
             var games = GetAll().ToList();
@@ -101,6 +103,15 @@ namespace StateServer.Repositories
             return id <= GetAll().ToList().Count;
         }
 
+        IRepository<GameDTO> IRepository<GameDTO>.GetInstance()
+        {
+            if (Instance == null)
+            {
+                Instance = new GameRepository();
+            }
+
+            return Instance;
+        }
     }
 
 }

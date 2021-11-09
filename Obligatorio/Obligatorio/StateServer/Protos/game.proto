@@ -7,7 +7,7 @@ package game;
 
 // The greeting service definition.
 service Game {
-  rpc AddGame (GameMessage) returns (google.protobuf.Empty);
+  rpc AddGame (GameMessage) returns (AddGameReply);
   rpc GetAllGames (google.protobuf.Empty) returns (GamesList);
   rpc GetAllBoughtGames(GetAllBoughtGamesRequest) returns (GamesList);
   rpc BuyGame(BuyGameRequest) returns (google.protobuf.Empty);
@@ -26,6 +26,10 @@ message GameMessage {
   string genre = 3;
   string description = 4;
   string coverPath = 5;
+}
+
+message AddGameReply {
+    string message = 1;
 }
 
 message GamesList {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using DTOs;
+using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using StateServer.Interfaces;
 
@@ -17,11 +18,22 @@ namespace StateServer
             GameRepository = gameRepo;
         }
 
-        public async Task AddGame(GameMessage gameMessage)
+        public override Task<AddGameReply> AddGame(GameMessage request, ServerCallContext context)
         {
             try
             {
-                GameRepository.GetInstance().Add(FromMessage(gameMessage));
+                GameRepository.GetInstance().Add(FromMessage(request));
+                return Task.FromResult(new AddGameReply
+                {
+                    Message = "Hello "
+                });
+            }
+            catch (Exception e)
+            {
+                return Task.FromResult(new AddGameReply
+                {
+                    Message = e.Message
+                });
             }
         }
 

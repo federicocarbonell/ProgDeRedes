@@ -22,7 +22,7 @@ namespace StateServer.Repositories
             Reviews = new Dictionary<int, ReviewDTO>();
         }
 
-        public static ReviewRepository GetInstance()
+        public ReviewRepository GetInstance()
         {
             if (Instance == null)
             {
@@ -92,6 +92,11 @@ namespace StateServer.Repositories
         private bool ValidId(int id)
         {
             return id <= GetAll().ToList().Count;
+        }
+
+        IRepository<ReviewDTO> IRepository<ReviewDTO>.GetInstance()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -28,7 +28,7 @@ namespace StateServer.Repositories
             });
         }
 
-        public static UserRepository GetInstance()
+        public UserRepository GetInstance()
         {
             if (Instance == null)
             {
@@ -102,6 +102,11 @@ namespace StateServer.Repositories
         private bool ValidId(int id)
         {
             return id <= GetAll().ToList().Count && !Get(id).IsDeleted;
+        }
+
+        IRepository<UserDTO> IRepository<UserDTO>.GetInstance()
+        {
+            throw new NotImplementedException();
         }
     }
 }
