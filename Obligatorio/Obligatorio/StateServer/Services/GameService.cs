@@ -26,7 +26,7 @@ namespace StateServer
                 GameRepository.GetInstance().Add(FromMessage(request));
                 return Task.FromResult(new AddGameReply
                 {
-                    Message = "Hello "
+                    Message = $"Added game {FromMessage(request).Name} successfully"
                 });
             }
             catch (Exception e)
@@ -66,7 +66,8 @@ namespace StateServer
                 Description = message.Description,
                 Name = message.Name,
                 Genre = message.Genre,
-                CoverPath = message.CoverPath
+                CoverPath = message.CoverPath,
+                IsDeleted = message.IsDeleted
             };
         }
     }

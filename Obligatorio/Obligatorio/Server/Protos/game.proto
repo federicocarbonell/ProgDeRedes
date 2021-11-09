@@ -26,6 +26,7 @@ message GameMessage {
   string genre = 3;
   string description = 4;
   string coverPath = 5;
+  bool isDeleted = 6;
 }
 
 message AddGameReply {

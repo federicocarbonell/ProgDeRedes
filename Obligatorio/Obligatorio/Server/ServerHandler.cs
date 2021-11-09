@@ -28,7 +28,7 @@ namespace Server
 
         public async Task<string> AddGameAsync(GameDTO game)
         {
-            var reply = await client.AddGameAsync(new GameMessage { Id = 0, Name = game.Name, CoverPath = game.Name + ".png", Genre = game.Genre, Description = game.Description });
+            var reply = await client.AddGameAsync(new GameMessage { Id = 0, Name = game.Name, CoverPath = game.Name + ".png", Genre = game.Genre, Description = game.Description, IsDeleted = false });
             return reply.Message;
         }
 
