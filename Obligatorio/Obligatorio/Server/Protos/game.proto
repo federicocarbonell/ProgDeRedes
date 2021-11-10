@@ -14,7 +14,7 @@ service Game {
   // Investigar como hacer el tema de tuplas.
   // rpc GetAllByQuery() returns ();
   rpc GetGameDetail(GameId) returns (GetGameDetailResponse);
-  rpc DeleteGame(GameId) returns (google.protobuf.Empty);
+  rpc DeleteGame(GameId) returns (DeleteGameResponse);
   rpc ModifyGame(ModifyGameRequest) returns (google.protobuf.Empty);
   rpc QualifyGame(QualifyGameRequest) returns (google.protobuf.Empty);
   rpc GetGameName(GameId) returns (GetGameNameResponse);
@@ -67,4 +67,8 @@ message QualifyGameRequest {
 
 message GetGameNameResponse {
   string gameName = 1;
+}
+
+message DeleteGameResponse {
+  bool response = 1;
 }

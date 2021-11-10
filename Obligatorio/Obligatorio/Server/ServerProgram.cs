@@ -371,7 +371,8 @@ namespace Server
 
             try
             {
-                gameService.DeleteGame(id);
+                bool response = await serverHandler.DeleteGameAsync(id);
+                //gameService.DeleteGame(id);
                 PublishMessage(channel, $"Juego {gameService.GetGameName(id)} borrado por el usuario {authService.GetLoggedUser().Username}");
                 await SendMessage(client, Encoding.UTF8.GetBytes("Juego con id: " + id + " borrado \n"));
             }

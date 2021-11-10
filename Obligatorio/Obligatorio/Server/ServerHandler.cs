@@ -39,6 +39,12 @@ namespace Server
             return ConvertToString(gamesList);
         }
 
+        public async Task<bool> DeleteGameAsync (int gameId)
+        {
+            var response = await client.DeleteGameAsync(new GameId { GameId_ = gameId });
+            return response.Response;
+        }
+
         private string ConvertToString(GamesList list)
         {
             string aux = "";

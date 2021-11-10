@@ -70,5 +70,26 @@ namespace StateServer
                 IsDeleted = message.IsDeleted
             };
         }
+
+        public override Task<DeleteGameResponse> DeleteGame(GameId request, ServerCallContext context)
+        {
+            try
+            {
+                GameRepository.Delete(request.GameId_);
+                var deleteGameResponse = new DeleteGameResponse
+                {
+                    Response = true
+                };
+                return Task.FromResult(deleteGameResponse);
+            }
+            catch (Exception e)
+            {
+                var deleteGameResponse = new DeleteGameResponse
+                {
+                    Response = false
+                };
+                return Task.FromResult(deleteGameResponse);
+            }
+        }
     }
 }

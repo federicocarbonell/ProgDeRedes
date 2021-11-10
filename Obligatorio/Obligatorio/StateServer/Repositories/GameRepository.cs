@@ -51,7 +51,7 @@ namespace StateServer.Repositories
                 throw new Exception("No hay un juego asociado al id recibido.");
             lock (GamesLocker)
             {
-                GameDTO game = Games[id];
+                GameDTO game = Instance.Games[id];
                 game.IsDeleted = true;
             }
         }
@@ -70,7 +70,7 @@ namespace StateServer.Repositories
         {
             lock (GamesLocker)
             {
-                return Games.Values.ToList();
+                return Instance.Games.Values.Where(x => !x.IsDeleted).ToList();
             }
         }
 
