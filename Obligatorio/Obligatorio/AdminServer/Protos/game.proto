@@ -1,0 +1,70 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+
+option csharp_namespace = "AdminServer";
+
+package game;
+
+// The greeting service definition.
+service Game {
+  rpc AddGame (GameMessage) returns (AddGameReply);
+  rpc GetAllGames (google.protobuf.Empty) returns (GamesList);
+  rpc GetAllBoughtGames(GetAllBoughtGamesRequest) returns (GamesList);
+  rpc BuyGame(BuyGameRequest) returns (google.protobuf.Empty);
+  // Investigar como hacer el tema de tuplas.
+  // rpc GetAllByQuery() returns ();
+  rpc GetGameDetail(GameId) returns (GetGameDetailResponse);
+  rpc DeleteGame(GameId) returns (google.protobuf.Empty);
+  rpc ModifyGame(ModifyGameRequest) returns (google.protobuf.Empty);
+  rpc QualifyGame(QualifyGameRequest) returns (google.protobuf.Empty);
+  rpc GetGameName(GameId) returns (GetGameNameResponse);
+}
+
+message GameMessage {
+  int32 id = 1;
+  string name = 2;
+  string genre = 3;
+  string description = 4;
+  string coverPath = 5;
+  bool isDeleted = 6;
+}
+
+message AddGameReply {
+    string message = 1;
+}
+
+message GamesList {
+  repeated GameMessage games = 1;
+}
+
+message GetAllBoughtGamesRequest {
+  string userName = 1;
+}
+
+message BuyGameRequest {
+  int32 gameId = 1;
+  string owner = 2;
+}
+
+message GameId {
+  int32 gameId = 1;
+}
+
+message GetGameDetailResponse {
+  string details = 1;
+}
+
+message ModifyGameRequest {
+  int32 gameId = 1;
+  GameMessage game = 2;
+}
+
+message QualifyGameRequest {
+  int32 gameId = 1;
+  int32 rating = 2;
+  string content = 3;
+}
+
+message GetGameNameResponse {
+  string gameName = 1;
+}

@@ -5,11 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\greet.proto" GrpcServices="Server" />
-    <Protobuf Include="Protos\game.proto" GrpcServices="Server">
-      <OutputDir>obj\Debug\net5.0\</OutputDir>
-      <Link>Protos\game.proto</Link>
-    </Protobuf>
+    <None Remove="Protos\game.proto" />
+    <None Remove="Protos\greet.proto" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Protos\game.proto" />
+    <Protobuf Include="Protos\game.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\greet.proto" GrpcServices="Server" />
   </ItemGroup>
 </Project>
