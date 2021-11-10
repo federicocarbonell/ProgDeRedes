@@ -1,4 +1,5 @@
-﻿using Grpc.Net.Client;
+﻿using DTOs;
+using Grpc.Net.Client;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,14 @@ namespace AdminServer.Controllers
             var reply = await client.GetAllGamesAsync(request).ResponseAsync;
             
             return Ok(ConvertToString(reply));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddGame([FromBody] GameDTO game)
+        {
+            var request = new GameMessage { Id = 0, Name = game.Name, CoverPath = game.CoverPath, Description = game.Description, Genre = game.Genre, IsDeleted = false };
+            var reply = await client.AddGameAsync(request);
+            return Ok(reply.Message);
         }
 
         private string ConvertToString(GamesList list)
