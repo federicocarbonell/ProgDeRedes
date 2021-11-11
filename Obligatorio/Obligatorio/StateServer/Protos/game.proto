@@ -50,6 +50,10 @@ message GameId {
   int32 gameId = 1;
 }
 
+message GameDetailRequest {
+    int32 gameId = 1;
+}
+
 message GetGameDetailResponse {
   string details = 1;
 }

@@ -15,6 +15,7 @@ namespace AdminServer.Controllers
 
         private GrpcChannel channel;
         private Game.GameClient client;
+        private Reviews.ReviewsClient reviewClient;
 
         public GamesController()
         {
@@ -22,6 +23,7 @@ namespace AdminServer.Controllers
                 "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             channel = GrpcChannel.ForAddress("http://localhost:5000");
             client = new Game.GameClient(channel);
+            reviewClient = new Reviews.ReviewsClient(channel);
         }
 
         [HttpGet]
@@ -42,6 +44,25 @@ namespace AdminServer.Controllers
             return Ok(reply.Message);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(long id)
+        {
+            GameDetail response = new GameDetail();
+            GameId gameReq = new GameId { GameId_ = (int)id };
+            GameIdMessage reviewReq = new GameIdMessage { Id = (int)id };
+
+            var gameInfo = await client.GetGameDetailAsync(gameReq);
+            var gameReviews = await reviewClient.GetReviewsByGameIdAsync(reviewReq);
+
+            response.GameInfo = gameInfo.Details;
+            foreach(var review in gameReviews.Reviews)
+            {
+                response.GameReviews.Add(ConvertToDTO(review));
+            }
+
+            return Ok(response);
+        }
+
         private string ConvertToString(GamesList list)
         {
             string aux = "";
@@ -52,6 +73,17 @@ namespace AdminServer.Controllers
             }
 
             return aux;
+        }
+
+        private ReviewDTO ConvertToDTO(ReviewMessage review)
+        {
+            return new ReviewDTO { Id = review.Id, GameId = review.GameId, Content = review.Content, Rating = review.Rating };
+        }
+
+        private struct GameDetail
+        {
+            public string GameInfo;
+            public List<ReviewDTO> GameReviews;
         }
 
     }

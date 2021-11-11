@@ -36,7 +36,7 @@ namespace StateServer.Services
             }
         }
 
-        public Task<ReviewMessageList> GetReviewsByGameId(GameId message)
+        public Task<ReviewMessageList> GetReviewsByGameId(GameIdMessage message)
         {
             try
             {
