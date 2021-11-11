@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option csharp_namespace = "StateServer.Services";
+
+package review;
+
+service Reviews {
+	rpc AddReview(ReviewMessage) returns (AddReviewResponse);
+	rpc GetReviewsByGameId(GameId) returns (ReviewMessageList);
+}
+
+message ReviewMessage {
+	int32 id = 1;
+	int32 gameId = 2;
+	int32 rating = 3;
+	string content = 4;
+}
+
+message ReviewMessageList {
+	repeated ReviewMessage reviews = 1;
+}
+
+message AddReviewResponse {
+	string message = 1;
+}
+
+message GameId {
+	int32 id = 1;
+}
