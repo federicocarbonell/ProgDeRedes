@@ -63,6 +63,24 @@ namespace AdminServer.Controllers
             return Ok(response);
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(long id)
+        {
+            var request = new GameId { GameId_ = (int)id };
+            await client.DeleteGameAsync(request);
+
+            return NoContent();
+        }
+
+        [HttpPost("{id}/reviews")]
+        public async Task<IActionResult> AddReview([FromBody] ReviewDTO review)
+        {
+            ReviewMessage message = new ReviewMessage { Id = 0, GameId = review.GameId, Content = review.Content, Rating = review.Rating };
+            AddReviewResponse response = await reviewClient.AddReviewAsync(message);
+
+            return Ok(response);
+        }
+
         private string ConvertToString(GamesList list)
         {
             string aux = "";
