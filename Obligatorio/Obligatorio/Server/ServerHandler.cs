@@ -65,6 +65,22 @@ namespace Server
 
         }
 
+        public async Task<bool> ModifyGameAsync (int gameId, GameDTO game)
+        {
+            var response = await client.ModifyGameAsync(new ModifyGameRequest
+            {
+                GameId = gameId,
+                Game = new GameMessage
+                {
+                    Id = game.Id,
+                    Name = game.Name,
+                    Description = game.Description,
+                    Genre = game.Genre,
+                }
+            });
+            return response.Response;
+        }
+
         private string ConvertToString(GamesList list)
         {
             string aux = "";

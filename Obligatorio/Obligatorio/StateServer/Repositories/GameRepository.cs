@@ -82,7 +82,7 @@ namespace StateServer.Repositories
                 throw new Exception("Ya existe un juego ese nombre, por favor seleccione otro.");
             lock (GamesLocker)
             {
-                GameDTO game = Games[id];
+                GameDTO game = Instance.Games[id];
                 game.Name = newEntity.Name;
                 game.Genre = newEntity.Genre;
                 game.CoverPath = newEntity.CoverPath;

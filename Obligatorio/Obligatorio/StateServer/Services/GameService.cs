@@ -105,5 +105,26 @@ namespace StateServer
                 return Task.FromResult(new GameModel());
             }
         }
+
+        public override Task<ModifyGameResponse> ModifyGame(ModifyGameRequest request, ServerCallContext context)
+        {
+            try
+            {
+                GameRepository.Update(request.GameId, FromMessage(request.Game));
+                var modifyGameResponse = new ModifyGameResponse
+                {
+                    Response = true
+                };
+                return Task.FromResult(modifyGameResponse);
+            }
+            catch
+            {
+                var modifyGameResponse = new ModifyGameResponse
+                {
+                    Response = false
+                };
+                return Task.FromResult(modifyGameResponse);
+            }
+        }
     }
 }
