@@ -41,8 +41,28 @@ namespace Server
 
         public async Task<bool> DeleteGameAsync (int gameId)
         {
-            var response = await client.DeleteGameAsync(new GameId { GameId_ = gameId });
+            var response = await client.DeleteGameAsync(new GameId { Id = gameId });
             return response.Response;
+        }
+
+        public async Task<string> GetGameDetailAsync(int gameId)
+        {
+            var response = await client.GetGameDetailAsync(new GameId { Id = gameId });
+            string details = "";
+            details += $"Id: {response.Id}, Nombre: {response.Name} \n";
+            details += $"Categoria: {response.Genre} , Descripcion: {response.Description} \n";
+            // TODO: Ver como hacer con las reviews.
+            //double rating = 0;
+            //details += "Reviews: \n";
+            //foreach (var review in game.Reviews)
+            //{
+            //    details += $"Id: {review.Id}, Rating: {review.Rating}" +
+            //        $", Reseña: {review.Content}, \n";
+            //    rating += review.Rating;
+            //}
+            //details += $"Rating promedio: {rating / game.Reviews.Count} \n";
+            return details;
+
         }
 
         private string ConvertToString(GamesList list)

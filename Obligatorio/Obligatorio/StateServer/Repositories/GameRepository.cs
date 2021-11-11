@@ -62,7 +62,7 @@ namespace StateServer.Repositories
                 throw new Exception("No hay un juego asociado al id recibido.");
             lock (GamesLocker)
             {
-                return Games[id];
+                return Instance.Games[id];
             }
         }
 

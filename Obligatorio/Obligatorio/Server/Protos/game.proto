@@ -5,18 +5,17 @@ option csharp_namespace = "Server";
 
 package game;
 
-// The greeting service definition.
 service Game {
   rpc AddGame (GameMessage) returns (AddGameReply);
   rpc GetAllGames (google.protobuf.Empty) returns (GamesList);
   rpc GetAllBoughtGames(GetAllBoughtGamesRequest) returns (GamesList);
-  rpc BuyGame(BuyGameRequest) returns (google.protobuf.Empty);
+  rpc BuyGame(BuyGameRequest) returns (BuyGameResponse);
   // Investigar como hacer el tema de tuplas.
   // rpc GetAllByQuery() returns ();
-  rpc GetGameDetail(GameId) returns (GetGameDetailResponse);
+  rpc GetGameDetail(GameId) returns (GameModel);
   rpc DeleteGame(GameId) returns (DeleteGameResponse);
-  rpc ModifyGame(ModifyGameRequest) returns (google.protobuf.Empty);
-  rpc QualifyGame(QualifyGameRequest) returns (google.protobuf.Empty);
+  rpc ModifyGame(ModifyGameRequest) returns (ModifyGameResponse);
+  rpc QualifyGame(QualifyGameRequest) returns (QualifyGameResponse);
   rpc GetGameName(GameId) returns (GetGameNameResponse);
 }
 
@@ -46,8 +45,20 @@ message BuyGameRequest {
   string owner = 2;
 }
 
+message BuyGameResponse {
+  bool response = 1;
+}
+
 message GameId {
-  int32 gameId = 1;
+  int32 id = 1;
+}
+
+message GameModel {
+  int32 id = 1;
+  string name = 2;
+  string genre = 3;
+  string description = 4;
+  string coverPath = 5;
 }
 
 message GetGameDetailResponse {
@@ -65,10 +76,18 @@ message QualifyGameRequest {
   string content = 3;
 }
 
+message QualifyGameResponse {
+  bool response = 1;
+}
+
 message GetGameNameResponse {
   string gameName = 1;
 }
 
 message DeleteGameResponse {
+  bool response = 1;
+}
+
+message ModifyGameResponse {
   bool response = 1;
 }

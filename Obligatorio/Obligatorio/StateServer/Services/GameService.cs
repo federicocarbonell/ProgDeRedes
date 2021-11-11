@@ -75,7 +75,7 @@ namespace StateServer
         {
             try
             {
-                GameRepository.Delete(request.GameId_);
+                GameRepository.Delete(request.Id);
                 var deleteGameResponse = new DeleteGameResponse
                 {
                     Response = true
@@ -89,6 +89,20 @@ namespace StateServer
                     Response = false
                 };
                 return Task.FromResult(deleteGameResponse);
+            }
+        }
+
+        public override Task<GameModel> GetGameDetail(GameId request, ServerCallContext context)
+        {
+            try
+            {
+                GameDTO game = GameRepository.Get(request.Id);
+                var gameDetails = new GameModel { Id = game.Id, Name = game.Name, Genre = game.Genre, Description = game.Description, CoverPath = game.CoverPath };
+                return Task.FromResult(gameDetails);
+            }
+            catch (Exception e)
+            {
+                return Task.FromResult(new GameModel());
             }
         }
     }
