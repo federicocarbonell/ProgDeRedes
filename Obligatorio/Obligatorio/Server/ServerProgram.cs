@@ -410,9 +410,9 @@ namespace Server
 
             try
             {
-                gameService.QualifyGame(gameReview);
+                var response = await serverHandler.QualifyGameAsync(gameReview);
                 //PublishMessage(channel, $"Juego {gameService.GetGameName(gameReview.GameId)} calificado por el usuario {authService.GetLoggedUser().Username}");
-                await SendMessage(client, Encoding.UTF8.GetBytes("Juego con id: " + gameReview.GameId + " calificado \n"));
+                await SendMessage(client, Encoding.UTF8.GetBytes(response));
             }
             catch (Exception e)
             {

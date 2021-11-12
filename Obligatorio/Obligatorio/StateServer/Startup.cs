@@ -39,7 +39,6 @@ namespace StateServer
             {
                 endpoints.MapGrpcService<GameService>();
                 endpoints.MapGrpcService<ReviewService>();
-                endpoints.MapGrpcService<GreeterService>();
 
                 endpoints.MapGet("/", async context =>
                 {

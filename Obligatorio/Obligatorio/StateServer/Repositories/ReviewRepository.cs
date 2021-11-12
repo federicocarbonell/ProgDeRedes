@@ -57,7 +57,7 @@ namespace StateServer.Repositories
             lock (ReviewsLocker)
             {
                 entity.Id = NextId++;
-                Reviews.Add(entity.Id, entity);
+                Instance.Reviews.Add(entity.Id, entity);
             }
         }
 
@@ -72,7 +72,7 @@ namespace StateServer.Repositories
                 throw new Exception("No hay review asociada al id recibido");
             lock (ReviewsLocker)
             {
-                return Reviews[id];
+                return Instance.Reviews[id];
             }
         }
 
@@ -80,7 +80,7 @@ namespace StateServer.Repositories
         {
             lock (ReviewsLocker)
             {
-                return Reviews.Values.ToList();
+                return Instance.Reviews.Values.ToList();
             }
         }
 
@@ -96,7 +96,12 @@ namespace StateServer.Repositories
 
         IRepository<ReviewDTO> IRepository<ReviewDTO>.GetInstance()
         {
-            throw new NotImplementedException();
+            if (Instance == null)
+            {
+                Instance = new ReviewRepository();
+            }
+
+            return Instance;
         }
     }
 }

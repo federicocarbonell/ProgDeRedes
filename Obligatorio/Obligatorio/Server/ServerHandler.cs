@@ -72,6 +72,18 @@ namespace Server
             return details;
         }
 
+        public async Task<string> QualifyGameAsync(ReviewDTO review)
+        {
+            var response = await reviewClient.AddReviewAsync(new ReviewMessage
+            {
+                Content = review.Content,
+                GameId = review.GameId,
+                Rating = review.Rating,
+                Id = review.Id
+            });
+            return response.Message;
+        }
+
         public async Task<bool> ModifyGameAsync (int gameId, GameDTO game)
         {
             var response = await gameClient.ModifyGameAsync(new ModifyGameRequest
