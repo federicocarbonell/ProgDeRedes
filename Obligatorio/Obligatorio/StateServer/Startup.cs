@@ -22,6 +22,7 @@ namespace StateServer
         {
             services.AddGrpc();
             services.AddScoped<IRepository<GameDTO>, GameRepository>();
+            services.AddScoped<IRepository<ReviewDTO>, ReviewRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
