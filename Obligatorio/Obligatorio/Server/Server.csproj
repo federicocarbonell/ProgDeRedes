@@ -30,6 +30,7 @@
     <None Remove="Files\" />
     <None Remove="Files\NoImage.png" />
     <None Remove="Protos\game.proto" />
+    <None Remove="Protos\review.proto" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">
@@ -48,6 +49,10 @@
     <Protobuf Include="Protos\game.proto" GrpcServices="Client">
       <OutputDir>obj\Debug\netcoreapp3.1\</OutputDir>
       <Link>Protos\game.proto</Link>
+    </Protobuf>
+    <Protobuf Include="Protos\review.proto" GrpcServices="Client">
+      <OutputDir>obj\Debug\netcoreapp3.1\</OutputDir>
+      <Link>Protos\review.proto</Link>
     </Protobuf>
   </ItemGroup>
 </Project>

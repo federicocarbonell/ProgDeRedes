@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StateServer.Interfaces;
 using StateServer.Repositories;
+using StateServer.Services;
 
 namespace StateServer
 {
@@ -36,6 +37,7 @@ namespace StateServer
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<GameService>();
+                endpoints.MapGrpcService<ReviewService>();
                 endpoints.MapGrpcService<GreeterService>();
 
                 endpoints.MapGet("/", async context =>

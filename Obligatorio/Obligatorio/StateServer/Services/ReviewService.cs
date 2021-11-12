@@ -1,4 +1,6 @@
 ﻿using DTOs;
+using Grpc.Core;
+using Microsoft.Extensions.Logging;
 using StateServer.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -9,15 +11,16 @@ namespace StateServer.Services
 {
     public class ReviewService : Reviews.ReviewsBase
     {
-
+        private readonly ILogger<GameService> _logger;
         private readonly IRepository<ReviewDTO> ReviewRepository;
 
-        public ReviewService(IRepository<ReviewDTO> reviewRepo)
+        public ReviewService(ILogger<GameService> logger, IRepository<ReviewDTO> reviewRepo)
         {
+            _logger = logger;
             ReviewRepository = reviewRepo;
         }
 
-        public Task<AddReviewResponse> AddReview(ReviewMessage message)
+        public override Task<AddReviewResponse> AddReview(ReviewMessage message, ServerCallContext context)
         {
             try
             {
@@ -36,14 +39,14 @@ namespace StateServer.Services
             }
         }
 
-        public Task<ReviewMessageList> GetReviewsByGameId(GameIdMessage message)
+        public override Task<ReviewMessageList> GetReviewsByGameId(GameIdMessage request, ServerCallContext context)
         {
             try
             {
-                var reviews = ReviewRepository.GetInstance().GetAll().Where(x => x.GameId == message.Id);
+                var reviews = ReviewRepository.GetInstance().GetAll().Where(x => x.GameId == request.Id);
                 var list = new ReviewMessageList();
 
-                foreach(var review in reviews)
+                foreach (var review in reviews)
                 {
                     list.Reviews.Add(new ReviewMessage { Id = review.Id, GameId = review.GameId, Rating = review.Rating, Content = review.Content });
                 }

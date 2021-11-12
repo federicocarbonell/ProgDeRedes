@@ -14,7 +14,8 @@ namespace Server
         private TcpClient tcpClient;
         private readonly TcpListener tcpListener;
         private GrpcChannel channel;
-        private Game.GameClient client;
+        private Game.GameClient gameClient;
+        private Reviews.ReviewsClient reviewClient;
 
         public ServerHandler(TcpClient tcpClient, TcpListener tcpListener)
         {
@@ -23,51 +24,57 @@ namespace Server
             this.tcpClient = tcpClient;
             this.tcpListener = tcpListener;
             channel = GrpcChannel.ForAddress("http://localhost:5000");
-            client = new Game.GameClient(channel);
+            gameClient = new Game.GameClient(channel);
+            reviewClient = new Reviews.ReviewsClient(channel);
         }
 
         public async Task<string> AddGameAsync(GameDTO game)
         {
-            var reply = await client.AddGameAsync(new GameMessage { Id = 0, Name = game.Name, CoverPath = game.Name + ".png", Genre = game.Genre, Description = game.Description, IsDeleted = false });
+            var reply = await gameClient.AddGameAsync(new GameMessage { Id = 0, Name = game.Name, CoverPath = game.Name + ".png", Genre = game.Genre, Description = game.Description, IsDeleted = false });
             return reply.Message;
         }
 
         public async Task<string> GetGamesAsync()
         {
             var request = new Google.Protobuf.WellKnownTypes.Empty();
-            var gamesList = await client.GetAllGamesAsync(request).ResponseAsync;
+            var gamesList = await gameClient.GetAllGamesAsync(request).ResponseAsync;
             return ConvertToString(gamesList);
         }
 
         public async Task<bool> DeleteGameAsync (int gameId)
         {
-            var response = await client.DeleteGameAsync(new GameId { Id = gameId });
+            var response = await gameClient.DeleteGameAsync(new GameId { Id = gameId });
             return response.Response;
         }
 
         public async Task<string> GetGameDetailAsync(int gameId)
         {
-            var response = await client.GetGameDetailAsync(new GameId { Id = gameId });
-            string details = "";
-            details += $"Id: {response.Id}, Nombre: {response.Name} \n";
-            details += $"Categoria: {response.Genre} , Descripcion: {response.Description} \n";
-            // TODO: Ver como hacer con las reviews.
-            //double rating = 0;
-            //details += "Reviews: \n";
-            //foreach (var review in game.Reviews)
-            //{
-            //    details += $"Id: {review.Id}, Rating: {review.Rating}" +
-            //        $", Reseña: {review.Content}, \n";
-            //    rating += review.Rating;
-            //}
-            //details += $"Rating promedio: {rating / game.Reviews.Count} \n";
-            return details;
+            var gameInfo = await gameClient.GetGameDetailAsync(new GameId { Id = gameId });
+            var reviews = await reviewClient.GetReviewsByGameIdAsync(new GameIdMessage { Id = gameId });
 
+            string details = "";
+            details += $"Id: {gameInfo.Id}, Nombre: {gameInfo.Name} \n";
+            details += $"Categoria: {gameInfo.Genre} , Descripcion: {gameInfo.Description} \n";
+
+            double rating = 0;
+            int counter = 0;
+
+            details += "Reviews: \n";
+            foreach (var review in reviews.Reviews)
+            {
+                details += $"Id: {review.Id}, Rating: {review.Rating}" +
+                    $", Reseña: {review.Content}, \n";
+                rating += review.Rating;
+                counter++;
+            }
+            details += $"Rating promedio: {rating / counter} \n";
+
+            return details;
         }
 
         public async Task<bool> ModifyGameAsync (int gameId, GameDTO game)
         {
-            var response = await client.ModifyGameAsync(new ModifyGameRequest
+            var response = await gameClient.ModifyGameAsync(new ModifyGameRequest
             {
                 GameId = gameId,
                 Game = new GameMessage

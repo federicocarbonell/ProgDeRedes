@@ -40,10 +40,10 @@ namespace Server
         static void Main(string[] args)
         {
             //EMPIEZA CONFIG QUEUE
-            var factory = new ConnectionFactory { HostName = "localhost" };
-            using IConnection connection = factory.CreateConnection();
-            channel = connection.CreateModel();
-            DeclareQueue(channel);
+            //var factory = new ConnectionFactory { HostName = "localhost" };
+            //using IConnection connection = factory.CreateConnection();
+            //channel = connection.CreateModel();
+            //DeclareQueue(channel);
             //TERMINA CONFIG QUEUE
             Console.WriteLine("Starting server");
             ObtainConfiguration();
@@ -318,7 +318,7 @@ namespace Server
             bool logged = await serverHandler.DoLoginAsync(bufferData, authService);
             if (logged)
             {
-                PublishMessage(channel, $"User {authService.GetLoggedUser().Username} logged in");
+                //PublishMessage(channel, $"User {authService.GetLoggedUser().Username} logged in");
                 Console.WriteLine($"Usuario autenticado : {authService.GetLoggedUser().Username}");
                 messageBytes = Encoding.UTF8.GetBytes("TokenAuth");
             }
@@ -339,7 +339,7 @@ namespace Server
         private static async Task GetGamesAsync(TcpClient client, AuthenticationService authService)
         {
             string games = await serverHandler.GetGamesAsync();
-            PublishMessage(channel, $"Juegos {games} obtenidos por el usuario {authService.GetLoggedUser().Username}");
+            //PublishMessage(channel, $"Juegos {games} obtenidos por el usuario {authService.GetLoggedUser().Username}");
             await SendMessage(client, Encoding.UTF8.GetBytes(games));
         }
 
@@ -353,7 +353,7 @@ namespace Server
             {
                 string response = await serverHandler.AddGameAsync(game);
                 //gameService.AddGame(game);
-                PublishMessage(channel, $"Juego {game.Name} agregado por el usuario {authService.GetLoggedUser().Username}");
+                //PublishMessage(channel, $"Juego {game.Name} agregado por el usuario {authService.GetLoggedUser().Username}");
                 await SendMessage(client, Encoding.UTF8.GetBytes("Juego agregado: " + game.Name + "\n" + response));
             }
             catch (Exception e)
@@ -373,7 +373,7 @@ namespace Server
             {
                 bool response = await serverHandler.DeleteGameAsync(id);
                 //gameService.DeleteGame(id);
-                PublishMessage(channel, $"Juego {gameService.GetGameName(id)} borrado por el usuario {authService.GetLoggedUser().Username}");
+                //PublishMessage(channel, $"Juego {gameService.GetGameName(id)} borrado por el usuario {authService.GetLoggedUser().Username}");
                 await SendMessage(client, Encoding.UTF8.GetBytes("Juego con id: " + id + " borrado \n"));
             }
             catch (Exception e)
@@ -392,7 +392,7 @@ namespace Server
             try
             {
                 var response = await serverHandler.ModifyGameAsync(game.Id, game);
-                PublishMessage(channel, $"Juego {game.Name} modificado por el usuario {authService.GetLoggedUser().Username}");
+                //PublishMessage(channel, $"Juego {game.Name} modificado por el usuario {authService.GetLoggedUser().Username}");
                 await SendMessage(client, Encoding.UTF8.GetBytes("Juego modificado: " + game.Name + "\n"));
             }
             catch (Exception e)
@@ -411,7 +411,7 @@ namespace Server
             try
             {
                 gameService.QualifyGame(gameReview);
-                PublishMessage(channel, $"Juego {gameService.GetGameName(gameReview.GameId)} calificado por el usuario {authService.GetLoggedUser().Username}");
+                //PublishMessage(channel, $"Juego {gameService.GetGameName(gameReview.GameId)} calificado por el usuario {authService.GetLoggedUser().Username}");
                 await SendMessage(client, Encoding.UTF8.GetBytes("Juego con id: " + gameReview.GameId + " calificado \n"));
             }
             catch (Exception e)
@@ -443,7 +443,7 @@ namespace Server
 
         private static async Task ViewBoughtGamesAsync(TcpClient client, AuthenticationService authService)
         {
-            PublishMessage(channel, $"El usuario {authService.GetLoggedUser().Username} vio sus juegos comprados");
+            //PublishMessage(channel, $"El usuario {authService.GetLoggedUser().Username} vio sus juegos comprados");
             await SendMessage(client, Encoding.UTF8.GetBytes(gameService.GetAllBoughtGames(authService.GetLoggedUser().Username)));
         }
 
@@ -456,7 +456,7 @@ namespace Server
             try
             {
                 gameService.BuyGame(gameId, authService.GetLoggedUser().Username);
-                PublishMessage(channel, $"Juego {gameService.GetGameName(gameId)} adquirido por el usuario {authService.GetLoggedUser().Username}");
+                //PublishMessage(channel, $"Juego {gameService.GetGameName(gameId)} adquirido por el usuario {authService.GetLoggedUser().Username}");
                 await SendMessage(client, Encoding.UTF8.GetBytes("Juego adquirido de manera exitosa. \n"));
             }
             catch (Exception e)

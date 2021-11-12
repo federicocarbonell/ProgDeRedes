@@ -1,6 +1,6 @@
-syntax = "proto3";
+﻿syntax = "proto3";
 
-option csharp_namespace = "StateServer ";
+option csharp_namespace = "Server ";
 
 package review;
 
