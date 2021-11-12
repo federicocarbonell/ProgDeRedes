@@ -438,7 +438,8 @@ namespace Server
             await ReceiveDataAsync(client, header.IDataLength, bufferData);
 
             var data = serverHandler.ReceiveSearchTerms(bufferData);
-            await SendMessage(client, Encoding.UTF8.GetBytes(gameService.GetAllByQuery(data)));
+            var response = await serverHandler.SearchForGameAsync(data);
+            await SendMessage(client, Encoding.UTF8.GetBytes(response));
         }
 
         private static async Task ViewBoughtGamesAsync(TcpClient client, AuthenticationService authService)

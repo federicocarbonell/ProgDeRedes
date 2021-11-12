@@ -10,8 +10,7 @@ service Game {
   rpc GetAllGames (google.protobuf.Empty) returns (GamesList);
   rpc GetAllBoughtGames(GetAllBoughtGamesRequest) returns (GamesList);
   rpc BuyGame(BuyGameRequest) returns (BuyGameResponse);
-  // Investigar como hacer el tema de tuplas.
-  // rpc GetAllByQuery() returns ();
+  rpc GetAllByQuery(GetAllByQueryRequest) returns (GetAllByQueryResponse);
   rpc GetGameDetail(GameId) returns (GameModel);
   rpc DeleteGame(GameId) returns (DeleteGameResponse);
   rpc ModifyGame(ModifyGameRequest) returns (ModifyGameResponse);
@@ -49,6 +48,16 @@ message BuyGameResponse {
   bool response = 1;
 }
 
+message GetAllByQueryRequest {
+  int32 queryType = 1;
+  string textQueryData = 2;
+  int32 ratingQueryData = 3;
+}
+
+message GetAllByQueryResponse {
+    string message = 1;
+}
+
 message GameId {
   int32 id = 1;
 }
@@ -59,6 +68,10 @@ message GameModel {
   string genre = 3;
   string description = 4;
   string coverPath = 5;
+}
+
+message GameDetailRequest {
+    int32 gameId = 1;
 }
 
 message GetGameDetailResponse {

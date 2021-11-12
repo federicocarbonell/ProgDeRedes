@@ -100,6 +100,25 @@ namespace Server
             return response.Response;
         }
 
+        public async Task<string> SearchForGameAsync(Tuple<int, string, int> data)
+        {
+            if (data.Item1 == 1 || data.Item1 == 2)
+            {
+                var response = await gameClient.GetAllByQueryAsync(new GetAllByQueryRequest
+                {
+                    QueryType = data.Item1,
+                    TextQueryData = data.Item2,
+                    RatingQueryData = data.Item3
+                });
+                return response.Message;
+            }
+            else
+            {
+                return "";
+            }
+
+        }
+
         private string ConvertToString(GamesList list)
         {
             string aux = "";

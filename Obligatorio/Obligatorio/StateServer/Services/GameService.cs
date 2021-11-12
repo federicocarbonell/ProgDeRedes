@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using DTOs;
 using Google.Protobuf.WellKnownTypes;
@@ -125,6 +126,42 @@ namespace StateServer
                 };
                 return Task.FromResult(modifyGameResponse);
             }
+        }
+
+        public override Task<GetAllByQueryResponse> GetAllByQuery(GetAllByQueryRequest request, ServerCallContext context)
+        {
+            var games = GameRepository.GetAll();
+            string result = "";
+            int queryType = request.QueryType;
+
+            switch (queryType)
+            {
+                case 1:
+                    {
+                        foreach (GameDTO game in games.Where(x => x.Name.Contains(request.TextQueryData) && !x.IsDeleted))
+                        {
+                            result += $"Id: {game.Id} Nombre: {game.Name} \n";
+                        }
+                    }
+                    break;
+                case 2:
+                    {
+                        foreach (GameDTO game in games.Where(x => x.Genre.Equals(request.TextQueryData) && !x.IsDeleted))
+                        {
+                            result += $"Id: {game.Id} Nombre: {game.Name} \n";
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            if (string.IsNullOrEmpty(result)) result = "No se encontraron juegos con el filtro especificado";
+
+            return Task.FromResult(new GetAllByQueryResponse
+            {
+                Message = result
+            });
         }
     }
 }
