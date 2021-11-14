@@ -61,6 +61,24 @@ namespace StateServer.Services
             }
         }
 
+        public override Task<GetAllByRatingResponse> GetAllByRating(GetAllByRatingRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var reviews = ReviewRepository.GetInstance().GetAll().Where(x => x.Rating > request.RatingQueryData);
+                var responseText = new GetAllByRatingResponse();
+                foreach (var review in reviews)
+                {
+                    responseText.Message += $"Game Id: {review.GameId} Rating: {review.Rating} \n";
+                }
+                return Task.FromResult(responseText);
+            }
+            catch (Exception e)
+            {
+                return Task.FromResult(new GetAllByRatingResponse());
+            }
+        }
+
         private ReviewDTO FromMessage(ReviewMessage message)
         {
             return new ReviewDTO

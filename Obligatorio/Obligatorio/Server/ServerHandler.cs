@@ -114,7 +114,13 @@ namespace Server
             }
             else
             {
-                return "";
+                var response = await reviewClient.GetAllByRatingAsync(new GetAllByRatingRequest
+                {
+                    QueryType = data.Item1,
+                    TextQueryData = data.Item2,
+                    RatingQueryData = data.Item3
+                });
+                return response.Message;
             }
 
         }

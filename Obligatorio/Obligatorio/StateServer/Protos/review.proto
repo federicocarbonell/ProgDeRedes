@@ -7,6 +7,7 @@ package review;
 service Reviews {
 	rpc AddReview(ReviewMessage) returns (AddReviewResponse);
 	rpc GetReviewsByGameId(GameIdMessage) returns (ReviewMessageList);
+	rpc GetAllByRating(GetAllByRatingRequest) returns (GetAllByRatingResponse);
 }
 
 message ReviewMessage {
@@ -26,4 +27,14 @@ message AddReviewResponse {
 
 message GameIdMessage {
 	int32 id = 1;
+}
+
+message GetAllByRatingRequest {
+	int32 queryType = 1;
+	string textQueryData = 2;
+	int32 ratingQueryData = 3;
+}
+
+message GetAllByRatingResponse {
+	string message = 1;
 }
