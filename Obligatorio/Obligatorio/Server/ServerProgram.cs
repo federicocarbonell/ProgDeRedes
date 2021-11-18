@@ -315,11 +315,11 @@ namespace Server
             byte[] messageBytes;
             bufferData = new byte[header.IDataLength];
             await ReceiveDataAsync(client, header.IDataLength, bufferData);
-            bool logged = await serverHandler.DoLoginAsync(bufferData, authService);
-            if (logged)
+            var session = await serverHandler.DoLoginAsync(bufferData, authService);
+            if (session.Logged)
             {
                 //PublishMessage(channel, $"User {authService.GetLoggedUser().Username} logged in");
-                Console.WriteLine($"Usuario autenticado : {authService.GetLoggedUser().Username}");
+                Console.WriteLine($"Usuario autenticado : {session.UserLogged}");
                 messageBytes = Encoding.UTF8.GetBytes("TokenAuth");
             }
             else

@@ -16,6 +16,7 @@ namespace Server
         private GrpcChannel channel;
         private Game.GameClient gameClient;
         private Reviews.ReviewsClient reviewClient;
+        private User.UserClient userClient;
 
         public ServerHandler(TcpClient tcpClient, TcpListener tcpListener)
         {
@@ -26,6 +27,7 @@ namespace Server
             channel = GrpcChannel.ForAddress("http://localhost:5000");
             gameClient = new Game.GameClient(channel);
             reviewClient = new Reviews.ReviewsClient(channel);
+            userClient = new User.UserClient(channel);
         }
 
         public async Task<string> AddGameAsync(GameDTO game)
@@ -137,7 +139,7 @@ namespace Server
             return aux;
         }
 
-        public async Task<bool> DoLoginAsync(byte[] bufferData, AuthenticationService authService)
+        public async Task<SessionDTO> DoLoginAsync(byte[] bufferData, AuthenticationService authService)
         {
             int usernameLength = obtainLength(bufferData, 0);
             int beforeLength = 0;
@@ -147,7 +149,18 @@ namespace Server
             int passwordLength = obtainLength(bufferData, beforeLength);
             string pass = convertToString(bufferData, passwordLength, beforeLength);
 
-            return authService.Login(username, pass);
+            var response = await userClient.LoginAsync(new LoginRequest
+            {
+                Username = username,
+                Password = pass
+            });
+            SessionDTO session = new SessionDTO
+            {
+                Logged = response.Response,
+                UserLogged = response.LoggedUser
+            };
+
+            return session;
         }
 
         public GameDTO ReceiveGame(byte[] bufferData)

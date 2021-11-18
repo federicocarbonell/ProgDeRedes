@@ -23,6 +23,7 @@ namespace StateServer
             services.AddGrpc();
             services.AddScoped<IRepository<GameDTO>, GameRepository>();
             services.AddScoped<IRepository<ReviewDTO>, ReviewRepository>();
+            services.AddScoped<IRepository<UserDTO>, UserRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,6 +40,7 @@ namespace StateServer
             {
                 endpoints.MapGrpcService<GameService>();
                 endpoints.MapGrpcService<ReviewService>();
+                endpoints.MapGrpcService<UserService>();
 
                 endpoints.MapGet("/", async context =>
                 {

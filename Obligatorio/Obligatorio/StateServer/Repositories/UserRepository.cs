@@ -106,7 +106,12 @@ namespace StateServer.Repositories
 
         IRepository<UserDTO> IRepository<UserDTO>.GetInstance()
         {
-            throw new NotImplementedException();
+            if (Instance == null)
+            {
+                Instance = new UserRepository();
+            }
+
+            return Instance;
         }
     }
 }
