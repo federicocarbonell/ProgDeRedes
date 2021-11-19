@@ -43,7 +43,7 @@ namespace Server
             return ConvertToString(gamesList);
         }
 
-        public async Task<bool> DeleteGameAsync (int gameId)
+        public async Task<bool> DeleteGameAsync(int gameId)
         {
             var response = await gameClient.DeleteGameAsync(new GameId { Id = gameId });
             return response.Response;
@@ -86,7 +86,7 @@ namespace Server
             return response.Message;
         }
 
-        public async Task<bool> ModifyGameAsync (int gameId, GameDTO game)
+        public async Task<bool> ModifyGameAsync(int gameId, GameDTO game)
         {
             var response = await gameClient.ModifyGameAsync(new ModifyGameRequest
             {
@@ -139,7 +139,7 @@ namespace Server
             return aux;
         }
 
-        public async Task<SessionDTO> DoLoginAsync(byte[] bufferData, AuthenticationService authService)
+        public async Task<SessionDTO> DoLoginAsync(byte[] bufferData)
         {
             int usernameLength = obtainLength(bufferData, 0);
             int beforeLength = 0;
@@ -177,7 +177,7 @@ namespace Server
             int descriptionLength = obtainLength(bufferData, beforeLength);
             string description = convertToString(bufferData, descriptionLength, beforeLength);
 
-            return new GameDTO { Name = name , Genre = genre, Description = description};
+            return new GameDTO { Name = name, Genre = genre, Description = description };
         }
 
         public async Task AddCoverGameAsync(byte[] bufferData, TcpClient tcpClient)
@@ -202,7 +202,7 @@ namespace Server
         }
 
 
-        public GameDTO ReceiveGameForModifying (byte[] bufferData)
+        public GameDTO ReceiveGameForModifying(byte[] bufferData)
         {
 
             int idLength = obtainLength(bufferData, 0);
@@ -221,7 +221,7 @@ namespace Server
             int descriptionLength = obtainLength(bufferData, beforeLength);
             string description = convertToString(bufferData, descriptionLength, beforeLength);
 
-            return new GameDTO { Id = id, Name = name, Genre = genre, Description = description};
+            return new GameDTO { Id = id, Name = name, Genre = genre, Description = description };
         }
 
         public Tuple<int, string, int> ReceiveSearchTerms(byte[] bufferData)
@@ -286,7 +286,7 @@ namespace Server
             return Convert.ToInt32(bufferData[start]);
         }
 
-        public String convertToString(byte[] bufferData,int stringLength, int start)
+        public String convertToString(byte[] bufferData, int stringLength, int start)
         {
             byte[] stringBytes = new byte[stringLength];
             for (int i = 0; i < stringLength; i++)

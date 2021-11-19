@@ -26,6 +26,13 @@ namespace StateServer.Repositories
                 Username = "admin",
                 Password = "admin"
             });
+            var user = new UserDTO
+            {
+                Id = NextId + 1,
+                Username = "fede",
+                Password = "fede"
+            };
+            Users.Add(NextId + 1, user);
         }
 
         public UserRepository GetInstance()

@@ -202,7 +202,7 @@ namespace Server
             port = Int32.Parse(config["Port"]);
             backlog = Int32.Parse(config["Backlog"]);
         }
-        
+
         private static async Task ListenForConnectionsAsync(TcpListener tcpListener)
         {
             while (!_exit)
@@ -212,9 +212,8 @@ namespace Server
                     var connectedClient = await tcpListener.AcceptTcpClientAsync();
                     _clients.Add(connectedClient);
                     // abro un hilo por cliente
-                    UserRepository repo = new UserRepository();
-                    AuthenticationService clientService = new AuthenticationService(repo);
-                    Task.Run(() => HandleClient(connectedClient, clientService));
+                    SessionDTO session = new SessionDTO();
+                    Task.Run(() => HandleClient(connectedClient, session));
                 }
                 catch (Exception e)
                 {
@@ -224,7 +223,7 @@ namespace Server
             }
         }
 
-        private static async Task HandleClient(TcpClient tcpClient, AuthenticationService clientService)
+        private static async Task HandleClient(TcpClient tcpClient, SessionDTO session)
         {
             while (!_exit)
             {
@@ -239,37 +238,37 @@ namespace Server
                     switch (header.ICommand)
                     {
                         case CommandConstants.Login:
-                            await LoginAsync(header, tcpClient, clientService);
+                            session = await LoginAsync(header, tcpClient, session);
                             break;
                         case CommandConstants.AddGame:
-                            await AddGameAsync(header, tcpClient, clientService);
+                            await AddGameAsync(header, tcpClient, session);
                             break;
                         case CommandConstants.SendGameCover:
                             await ReceiveGameCoverAsync(header, tcpClient);
                             break;
                         case CommandConstants.GetGames:
-                            await GetGamesAsync(tcpClient, clientService);
+                            await GetGamesAsync(tcpClient, session);
                             break;
                         case CommandConstants.DeleteGame:
-                            await DeleteGameAsync(header, tcpClient, clientService);
+                            await DeleteGameAsync(header, tcpClient, session);
                             break;
                         case CommandConstants.ModifyGame:
-                            await ModifyGameAsync(header, tcpClient, clientService);
+                            await ModifyGameAsync(header, tcpClient, session);
                             break;
                         case CommandConstants.QualifyGame:
-                            await QualifyGameAsync(header, tcpClient, clientService);
+                            await QualifyGameAsync(header, tcpClient, session);
                             break;
                         case CommandConstants.ViewDetail:
-                            await ViewGameDetailAsync(header, tcpClient, clientService);
+                            await ViewGameDetailAsync(header, tcpClient, session);
                             break;
                         case CommandConstants.SearchForGame:
                             await SearchForGameAsync(header, tcpClient);
                             break;
                         case CommandConstants.ViewBoughtGames:
-                            await ViewBoughtGamesAsync(tcpClient, clientService);
+                            await ViewBoughtGamesAsync(tcpClient, session);
                             break;
                         case CommandConstants.BuyGame:
-                            await BuyGameAsync(header, tcpClient, clientService);
+                            await BuyGameAsync(header, tcpClient, session);
                             break;
                         case CommandConstants.DownloadCover:
                             await SendGameConverAsync(header, tcpClient);
@@ -310,12 +309,12 @@ namespace Server
             }
         }
 
-        private static async Task LoginAsync(Header header, TcpClient client, AuthenticationService authService)
+        private static async Task<SessionDTO> LoginAsync(Header header, TcpClient client, SessionDTO session)
         {
             byte[] messageBytes;
             bufferData = new byte[header.IDataLength];
             await ReceiveDataAsync(client, header.IDataLength, bufferData);
-            var session = await serverHandler.DoLoginAsync(bufferData, authService);
+            session = await serverHandler.DoLoginAsync(bufferData);
             if (session.Logged)
             {
                 //PublishMessage(channel, $"User {authService.GetLoggedUser().Username} logged in");
@@ -327,6 +326,7 @@ namespace Server
                 messageBytes = Encoding.UTF8.GetBytes("Wrong credentials");
             }
             await client.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
+            return session;
         }
 
         private static async Task ReceiveGameCoverAsync(Header header, TcpClient client)
@@ -336,14 +336,15 @@ namespace Server
             await serverHandler.AddCoverGameAsync(bufferData, client);
         }
 
-        private static async Task GetGamesAsync(TcpClient client, AuthenticationService authService)
+        private static async Task GetGamesAsync(TcpClient client, SessionDTO session)
         {
             string games = await serverHandler.GetGamesAsync();
-            //PublishMessage(channel, $"Juegos {games} obtenidos por el usuario {authService.GetLoggedUser().Username}");
+            //PublishMessage(channel, $"Juegos {games} obtenidos por el usuario {session.UserLogged}");
+            Console.WriteLine($"Usuario autenticado : {session.UserLogged}");
             await SendMessage(client, Encoding.UTF8.GetBytes(games));
         }
 
-        private static async Task AddGameAsync(Header header, TcpClient client, AuthenticationService authService)
+        private static async Task AddGameAsync(Header header, TcpClient client, SessionDTO session)
         {
             bufferData = new byte[header.IDataLength];
             await ReceiveDataAsync(client, header.IDataLength, bufferData);
@@ -353,7 +354,7 @@ namespace Server
             {
                 string response = await serverHandler.AddGameAsync(game);
                 //gameService.AddGame(game);
-                //PublishMessage(channel, $"Juego {game.Name} agregado por el usuario {authService.GetLoggedUser().Username}");
+                //PublishMessage(channel, $"Juego {game.Name} agregado por el usuario {session.UserLogged}");
                 await SendMessage(client, Encoding.UTF8.GetBytes("Juego agregado: " + game.Name + "\n" + response));
             }
             catch (Exception e)
@@ -363,7 +364,7 @@ namespace Server
             }
         }
 
-        private static async Task DeleteGameAsync(Header header, TcpClient client, AuthenticationService authService)
+        private static async Task DeleteGameAsync(Header header, TcpClient client, SessionDTO session)
         {
             bufferData = new byte[header.IDataLength];
             await ReceiveDataAsync(client, header.IDataLength, bufferData);
@@ -373,7 +374,7 @@ namespace Server
             {
                 bool response = await serverHandler.DeleteGameAsync(id);
                 //gameService.DeleteGame(id);
-                //PublishMessage(channel, $"Juego {gameService.GetGameName(id)} borrado por el usuario {authService.GetLoggedUser().Username}");
+                //PublishMessage(channel, $"Juego {gameService.GetGameName(id)} borrado por el usuario {session.UserLogged}");
                 await SendMessage(client, Encoding.UTF8.GetBytes("Juego con id: " + id + " borrado \n"));
             }
             catch (Exception e)
@@ -383,7 +384,7 @@ namespace Server
             }
         }
 
-        private static async Task ModifyGameAsync(Header header, TcpClient client, AuthenticationService authService)
+        private static async Task ModifyGameAsync(Header header, TcpClient client, SessionDTO session)
         {
             bufferData = new byte[header.IDataLength];
             await ReceiveDataAsync(client, header.IDataLength, bufferData);
@@ -392,7 +393,7 @@ namespace Server
             try
             {
                 var response = await serverHandler.ModifyGameAsync(game.Id, game);
-                //PublishMessage(channel, $"Juego {game.Name} modificado por el usuario {authService.GetLoggedUser().Username}");
+                //PublishMessage(channel, $"Juego {game.Name} modificado por el usuario {session.UserLogged}");
                 await SendMessage(client, Encoding.UTF8.GetBytes("Juego modificado: " + game.Name + "\n"));
             }
             catch (Exception e)
@@ -402,7 +403,7 @@ namespace Server
             }
         }
 
-        private static async Task QualifyGameAsync(Header header, TcpClient client, AuthenticationService authService)
+        private static async Task QualifyGameAsync(Header header, TcpClient client, SessionDTO session)
         {
             bufferData = new byte[header.IDataLength];
             await ReceiveDataAsync(client, header.IDataLength, bufferData);
@@ -411,7 +412,7 @@ namespace Server
             try
             {
                 var response = await serverHandler.QualifyGameAsync(gameReview);
-                //PublishMessage(channel, $"Juego {gameService.GetGameName(gameReview.GameId)} calificado por el usuario {authService.GetLoggedUser().Username}");
+                //PublishMessage(channel, $"Juego {gameService.GetGameName(gameReview.GameId)} calificado por el usuario {session.UserLogged}");
                 await SendMessage(client, Encoding.UTF8.GetBytes(response));
             }
             catch (Exception e)
@@ -421,14 +422,14 @@ namespace Server
             }
         }
 
-        private static async Task ViewGameDetailAsync(Header header, TcpClient client, AuthenticationService authService)
+        private static async Task ViewGameDetailAsync(Header header, TcpClient client, SessionDTO session)
         {
             bufferData = new byte[header.IDataLength];
             await ReceiveDataAsync(client, header.IDataLength, bufferData);
 
             int gameId = serverHandler.ReceiveId(bufferData);
             string gameDetails = await serverHandler.GetGameDetailAsync(gameId);
-            //PublishMessage(channel, $"Detalle del juego {gameService.GetGameName(gameId)} visto por el usuario {authService.GetLoggedUser().Username}");
+            //PublishMessage(channel, $"Detalle del juego {gameService.GetGameName(gameId)} visto por el usuario {session.UserLogged}");
             await SendMessage(client, Encoding.UTF8.GetBytes(gameDetails));
         }
 
@@ -442,13 +443,13 @@ namespace Server
             await SendMessage(client, Encoding.UTF8.GetBytes(response));
         }
 
-        private static async Task ViewBoughtGamesAsync(TcpClient client, AuthenticationService authService)
+        private static async Task ViewBoughtGamesAsync(TcpClient client, SessionDTO session)
         {
-            //PublishMessage(channel, $"El usuario {authService.GetLoggedUser().Username} vio sus juegos comprados");
+            //PublishMessage(channel, $"El usuario {session.UserLogged} vio sus juegos comprados");
             await SendMessage(client, Encoding.UTF8.GetBytes(gameService.GetAllBoughtGames(authService.GetLoggedUser().Username)));
         }
 
-        private static async Task BuyGameAsync(Header header, TcpClient client, AuthenticationService authService)
+        private static async Task BuyGameAsync(Header header, TcpClient client, SessionDTO session)
         {
             bufferData = new byte[header.IDataLength];
             await ReceiveDataAsync(client, header.IDataLength, bufferData);
@@ -457,7 +458,7 @@ namespace Server
             try
             {
                 gameService.BuyGame(gameId, authService.GetLoggedUser().Username);
-                //PublishMessage(channel, $"Juego {gameService.GetGameName(gameId)} adquirido por el usuario {authService.GetLoggedUser().Username}");
+                //PublishMessage(channel, $"Juego {gameService.GetGameName(gameId)} adquirido por el usuario {session.UserLogged}");
                 await SendMessage(client, Encoding.UTF8.GetBytes("Juego adquirido de manera exitosa. \n"));
             }
             catch (Exception e)
