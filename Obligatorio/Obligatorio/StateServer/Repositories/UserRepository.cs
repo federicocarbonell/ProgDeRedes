@@ -26,13 +26,6 @@ namespace StateServer.Repositories
                 Username = "admin",
                 Password = "admin"
             });
-            var user = new UserDTO
-            {
-                Id = NextId + 1,
-                Username = "fede",
-                Password = "fede"
-            };
-            Users.Add(NextId + 1, user);
         }
 
         public UserRepository GetInstance()
@@ -51,7 +44,8 @@ namespace StateServer.Repositories
                 throw new Exception("Ya existe un usuario con ese nombre, por favor seleccione otro.");
             lock (UsersLocker)
             {
-                entity.Id = NextId++;
+                NextId++;
+                entity.Id = NextId;
                 Users.Add(entity.Id, entity);
             }
         }
@@ -81,7 +75,7 @@ namespace StateServer.Repositories
         {
             lock (UsersLocker)
             {
-                return Users.Values.ToList();
+                return Instance.Users.Values.ToList();
             }
         }
 
@@ -108,7 +102,7 @@ namespace StateServer.Repositories
 
         private bool ValidId(int id)
         {
-            return id <= GetAll().ToList().Count && !Get(id).IsDeleted;
+            return id <= GetAll().ToList().Count && !Users[id].IsDeleted;
         }
 
         IRepository<UserDTO> IRepository<UserDTO>.GetInstance()

@@ -48,7 +48,7 @@ namespace StateServer.Services
         {
             try
             {
-                UserRepository.Add(FromMessage(request));
+                UserRepository.GetInstance().Add(FromMessage(request));
                 string returnMessage = $"Usuario {request.Username} dado de alta con exito";
                 return Task.FromResult(new GenericResponse { Ok = true, Messsage = returnMessage });
             }
@@ -62,7 +62,7 @@ namespace StateServer.Services
         {
             try
             {
-                UserRepository.Delete(request.Id);
+                UserRepository.GetInstance().Delete(request.Id);
                 string returnMessage = $"Usuario con el id {request.Id} borrado con exito";
                 return Task.FromResult(new GenericResponse { Ok = true, Messsage = returnMessage });
             }
@@ -75,7 +75,7 @@ namespace StateServer.Services
         public override Task<UserListMessage> GetUsers(Empty request, ServerCallContext context)
         {
             var returnMessage = new UserListMessage();
-            foreach (UserDTO item in UserRepository.GetAll())
+            foreach (UserDTO item in UserRepository.GetInstance().GetAll())
             {
                 returnMessage.Users.Add(FromDTO(item));
             }
@@ -88,7 +88,7 @@ namespace StateServer.Services
             try
             {
                 UserDTO newUser = FromMessage(request);
-                UserRepository.Update(newUser.Id, newUser);
+                UserRepository.GetInstance().Update(newUser.Id, newUser);
                 string returnMessage = $"Usuario con el id {request.Id} actualizado con exito";
                 return Task.FromResult(new GenericResponse { Ok = true, Messsage = returnMessage });
             }
