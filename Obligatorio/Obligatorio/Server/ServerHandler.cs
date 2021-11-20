@@ -127,6 +127,41 @@ namespace Server
 
         }
 
+        public async Task<string> GetGameNameAsync (int gameId)
+        {
+            var response = await gameClient.GetGameNameAsync(new GameId
+            {
+                Id = gameId
+            });
+            return response.GameName;
+        }
+
+        public async Task BuyGameAsync (int gameId, string buyer)
+        {
+            var response = await gameClient.BuyGameAsync(new BuyGameRequest
+            {
+                GameId = gameId,
+                Owner = buyer
+            });
+        }
+
+        public async Task<string> GetAllBoughtGamesAsync(string owner)
+        {
+            var response = await gameClient.GetAllBoughtGamesAsync(new GetAllBoughtGamesRequest
+            {
+                UserName = owner
+            });
+            var gamesList = "";
+            foreach (var game in response.Games)
+            {
+                gamesList += $"Id: {game.Id} Nombre: {game.Name} \n";
+            }
+            if (string.IsNullOrEmpty(gamesList))
+                gamesList = "El usuario especificado no ha adquirido juegos";
+
+            return gamesList;
+        }
+
         private string ConvertToString(GamesList list)
         {
             string aux = "";
