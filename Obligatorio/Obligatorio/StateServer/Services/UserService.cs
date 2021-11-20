@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DTOs;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using StateServer.Interfaces;
@@ -43,12 +44,12 @@ namespace StateServer.Services
             });
         }
 
-        public Task<GenericResponse> AddUser(UserMessage message)
+        public override Task<GenericResponse> AddUser(UserMessage request, ServerCallContext context)
         {
             try
             {
-                UserRepository.Add(FromMessage(message));
-                string returnMessage = $"Usuario {message.Username} dado de alta con exito";
+                UserRepository.Add(FromMessage(request));
+                string returnMessage = $"Usuario {request.Username} dado de alta con exito";
                 return Task.FromResult(new GenericResponse { Ok = true, Messsage = returnMessage });
             }
             catch (Exception e)
@@ -57,12 +58,12 @@ namespace StateServer.Services
             }
         }
 
-        public Task<GenericResponse> DeleteUser(UserIdMessage message)
+        public override Task<GenericResponse> DeleteUser(UserIdMessage request, ServerCallContext context)
         {
             try
             {
-                UserRepository.Delete(message.Id);
-                string returnMessage = $"Usuario con el id {message.Id} borrado con exito";
+                UserRepository.Delete(request.Id);
+                string returnMessage = $"Usuario con el id {request.Id} borrado con exito";
                 return Task.FromResult(new GenericResponse { Ok = true, Messsage = returnMessage });
             }
             catch (Exception e)
@@ -71,7 +72,7 @@ namespace StateServer.Services
             }
         }
 
-        public Task<UserListMessage> GetUsers()
+        public override Task<UserListMessage> GetUsers(Empty request, ServerCallContext context)
         {
             var returnMessage = new UserListMessage();
             foreach (UserDTO item in UserRepository.GetAll())
@@ -82,13 +83,13 @@ namespace StateServer.Services
             return Task.FromResult(returnMessage);
         }
 
-        public Task<GenericResponse> ModifyUser(UserMessage message)
+        public override Task<GenericResponse> ModifyUser(UserMessage request, ServerCallContext context)
         {
             try
             {
-                UserDTO newUser = FromMessage(message);
+                UserDTO newUser = FromMessage(request);
                 UserRepository.Update(newUser.Id, newUser);
-                string returnMessage = $"Usuario con el id {message.Id} actualizado con exito";
+                string returnMessage = $"Usuario con el id {request.Id} actualizado con exito";
                 return Task.FromResult(new GenericResponse { Ok = true, Messsage = returnMessage });
             }
             catch (Exception e)
