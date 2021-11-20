@@ -11,6 +11,6 @@ namespace StateServer.Interfaces
         void Add(T entity);
         void Update(int id, T newEntity);
         void Delete(int id);
-
+        void BuyGame(int id, string buyer) { }
     }
 }
