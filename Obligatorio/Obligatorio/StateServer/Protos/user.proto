@@ -7,6 +7,30 @@ package user;
 
 service User {
     rpc Login(LoginRequest) returns (LoginResponse);
+    rpc AddUser(UserMessage) returns (GenericResponse);
+    rpc DeleteUser(UserIdMessage) returns (GenericResponse);
+    rpc GetUsers(google.protobuf.empty) returns(UserListMessage);
+    rpc ModifyUser(UserMessage) returns (GenericResponse);
+}
+
+message UserMessage {
+    int32 id = 1;
+    string username = 2;
+    string password = 3;
+    bool isDeleted = 4;
+}
+
+message UserListMessage {
+    repeated UserMessage users = 1;
+}
+
+message UserIdMessage {
+    int32 id = 1;
+}
+
+message GenericResponse {
+    bool ok = 1;
+    string messsage = 2;
 }
 
 message LoginRequest {
