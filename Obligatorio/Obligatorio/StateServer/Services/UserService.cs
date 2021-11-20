@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DTOs;
@@ -70,15 +71,32 @@ namespace StateServer.Services
             }
         }
 
-        //public Task<GenericResponse> GetUsers()
-        //{
-        //    // hacer transformacion del getall al dto de retorno
-        //}
+        public Task<UserListMessage> GetUsers()
+        {
+            var returnMessage = new UserListMessage();
+            foreach (UserDTO item in UserRepository.GetAll())
+            {
+                returnMessage.Users.Add(FromDTO(item));
+            }
 
-        //public Task<GenericResponse> UpdateUsers()
-        //{
-        //    // falta implementar
-        //}
+            return Task.FromResult(returnMessage);
+        }
+
+        public Task<GenericResponse> ModifyUser(UserMessage message)
+        {
+            try
+            {
+                UserDTO newUser = FromMessage(message);
+                UserRepository.Update(newUser.Id, newUser);
+                string returnMessage = $"Usuario con el id {message.Id} actualizado con exito";
+                return Task.FromResult(new GenericResponse { Ok = true, Messsage = returnMessage });
+            }
+            catch (Exception e)
+            {
+                return Task.FromResult(new GenericResponse { Ok = false, Messsage = e.Message });
+            }
+            
+        }
 
         private UserDTO GetByName(string name)
         {
@@ -87,11 +105,22 @@ namespace StateServer.Services
 
         private UserDTO FromMessage(UserMessage userMessage)
         {
-            return new UserDTO { 
+            return new UserDTO 
+            { 
                 Id = userMessage.Id,
                 IsDeleted = userMessage.IsDeleted,
                 Username = userMessage.Username,
                 Password = userMessage.Password 
+            };
+        }
+
+        private UserMessage FromDTO(UserDTO user)
+        {
+            return new UserMessage
+            {
+                Id = user.Id,
+                IsDeleted = user.IsDeleted,
+                Username = user.Username
             };
         }
     }
