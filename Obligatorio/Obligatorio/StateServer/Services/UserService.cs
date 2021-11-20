@@ -42,9 +42,57 @@ namespace StateServer.Services
             });
         }
 
+        public Task<GenericResponse> AddUser(UserMessage message)
+        {
+            try
+            {
+                UserRepository.Add(FromMessage(message));
+                string returnMessage = $"Usuario {message.Username} dado de alta con exito";
+                return Task.FromResult(new GenericResponse { Ok = true, Messsage = returnMessage });
+            }
+            catch (Exception e)
+            {
+                return Task.FromResult(new GenericResponse { Ok = false, Messsage = e.Message });
+            }
+        }
+
+        public Task<GenericResponse> DeleteUser(UserIdMessage message)
+        {
+            try
+            {
+                UserRepository.Delete(message.Id);
+                string returnMessage = $"Usuario con el id {message.Id} borrado con exito";
+                return Task.FromResult(new GenericResponse { Ok = true, Messsage = returnMessage });
+            }
+            catch (Exception e)
+            {
+                return Task.FromResult(new GenericResponse { Ok = false, Messsage = e.Message });
+            }
+        }
+
+        //public Task<GenericResponse> GetUsers()
+        //{
+        //    // hacer transformacion del getall al dto de retorno
+        //}
+
+        //public Task<GenericResponse> UpdateUsers()
+        //{
+        //    // falta implementar
+        //}
+
         private UserDTO GetByName(string name)
         {
             return UserRepository.GetAll().Where(x => x.Username.Equals(name)).FirstOrDefault();
+        }
+
+        private UserDTO FromMessage(UserMessage userMessage)
+        {
+            return new UserDTO { 
+                Id = userMessage.Id,
+                IsDeleted = userMessage.IsDeleted,
+                Username = userMessage.Username,
+                Password = userMessage.Password 
+            };
         }
     }
 }
