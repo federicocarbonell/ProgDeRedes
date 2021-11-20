@@ -192,8 +192,15 @@ namespace StateServer
             catch (Exception e)
             {
                 throw new Exception(e.Message);
+                return Task.FromResult(new BuyGameResponse
+                {
+                    Response = false
+                });
             }
-            return base.BuyGame(request, context);
+            return Task.FromResult(new BuyGameResponse
+            {
+                Response = true
+            });
         }
 
         public override Task<GamesList> GetAllBoughtGames(GetAllBoughtGamesRequest request, ServerCallContext context)

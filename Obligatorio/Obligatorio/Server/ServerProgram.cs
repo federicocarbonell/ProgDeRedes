@@ -19,8 +19,6 @@ namespace Server
     {
         static bool _exit = false;
         static List<TcpClient> _clients = new List<TcpClient>();
-        static GameService gameService;
-        static AuthenticationService authService;
         static ServerHandler serverHandler;
         static byte[] bufferData;
         private IConfiguration _configuration;
@@ -53,10 +51,8 @@ namespace Server
             tcpListener.Start();
             // abro un hilo
             GameRepository gameRepository = new GameRepository();
-            gameService = new GameService(gameRepository);
             Task.Run(() => ListenForConnectionsAsync(tcpListener));
             UserRepository userRepo = new UserRepository();
-            authService = new AuthenticationService(userRepo);
 
             clientEndPoint = new IPEndPoint(IPAddress.Parse(ip), port + 1);
             tcpClient = new TcpClient(clientEndPoint);
@@ -353,7 +349,6 @@ namespace Server
             try
             {
                 string response = await serverHandler.AddGameAsync(game);
-                //gameService.AddGame(game);
                 PublishMessage(channel, $"Juego {game.Name} agregado por el usuario {session.UserLogged}");
                 await SendMessage(client, Encoding.UTF8.GetBytes("Juego agregado: " + game.Name + "\n" + response));
             }
@@ -373,7 +368,6 @@ namespace Server
             try
             {
                 bool response = await serverHandler.DeleteGameAsync(id);
-                //gameService.DeleteGame(id);
                 PublishMessage(channel, $"Juego {serverHandler.GetGameNameAsync(id)} borrado por el usuario {session.UserLogged}");
                 await SendMessage(client, Encoding.UTF8.GetBytes("Juego con id: " + id + " borrado \n"));
             }
