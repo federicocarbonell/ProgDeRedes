@@ -1,10 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Protos\user.proto" />
     <None Remove="Protos\game.proto" />
     <None Remove="Protos\review.proto" />
   </ItemGroup>
@@ -27,6 +28,7 @@
   <ItemGroup>
     <Protobuf Include="Protos\game.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\review.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\user.proto" GrpcServices="Client" />
   </ItemGroup>
 
 
