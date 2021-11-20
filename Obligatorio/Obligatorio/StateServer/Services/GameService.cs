@@ -163,5 +163,58 @@ namespace StateServer
                 Message = result
             });
         }
+
+        public override Task<GetGameNameResponse> GetGameName(GameId request, ServerCallContext context)
+        {
+            try
+            {
+                GameDTO game = GameRepository.Get(request.Id);
+                return Task.FromResult(new GetGameNameResponse
+                {
+                    GameName = game.Name
+                });
+            }
+            catch (Exception e)
+            {
+                return Task.FromResult(new GetGameNameResponse
+                {
+                    GameName = ""
+                });
+            }
+        }
+
+        public override Task<BuyGameResponse> BuyGame(BuyGameRequest request, ServerCallContext context)
+        {
+            try
+            {
+                GameRepository.BuyGame(request.GameId, request.Owner);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return base.BuyGame(request, context);
+        }
+
+        public override Task<GamesList> GetAllBoughtGames(GetAllBoughtGamesRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var games = GameRepository.GetAll();
+                var boughtGames = new GamesList();
+                foreach (var game in games)
+                {
+                    if (game.Owners != null && game.Owners.Contains(request.UserName))
+                    {
+                        boughtGames.Games.Add(new GameMessage { Id = game.Id, Name = game.Name, Genre = game.Genre, Description = game.Description, CoverPath = game.CoverPath });
+                    }
+                }
+                return Task.FromResult(boughtGames);
+            }
+            catch (Exception e)
+            {
+                return Task.FromResult(new GamesList());
+            }
+}
     }
 }

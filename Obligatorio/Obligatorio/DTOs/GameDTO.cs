@@ -1,4 +1,6 @@
-﻿namespace DTOs
+﻿using System.Collections.Generic;
+
+namespace DTOs
 {
     public class GameDTO
     {
@@ -14,5 +16,6 @@
 
         public string CoverPath { get; set; }
 
+        public List<string> Owners { get; set; }
     }
 }

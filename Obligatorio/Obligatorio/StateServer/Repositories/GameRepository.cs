@@ -90,6 +90,16 @@ namespace StateServer.Repositories
             }
         }
 
+        public void BuyGame(int id, string buyer)
+        {
+            GameDTO game = Get(id);
+            if(game.Owners == null)
+            {
+                game.Owners = new List<string>();
+            }
+            game.Owners.Add(buyer);
+        }
+
         // TODO: Ver de arreglar este metódo que se esta rompiendo.
         private bool ValidName(string name)
         {
