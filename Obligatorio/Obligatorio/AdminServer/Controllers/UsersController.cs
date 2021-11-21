@@ -52,9 +52,9 @@ namespace AdminServer.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(long id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var request = new UserIdMessage{ Id = (int)id };
+            var request = new UserIdMessage{ Id = id };
             var response = await client.DeleteUserAsync(request);
 
             if(response.Ok) return NoContent();
@@ -62,11 +62,11 @@ namespace AdminServer.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser([FromBody]UserDTO user)
+        public async Task<IActionResult> UpdateUser([FromBody]UserDTO user, int id)
         {
             var request = new UserMessage
             {
-                Id = user.Id,
+                Id = id,
                 Username = user.Username,
                 Password = user.Password
                 
