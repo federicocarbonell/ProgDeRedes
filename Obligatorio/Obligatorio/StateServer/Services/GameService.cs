@@ -124,12 +124,12 @@ namespace StateServer
                     Message = $"Updated game with id {request.GameId} successfully"
                 });
             }
-            catch
+            catch (Exception e)
             {
                 return Task.FromResult(new GenResponse
                 {
                     Ok = false,
-                    Message = $"Deleted game with id {request.GameId} successfully"
+                    Message = e.Message
                 });
             }
         }

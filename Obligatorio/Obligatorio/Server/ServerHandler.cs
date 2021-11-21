@@ -33,7 +33,14 @@ namespace Server
         public async Task<string> AddGameAsync(GameDTO game)
         {
             var reply = await gameClient.AddGameAsync(new GameMessage { Id = 0, Name = game.Name, CoverPath = game.Name + ".png", Genre = game.Genre, Description = game.Description, IsDeleted = false });
-            return reply.Message;
+            if (reply.Ok)
+            {
+                return reply.Message;
+            }
+            else
+            {
+                throw new Exception(reply.Message);
+            }
         }
 
         public async Task<string> GetGamesAsync()
@@ -46,7 +53,14 @@ namespace Server
         public async Task<bool> DeleteGameAsync(int gameId)
         {
             var response = await gameClient.DeleteGameAsync(new GameId { Id = gameId });
-            return response.Response;
+            if (response.Ok)
+            {
+                return response.Ok;
+            }
+            else
+            {
+                throw new Exception(response.Message);
+            }
         }
 
         public async Task<string> GetGameDetailAsync(int gameId)
@@ -99,7 +113,14 @@ namespace Server
                     Genre = game.Genre,
                 }
             });
-            return response.Response;
+            if (response.Ok)
+            {
+                return response.Ok;
+            }
+            else
+            {
+                throw new Exception(response.Message);
+            }
         }
 
         public async Task<string> SearchForGameAsync(Tuple<int, string, int> data)
