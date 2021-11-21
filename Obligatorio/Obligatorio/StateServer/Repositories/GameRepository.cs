@@ -110,7 +110,7 @@ namespace StateServer.Repositories
 
         private bool ValidId(int id)
         {
-            return id <= GetAll().ToList().Count;
+            return id <= GetAll().ToList().Count && !Games[id].IsDeleted;
         }
 
         IRepository<GameDTO> IRepository<GameDTO>.GetInstance()
