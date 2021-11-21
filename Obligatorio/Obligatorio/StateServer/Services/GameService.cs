@@ -76,7 +76,7 @@ namespace StateServer
         {
             try
             {
-                GameRepository.Delete(request.Id);
+                GameRepository.GetInstance().Delete(request.Id);
                 var deleteGameResponse = new DeleteGameResponse
                 {
                     Response = true
