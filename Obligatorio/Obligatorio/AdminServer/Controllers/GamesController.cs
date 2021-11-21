@@ -91,14 +91,14 @@ namespace AdminServer.Controllers
             return Ok(response);
         }
 
-        // [HttpPost("{id}/owners")]
-        // public async Task<IActionResult> BuyGame([FromBody] int buyerId, int id)
-        // {
-        //     BuyGameRequest message = new BuyGameRequest{ GameId = id, }
-        //     AddReviewResponse response = await reviewClient.AddReviewAsync(message);
-
-        //     return Ok(response);
-        // }
+        [HttpPost("{id}/owners")]
+        public async Task<IActionResult> BuyGame([FromQuery] string buyerName, int id)
+        {
+            BuyGameRequest message = new BuyGameRequest{ GameId = id, Owner = buyerName };
+            GenResponse response = await client.BuyGameAsync(message);
+            if(response.Ok) Ok(response.Message);
+            return BadRequest(response.Message);
+        }
 
         private string ConvertToString(GamesList list)
         {
