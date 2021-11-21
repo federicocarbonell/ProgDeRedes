@@ -457,7 +457,7 @@ namespace Server
             {
                 await serverHandler.BuyGameAsync(gameId, session.UserLogged);
                 string gameName = await serverHandler.GetGameNameAsync(gameId);
-                PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Juego {gameName} adquirido por el usuario {session.UserLogged}, Fecha: {DateTime.Now}");
+                PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Juego {gameName} adquirido, Fecha: {DateTime.Now}");
                 await SendMessage(client, Encoding.UTF8.GetBytes("Juego adquirido de manera exitosa. \n"));
             }
             catch (Exception e)
