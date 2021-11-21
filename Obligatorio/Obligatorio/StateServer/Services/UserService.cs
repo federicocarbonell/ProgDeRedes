@@ -101,7 +101,7 @@ namespace StateServer.Services
 
         private UserDTO GetByName(string name)
         {
-            return UserRepository.GetAll().Where(x => x.Username.Equals(name)).FirstOrDefault();
+            return UserRepository.GetInstance().GetAll().Where(x => x.Username.Equals(name)).FirstOrDefault();
         }
 
         private UserDTO FromMessage(UserMessage userMessage)
