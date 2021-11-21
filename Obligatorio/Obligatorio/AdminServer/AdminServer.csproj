@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Protos\user.proto" />
     <None Remove="Protos\game.proto" />
+    <None Remove="Protos\user.proto" />
     <None Remove="Protos\review.proto" />
   </ItemGroup>
 

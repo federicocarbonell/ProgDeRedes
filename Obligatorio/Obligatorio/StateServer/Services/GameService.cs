@@ -20,20 +20,22 @@ namespace StateServer
             GameRepository = gameRepo;
         }
 
-        public override Task<AddGameReply> AddGame(GameMessage request, ServerCallContext context)
+        public override Task<GenResponse> AddGame(GameMessage request, ServerCallContext context)
         {
             try
             {
                 GameRepository.GetInstance().Add(FromMessage(request));
-                return Task.FromResult(new AddGameReply
+                return Task.FromResult(new GenResponse
                 {
+                    Ok = true,
                     Message = $"Added game {FromMessage(request).Name} successfully"
                 });
             }
             catch (Exception e)
             {
-                return Task.FromResult(new AddGameReply
+                return Task.FromResult(new GenResponse
                 {
+                    Ok = false,
                     Message = e.Message
                 });
             }
@@ -72,7 +74,7 @@ namespace StateServer
             };
         }
 
-        public override Task<DeleteGameResponse> DeleteGame(GameId request, ServerCallContext context)
+        public override Task<GenResponse> DeleteGame(GameId request, ServerCallContext context)
         {
             try
             {
@@ -81,15 +83,19 @@ namespace StateServer
                 {
                     Response = true
                 };
-                return Task.FromResult(deleteGameResponse);
+                return Task.FromResult(new GenResponse 
+                {
+                    Ok = true,
+                    Message = $"Deleted game with id {request.Id} successfully"
+                });
             }
             catch (Exception e)
             {
-                var deleteGameResponse = new DeleteGameResponse
+                return Task.FromResult(new GenResponse
                 {
-                    Response = false
-                };
-                return Task.FromResult(deleteGameResponse);
+                    Ok = false,
+                    Message = e.Message
+                });
             }
         }
 
@@ -107,24 +113,24 @@ namespace StateServer
             }
         }
 
-        public override Task<ModifyGameResponse> ModifyGame(ModifyGameRequest request, ServerCallContext context)
+        public override Task<GenResponse> ModifyGame(ModifyGameRequest request, ServerCallContext context)
         {
             try
             {
                 GameRepository.GetInstance().Update(request.GameId, FromMessage(request.Game));
-                var modifyGameResponse = new ModifyGameResponse
+                return Task.FromResult(new GenResponse
                 {
-                    Response = true
-                };
-                return Task.FromResult(modifyGameResponse);
+                    Ok = true,
+                    Message = $"Updated game with id {request.GameId} successfully"
+                });
             }
             catch
             {
-                var modifyGameResponse = new ModifyGameResponse
+                return Task.FromResult(new GenResponse
                 {
-                    Response = false
-                };
-                return Task.FromResult(modifyGameResponse);
+                    Ok = false,
+                    Message = $"Deleted game with id {request.GameId} successfully"
+                });
             }
         }
 
@@ -183,24 +189,25 @@ namespace StateServer
             }
         }
 
-        public override Task<BuyGameResponse> BuyGame(BuyGameRequest request, ServerCallContext context)
+        public override Task<GenResponse> BuyGame(BuyGameRequest request, ServerCallContext context)
         {
             try
             {
                 GameRepository.BuyGame(request.GameId, request.Owner);
+                return Task.FromResult(new GenResponse
+                {
+                    Ok = true,
+                    Message = $"User {request.Owner} bought the game with id {request.GameId} successfully"
+                });
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
-                return Task.FromResult(new BuyGameResponse
+                return Task.FromResult(new GenResponse
                 {
-                    Response = false
+                    Ok = false,
+                    Message = e.Message
                 });
             }
-            return Task.FromResult(new BuyGameResponse
-            {
-                Response = true
-            });
         }
 
         public override Task<GamesList> GetAllBoughtGames(GetAllBoughtGamesRequest request, ServerCallContext context)

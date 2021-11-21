@@ -7,16 +7,15 @@ package game;
 
 // The greeting service definition.
 service Game {
-  rpc AddGame (GameMessage) returns (AddGameReply);
+  rpc AddGame (GameMessage) returns (GenResponse);
   rpc GetAllGames (google.protobuf.Empty) returns (GamesList);
   rpc GetAllBoughtGames(GetAllBoughtGamesRequest) returns (GamesList);
-  rpc BuyGame(BuyGameRequest) returns (google.protobuf.Empty);
-  // Investigar como hacer el tema de tuplas.
-  // rpc GetAllByQuery() returns ();
-  rpc GetGameDetail(GameId) returns (GetGameDetailResponse);
-  rpc DeleteGame(GameId) returns (google.protobuf.Empty);
-  rpc ModifyGame(ModifyGameRequest) returns (google.protobuf.Empty);
-  rpc QualifyGame(QualifyGameRequest) returns (google.protobuf.Empty);
+  rpc BuyGame(BuyGameRequest) returns (GenResponse);
+  rpc GetAllByQuery(GetAllByQueryRequest) returns (GetAllByQueryResponse);
+  rpc GetGameDetail(GameId) returns (GameModel);
+  rpc DeleteGame(GameId) returns (GenResponse);
+  rpc ModifyGame(ModifyGameRequest) returns (GenResponse);
+  rpc QualifyGame(QualifyGameRequest) returns (GenResponse);
   rpc GetGameName(GameId) returns (GetGameNameResponse);
 }
 
@@ -27,6 +26,11 @@ message GameMessage {
   string description = 4;
   string coverPath = 5;
   bool isDeleted = 6;
+}
+
+message GenResponse {
+    bool ok = 1;
+    string message = 2;
 }
 
 message AddGameReply {
@@ -46,8 +50,34 @@ message BuyGameRequest {
   string owner = 2;
 }
 
+message BuyGameResponse {
+  bool response = 1;
+}
+
+message GetAllByQueryRequest {
+  int32 queryType = 1;
+  string textQueryData = 2;
+  int32 ratingQueryData = 3;
+}
+
+message GetAllByQueryResponse {
+    string message = 1;
+}
+
 message GameId {
-  int32 gameId = 1;
+  int32 id = 1;
+}
+
+message GameModel {
+  int32 id = 1;
+  string name = 2;
+  string genre = 3;
+  string description = 4;
+  string coverPath = 5;
+}
+
+message GameDetailRequest {
+    int32 gameId = 1;
 }
 
 message GetGameDetailResponse {
@@ -65,6 +95,18 @@ message QualifyGameRequest {
   string content = 3;
 }
 
+message QualifyGameResponse {
+  bool response = 1;
+}
+
 message GetGameNameResponse {
   string gameName = 1;
+}
+
+message DeleteGameResponse {
+  bool response = 1;
+}
+
+message ModifyGameResponse {
+  bool response = 1;
 }

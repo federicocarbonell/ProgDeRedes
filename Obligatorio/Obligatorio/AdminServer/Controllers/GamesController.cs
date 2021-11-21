@@ -48,13 +48,13 @@ namespace AdminServer.Controllers
         public async Task<IActionResult> Get(long id)
         {
             GameDetail response = new GameDetail();
-            GameId gameReq = new GameId { GameId_ = (int)id };
+            GameId gameReq = new GameId { Id = (int)id };
             GameIdMessage reviewReq = new GameIdMessage { Id = (int)id };
 
             var gameInfo = await client.GetGameDetailAsync(gameReq);
             var gameReviews = await reviewClient.GetReviewsByGameIdAsync(reviewReq);
 
-            response.GameInfo = gameInfo.Details;
+            response.GameInfo = $"id = {gameInfo.Id}, name = {gameInfo.Name}, genre = {gameInfo.Genre}, description = {gameInfo.Description}";
             foreach(var review in gameReviews.Reviews)
             {
                 response.GameReviews.Add(ConvertToDTO(review));
@@ -66,7 +66,7 @@ namespace AdminServer.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var request = new GameId { GameId_ = id };
+            var request = new GameId { Id = id };
             await client.DeleteGameAsync(request);
 
             return NoContent();
@@ -90,6 +90,15 @@ namespace AdminServer.Controllers
 
             return Ok(response);
         }
+
+        // [HttpPost("{id}/owners")]
+        // public async Task<IActionResult> BuyGame([FromBody] int buyerId, int id)
+        // {
+        //     BuyGameRequest message = new BuyGameRequest{ GameId = id, }
+        //     AddReviewResponse response = await reviewClient.AddReviewAsync(message);
+
+        //     return Ok(response);
+        // }
 
         private string ConvertToString(GamesList list)
         {

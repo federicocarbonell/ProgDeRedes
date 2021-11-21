@@ -7,15 +7,15 @@ package game;
 
 // The greeting service definition.
 service Game {
-  rpc AddGame (GameMessage) returns (AddGameReply);
+  rpc AddGame (GameMessage) returns (GenResponse);
   rpc GetAllGames (google.protobuf.Empty) returns (GamesList);
   rpc GetAllBoughtGames(GetAllBoughtGamesRequest) returns (GamesList);
-  rpc BuyGame(BuyGameRequest) returns (BuyGameResponse);
+  rpc BuyGame(BuyGameRequest) returns (GenResponse);
   rpc GetAllByQuery(GetAllByQueryRequest) returns (GetAllByQueryResponse);
   rpc GetGameDetail(GameId) returns (GameModel);
-  rpc DeleteGame(GameId) returns (DeleteGameResponse);
-  rpc ModifyGame(ModifyGameRequest) returns (ModifyGameResponse);
-  rpc QualifyGame(QualifyGameRequest) returns (QualifyGameResponse);
+  rpc DeleteGame(GameId) returns (GenResponse);
+  rpc ModifyGame(ModifyGameRequest) returns (GenResponse);
+  rpc QualifyGame(QualifyGameRequest) returns (GenResponse);
   rpc GetGameName(GameId) returns (GetGameNameResponse);
 }
 
@@ -26,6 +26,11 @@ message GameMessage {
   string description = 4;
   string coverPath = 5;
   bool isDeleted = 6;
+}
+
+message GenResponse {
+    bool ok = 1;
+    string message = 2;
 }
 
 message AddGameReply {
