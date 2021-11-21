@@ -33,7 +33,7 @@ namespace AdminServer.Controllers
 
             var reply = await client.GetAllGamesAsync(request).ResponseAsync;
             
-            return Ok(ConvertToString(reply));
+            return Ok(reply.Games);
         }
 
         [HttpPost]
