@@ -313,7 +313,7 @@ namespace Server
             session = await serverHandler.DoLoginAsync(bufferData);
             if (session.Logged)
             {
-                PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Logged in");
+                PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Logged in, Fecha: {DateTime.Now}");
                 Console.WriteLine($"Usuario autenticado : {session.UserLogged}");
                 messageBytes = Encoding.UTF8.GetBytes("TokenAuth");
             }
@@ -335,7 +335,7 @@ namespace Server
         private static async Task GetGamesAsync(TcpClient client, SessionDTO session)
         {
             string games = await serverHandler.GetGamesAsync();
-            PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Juegos {games} obtenidos");
+            PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Juegos {games} obtenidos, Fecha: {DateTime.Now}");
             Console.WriteLine($"Usuario autenticado : {session.UserLogged}");
             await SendMessage(client, Encoding.UTF8.GetBytes(games));
         }
@@ -349,7 +349,7 @@ namespace Server
             try
             {
                 string response = await serverHandler.AddGameAsync(game);
-                PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Juego {game.Name} agregado");
+                PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Juego {game.Name} agregado, Fecha: {DateTime.Now}");
                 await SendMessage(client, Encoding.UTF8.GetBytes("Juego agregado: " + game.Name + "\n" + response));
             }
             catch (Exception e)
@@ -368,7 +368,8 @@ namespace Server
             try
             {
                 bool response = await serverHandler.DeleteGameAsync(id);
-                PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Juego {serverHandler.GetGameNameAsync(id)} borrado");
+                string gameName = await serverHandler.GetGameNameAsync(id);
+                PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Juego {gameName} borrado, Fecha: {DateTime.Now}");
                 await SendMessage(client, Encoding.UTF8.GetBytes("Juego con id: " + id + " borrado \n"));
             }
             catch (Exception e)
@@ -387,7 +388,7 @@ namespace Server
             try
             {
                 var response = await serverHandler.ModifyGameAsync(game.Id, game);
-                PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Juego {game.Name} modificado");
+                PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Juego {game.Name} modificado, Fecha: {DateTime.Now}");
                 await SendMessage(client, Encoding.UTF8.GetBytes("Juego modificado: " + game.Name + "\n"));
             }
             catch (Exception e)
@@ -406,7 +407,8 @@ namespace Server
             try
             {
                 var response = await serverHandler.QualifyGameAsync(gameReview);
-                PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Juego {serverHandler.GetGameNameAsync(gameReview.GameId)} calificado");
+                string gameName = await serverHandler.GetGameNameAsync(gameReview.GameId);
+                PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Juego {gameName} calificado, Fecha: {DateTime.Now}");
                 await SendMessage(client, Encoding.UTF8.GetBytes(response));
             }
             catch (Exception e)
@@ -423,7 +425,8 @@ namespace Server
 
             int gameId = serverHandler.ReceiveId(bufferData);
             string gameDetails = await serverHandler.GetGameDetailAsync(gameId);
-            PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Detalle del juego {serverHandler.GetGameNameAsync(gameId)} visto");
+            string gameName = await serverHandler.GetGameNameAsync(gameId);
+            PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Detalle del juego {gameName} visto, Fecha: {DateTime.Now}");
             await SendMessage(client, Encoding.UTF8.GetBytes(gameDetails));
         }
 
@@ -439,7 +442,7 @@ namespace Server
 
         private static async Task ViewBoughtGamesAsync(TcpClient client, SessionDTO session)
         {
-            PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Vio sus juegos comprados");
+            PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Vio sus juegos comprados, Fecha: {DateTime.Now}");
             var gamesList = await serverHandler.GetAllBoughtGamesAsync(session.UserLogged);
             await SendMessage(client, Encoding.UTF8.GetBytes(gamesList));
         }
@@ -453,7 +456,8 @@ namespace Server
             try
             {
                 await serverHandler.BuyGameAsync(gameId, session.UserLogged);
-                PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Juego {serverHandler.GetGameNameAsync(gameId)} adquirido por el usuario {session.UserLogged}");
+                string gameName = await serverHandler.GetGameNameAsync(gameId);
+                PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Juego {gameName} adquirido por el usuario {session.UserLogged}, Fecha: {DateTime.Now}");
                 await SendMessage(client, Encoding.UTF8.GetBytes("Juego adquirido de manera exitosa. \n"));
             }
             catch (Exception e)
