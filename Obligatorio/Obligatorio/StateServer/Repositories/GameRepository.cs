@@ -36,8 +36,8 @@ namespace StateServer.Repositories
 
         public void Add(GameDTO entity)
         {
-            //if (!ValidName(entity.Name))
-            //    throw new Exception("Ya existe un juego ese nombre, por favor seleccione otro.");
+            if (!ValidName(entity.Name))
+                throw new Exception("Ya existe un juego ese nombre, por favor seleccione otro.");
             lock (GamesLocker)
             {
                 entity.Id = NextId++;
@@ -110,7 +110,7 @@ namespace StateServer.Repositories
 
         private bool ValidId(int id)
         {
-            return id <= GetAll().ToList().Count && !Games[id].IsDeleted;
+            return id <= GetAll().ToList().Count && !Instance.Games[id].IsDeleted;
         }
 
         IRepository<GameDTO> IRepository<GameDTO>.GetInstance()
