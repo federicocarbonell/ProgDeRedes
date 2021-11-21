@@ -111,7 +111,7 @@ namespace StateServer
         {
             try
             {
-                GameRepository.Update(request.GameId, FromMessage(request.Game));
+                GameRepository.GetInstance().Update(request.GameId, FromMessage(request.Game));
                 var modifyGameResponse = new ModifyGameResponse
                 {
                     Response = true

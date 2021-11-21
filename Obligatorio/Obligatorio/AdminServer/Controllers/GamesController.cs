@@ -39,7 +39,7 @@ namespace AdminServer.Controllers
         [HttpPost]
         public async Task<IActionResult> AddGame([FromBody] GameDTO game)
         {
-            var request = new GameMessage { Id = 0, Name = game.Name, CoverPath = game.CoverPath, Description = game.Description, Genre = game.Genre, IsDeleted = false };
+            var request = new GameMessage { Id = 0, Name = game.Name, CoverPath = "undefined", Description = game.Description, Genre = game.Genre, IsDeleted = false };
             var reply = await client.AddGameAsync(request);
             return Ok(reply.Message);
         }
@@ -64,10 +64,20 @@ namespace AdminServer.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(long id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var request = new GameId { GameId_ = (int)id };
+            var request = new GameId { GameId_ = id };
             await client.DeleteGameAsync(request);
+
+            return NoContent();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update([FromBody] GameDTO game, int id)
+        {
+            var request = new GameMessage { Id = id, Name = game.Name, CoverPath = "undefined", Description = game.Description, Genre = game.Genre, IsDeleted = game.IsDeleted };
+            var aux = new ModifyGameRequest { GameId = id, Game = request };
+            var response = await client.ModifyGameAsync(aux);
 
             return NoContent();
         }
