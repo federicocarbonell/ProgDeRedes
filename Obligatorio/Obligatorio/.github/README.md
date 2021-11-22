@@ -1,5 +1,7 @@
 #  Documentación del tercer obligatorio
 
+## Repositorio
+https://github.com/federicocarbonell/ProgDeRedes
 ## Autores
 
 * Federico Carbonell - 224359
@@ -57,7 +59,7 @@ Pruebas en ruta /pruebasPostman
 
 ## Alcance proyecto
 
-### Alcance AdminServer
+### Alcance LogServer
 
 * API REST
 * Permite ver todos los logs o filtrar en funcion de parametros como fecha, usuario, juego.
@@ -196,7 +198,11 @@ Pruebas en ruta /pruebasPostman
 
 Este fue el principal desafío encontrado en este obligatorio. Nos decantamos por la utilización de una clase ServerState que almacenase el estado del servidor durante su ejecución en memoria. Esta clase es estática y aplica el patrón Singleton, al cual le agregamos el uso de una serie de locks para asegurar la integridad de las operaciones sobre la misma. Las operaciones de lectura sobre las listas  de entidades de dominio son de libre acceso, mientras que las de escritura sobre las mismas tienen un lock individual (ej, si el cliente A está escribiendo a la lista de reviews, el cliente B puede al mismo tiempo escribir a la lista de usuarios).
 
-## Protocolo utilizado
+Este fue el manejo previo utilizado para los obligatorios 1 y 2.
+
+En esta instancia se creo un servicio separado que se encargeu de mantener el estado, atrás de una API gRPC. Utiliza de igual forma singletons a la hora de manejar los datos por el mismo motivo. Se utiliza un unico locker a diferencia de la vez pasada que se usaba un locker para lectura y otro para escritura.
+
+## Protocolo propietario
 El protocolo que utilizamos es muy similar al descrito en la letra del obligatorio:
 
 * Es orientado a caracteres.
@@ -220,7 +226,7 @@ Al querer deserializar los datos el servidor, comienza a leer sabiendo que los p
 
 ## Comunicación entre aplicaciones
 
-Para la comunicacion entre aplicaciones utilizamos las tecnologias gRPC, Rabbit Mq, Rest Api y un protocolo propietario. En el diagrama que se encuentra debajo se encuentra especificado como se utilizaron.
+Para la comunicacion entre aplicaciones utilizamos las tecnologias gRPC, Rabbit MQ, Rest Api y un protocolo propietario. En el diagrama que se encuentra debajo se encuentra especificado como se utilizaron.
 
 [<img src="../wiki/.images/comunicaciones.png" width="500"/>](comunicaciones.png)
 ## Arquitectura
