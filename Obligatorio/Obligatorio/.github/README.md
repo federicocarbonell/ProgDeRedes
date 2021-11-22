@@ -51,6 +51,9 @@ Pruebas en ruta /pruebasPostman
 }
 ```
 
+### LOGS
+* GET /logs obtiene los logs generados por el sistema
+* GET /logs?usuario={usuario}&juego={juego}&fecha={fecha} soporta filtrado de la siguiente forma.
 
 ## Alcance proyecto
 
