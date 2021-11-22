@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DTOs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using StateServer.Interfaces;
+using StateServer.Repositories;
+using StateServer.Services;
 
 namespace StateServer
 {
@@ -17,6 +21,9 @@ namespace StateServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
+            services.AddScoped<IRepository<GameDTO>, GameRepository>();
+            services.AddScoped<IRepository<ReviewDTO>, ReviewRepository>();
+            services.AddScoped<IRepository<UserDTO>, UserRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -31,7 +38,9 @@ namespace StateServer
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>();
+                endpoints.MapGrpcService<GameService>();
+                endpoints.MapGrpcService<ReviewService>();
+                endpoints.MapGrpcService<UserService>();
 
                 endpoints.MapGet("/", async context =>
                 {
