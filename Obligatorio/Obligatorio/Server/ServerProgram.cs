@@ -9,8 +9,6 @@ using System.Threading.Tasks;
 using DTOs;
 using Microsoft.Extensions.Configuration;
 using ProtocolLibrary;
-using StateServices;
-using StateServices.DomainEntities;
 using RabbitMQ.Client;
 
 namespace Server
@@ -50,9 +48,7 @@ namespace Server
             tcpListener = new TcpListener(listenerEndPoint);
             tcpListener.Start();
             // abro un hilo
-            GameRepository gameRepository = new GameRepository();
             Task.Run(() => ListenForConnectionsAsync(tcpListener));
-            UserRepository userRepo = new UserRepository();
 
             clientEndPoint = new IPEndPoint(IPAddress.Parse(ip), port + 1);
             tcpClient = new TcpClient(clientEndPoint);
@@ -69,18 +65,6 @@ namespace Server
                         case 0:
                             _exit = true;
                             break;
-                        //case 1:
-                        //    PrintAddUser();
-                        //    break;
-                        //case 2:
-                        //    PrintDeleteUser();
-                        //    break;
-                        //case 3:
-                        //    PrintModifyUser();
-                        //    break;
-                        //case 4:
-                        //    PrintViewUsers();
-                        //    break;
                         default:
                             break;
                     }
@@ -122,73 +106,6 @@ namespace Server
         }
 
         // FUNCIONES QUEUE FIN
-
-        //private static void PrintViewUsers()
-        //{
-        //    var users = authService.GetUsers();
-
-        //    foreach(User u in users.Where(x => x.IsDeleted == false))
-        //    {
-        //        Console.WriteLine($"Id: {u.Id}, username: {u.Username}");
-        //    }                
-        //}
-
-        //private static void PrintModifyUser()
-        //{
-        //    Console.Write("Modificar usuario con el id: ");
-        //    int id = Int32.Parse(Console.ReadLine());
-
-        //    Console.Write("Username: ");
-        //    var user = Console.ReadLine();
-
-        //    Console.Write("Password: ");
-        //    var pass = Console.ReadLine();
-
-        //    try
-        //    {
-        //        authService.UpdateUser(id, user, pass);
-        //        Console.WriteLine($"Usuario {user} modificado con exito");
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine($"{e.Message}");
-        //    }
-        //}
-
-        //private static void PrintDeleteUser()
-        //{
-        //    Console.Write("Borrar usuario con el id: ");
-        //    int id = Int32.Parse(Console.ReadLine());
-
-        //    try
-        //    {
-        //        authService.DeleteUser(id);
-        //        Console.WriteLine($"Usuario con el id {id} borrado con exito");
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine($"{e.Message}");
-        //    }
-        //}
-
-        //private static void PrintAddUser()
-        //{
-        //    Console.Write("Username: ");
-        //    var user = Console.ReadLine();
-
-        //    Console.Write("Password: ");
-        //    var pass = Console.ReadLine();
-
-        //    try
-        //    {
-        //        User u = authService.AddUser(user, pass);
-        //        Console.WriteLine($"Usuario {user} dado de alta con exito");
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine($"{e.Message}");
-        //    }
-        //}
 
         private static void ObtainConfiguration()
         {
