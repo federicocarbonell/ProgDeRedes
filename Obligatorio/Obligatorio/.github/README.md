@@ -1,4 +1,4 @@
-#  Documentación del primer obligatorio
+#  Documentación del tercer obligatorio
 
 ## Autores
 
@@ -7,14 +7,42 @@
 
 ## Manual de usuario
 
-1. Iniciar aplicación Server.
- - Ejecutar server.exe.
-2. Iniciar aplicación Client.
- - Ejecutar client.exe
-3. Utilizar la aplicación
- - [Comandos disponibles](#comandos)
+1. Iniciar aplicación StateServer
+    - Ejecutar ServerEstado/StateServer.exe
+2. Iniciar resto de las aplicaciones
+    - Ejecutar AdminAPI/AdminServer.exe
+    - Ejecutar ServerCliente/Server.exe
+    - Ejecutar Cliente/Client.exe
+3. Iniciar aplicación LogAPI
+    - Esta aplicación se la puede ejecutar desde el principio, luego de haber operado, etc dado que los mensajes existen mas allá de el consumidor.
+    - Ejecutar LogsAPI/LogAPI.exe
 
-## Alcance Cliente
+## Alcance proyecto
+
+### Alcance AdminServer
+
+* API REST
+* Permite ver todos los logs o filtrar en funcion de parametros como fecha, usuario, juego.
+* Ejemplos de request en la coleccion de postman.
+### Alcance AdminServer
+
+* API REST
+* ABM de juegos, usuarios y posibilidad de asociarlos
+* Ejemplos de request en la coleccion de postman.
+
+### Alcance StateServer
+
+* API gRPC
+* Fuente autoritaria de datos.
+
+### Alcance Server
+
+* Servidor para protocolo propietario.
+* Utiliza StateServer como fuente de datos.
+
+### Alcance Cliente
+
+* Cliente para protocolo propietario
 
 * Conexión y desconexión al servidor.
 
