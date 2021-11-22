@@ -67,24 +67,32 @@ namespace Server
             var gameInfo = await gameClient.GetGameDetailAsync(new GameId { Id = gameId });
             var reviews = await reviewClient.GetReviewsByGameIdAsync(new GameIdMessage { Id = gameId });
 
-            string details = "";
-            details += $"Id: {gameInfo.Id}, Nombre: {gameInfo.Name} \n";
-            details += $"Categoria: {gameInfo.Genre} , Descripcion: {gameInfo.Description} \n";
-
-            double rating = 0;
-            int counter = 0;
-
-            details += "Reviews: \n";
-            foreach (var review in reviews.Reviews)
+            //Add review.ok too
+            if (gameInfo.Ok)
             {
-                details += $"Id: {review.Id}, Rating: {review.Rating}" +
-                    $", Reseña: {review.Content}, \n";
-                rating += review.Rating;
-                counter++;
-            }
-            details += $"Rating promedio: {rating / counter} \n";
+                string details = "";
+                details += $"Id: {gameInfo.Id}, Nombre: {gameInfo.Name} \n";
+                details += $"Categoria: {gameInfo.Genre} , Descripcion: {gameInfo.Description} \n";
 
-            return details;
+                double rating = 0;
+                int counter = 0;
+
+                details += "Reviews: \n";
+                foreach (var review in reviews.Reviews)
+                {
+                    details += $"Id: {review.Id}, Rating: {review.Rating}" +
+                        $", Reseña: {review.Content}, \n";
+                    rating += review.Rating;
+                    counter++;
+                }
+                details += $"Rating promedio: {rating / counter} \n";
+
+                return details;
+            }
+            else
+            {
+                throw new Exception(gameInfo.Message);
+            }
         }
 
         public async Task<string> QualifyGameAsync(ReviewDTO review)
@@ -153,7 +161,13 @@ namespace Server
             {
                 Id = gameId
             });
-            return response.GameName;
+            if (response.Ok)
+            {
+                return response.GameName;
+            } else
+            {
+                throw new Exception(response.GameName);
+            }
         }
 
         public async Task BuyGameAsync (int gameId, string buyer)
@@ -163,6 +177,10 @@ namespace Server
                 GameId = gameId,
                 Owner = buyer
             });
+            if (!response.Ok)
+            {
+                throw new Exception(response.Message);
+            }
         }
 
         public async Task<string> GetAllBoughtGamesAsync(string owner)

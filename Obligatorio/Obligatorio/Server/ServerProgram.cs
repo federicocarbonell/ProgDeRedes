@@ -341,10 +341,18 @@ namespace Server
             await ReceiveDataAsync(client, header.IDataLength, bufferData);
 
             int gameId = serverHandler.ReceiveId(bufferData);
-            string gameDetails = await serverHandler.GetGameDetailAsync(gameId);
-            string gameName = await serverHandler.GetGameNameAsync(gameId);
-            PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Detalle del juego {gameName} visto, Fecha: {DateTime.Now}");
-            await SendMessage(client, Encoding.UTF8.GetBytes(gameDetails));
+            try
+            {
+                string gameDetails = await serverHandler.GetGameDetailAsync(gameId);
+                string gameName = await serverHandler.GetGameNameAsync(gameId);
+                PublishMessage(channel, $"Usuario: {session.UserLogged},Accion: Detalle del juego {gameName} visto, Fecha: {DateTime.Now}");
+                await SendMessage(client, Encoding.UTF8.GetBytes(gameDetails));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                await SendMessage(client, Encoding.UTF8.GetBytes(e.Message));
+            }
         }
 
         private static async Task SearchForGameAsync(Header header, TcpClient client)

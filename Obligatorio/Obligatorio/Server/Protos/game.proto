@@ -5,7 +5,6 @@ option csharp_namespace = "Server";
 
 package game;
 
-// The greeting service definition.
 service Game {
   rpc AddGame (GameMessage) returns (GenResponse);
   rpc GetAllGames (google.protobuf.Empty) returns (GamesList);
@@ -61,7 +60,7 @@ message GetAllByQueryRequest {
 }
 
 message GetAllByQueryResponse {
-    string message = 1;
+  string message = 1;
 }
 
 message GameId {
@@ -74,10 +73,12 @@ message GameModel {
   string genre = 3;
   string description = 4;
   string coverPath = 5;
+  bool ok = 6;
+  string message = 7;
 }
 
 message GameDetailRequest {
-    int32 gameId = 1;
+  int32 gameId = 1;
 }
 
 message GetGameDetailResponse {
@@ -100,7 +101,8 @@ message QualifyGameResponse {
 }
 
 message GetGameNameResponse {
-  string gameName = 1;
+  bool ok = 1;
+  string gameName = 2;
 }
 
 message DeleteGameResponse {

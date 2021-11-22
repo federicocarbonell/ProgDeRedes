@@ -109,7 +109,11 @@ namespace StateServer
             }
             catch (Exception e)
             {
-                return Task.FromResult(new GameModel());
+                return Task.FromResult(new GameModel
+                {
+                    Ok = false,
+                    Message = e.Message
+                });
             }
         }
 
@@ -174,7 +178,7 @@ namespace StateServer
         {
             try
             {
-                GameDTO game = GameRepository.Get(request.Id);
+                GameDTO game = GameRepository.GetInstance().Get(request.Id);
                 return Task.FromResult(new GetGameNameResponse
                 {
                     GameName = game.Name
@@ -184,7 +188,8 @@ namespace StateServer
             {
                 return Task.FromResult(new GetGameNameResponse
                 {
-                    GameName = ""
+                    Ok = false,
+                    GameName = e.Message
                 });
             }
         }
@@ -193,7 +198,7 @@ namespace StateServer
         {
             try
             {
-                GameRepository.BuyGame(request.GameId, request.Owner);
+                GameRepository.GetInstance().BuyGame(request.GameId, request.Owner);
                 return Task.FromResult(new GenResponse
                 {
                     Ok = true,
@@ -214,7 +219,7 @@ namespace StateServer
         {
             try
             {
-                var games = GameRepository.GetAll();
+                var games = GameRepository.GetInstance().GetAll();
                 var boughtGames = new GamesList();
                 foreach (var game in games)
                 {
