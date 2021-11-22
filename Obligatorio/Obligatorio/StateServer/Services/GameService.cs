@@ -104,7 +104,7 @@ namespace StateServer
             try
             {
                 GameDTO game = GameRepository.Get(request.Id);
-                var gameDetails = new GameModel { Id = game.Id, Name = game.Name, Genre = game.Genre, Description = game.Description, CoverPath = game.CoverPath };
+                var gameDetails = new GameModel { Id = game.Id, Name = game.Name, Genre = game.Genre, Description = game.Description, CoverPath = game.CoverPath , Ok = true};
                 return Task.FromResult(gameDetails);
             }
             catch (Exception e)
@@ -181,6 +181,7 @@ namespace StateServer
                 GameDTO game = GameRepository.GetInstance().Get(request.Id);
                 return Task.FromResult(new GetGameNameResponse
                 {
+                    Ok = true,
                     GameName = game.Name
                 });
             }
