@@ -111,7 +111,7 @@ namespace LogApi.Services
                 }
             }
 
-            return filteredList.Count() > 0 ? Task.FromResult(filteredList) : Task.FromResult(messages);
+            return (game != null || date != null || user != null) ? Task.FromResult(filteredList) : Task.FromResult(messages);
         }
     }
 }
