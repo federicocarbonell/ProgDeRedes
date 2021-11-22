@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "1cb7ad13-5274-4cad-98d6-396848bc37e3",
+		"_postman_id": "1a20a19a-f7fb-46dd-9ce6-4608ff548c47",
 		"name": "ProgRedes",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -265,6 +265,47 @@
 								{
 									"key": "buyerName",
 									"value": "admin"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Logs",
+			"item": [
+				{
+					"name": "obtener logs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:53113/Logs",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "53113",
+							"path": [
+								"Logs"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "admin",
+									"disabled": true
+								},
+								{
+									"key": "juego",
+									"value": "Cyberpunk",
+									"disabled": true
+								},
+								{
+									"key": "fecha",
+									"value": "11/22/2021",
+									"disabled": true
 								}
 							]
 						}
