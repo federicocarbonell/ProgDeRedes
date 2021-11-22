@@ -17,7 +17,8 @@
     - Esta aplicación se la puede ejecutar desde el principio, luego de haber operado, etc dado que los mensajes existen mas allá de el consumidor.
     - Ejecutar LogsAPI/LogAPI.exe
 
-## Endpoints
+## Endpoints APIs REST
+Pruebas en ruta /pruebasPostman
 
 ### USERS
 * POST /users crea usuario (userDTO en el body)
