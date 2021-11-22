@@ -11,6 +11,7 @@ service User {
     rpc DeleteUser(UserIdMessage) returns (GenericResponse);
     rpc GetUsers(google.protobuf.Empty) returns(UserListMessage);
     rpc ModifyUser(UserMessage) returns (GenericResponse);
+    rpc GetUsername(UserIdMessage) returns (GenericResponse);
 }
 
 message UserMessage {

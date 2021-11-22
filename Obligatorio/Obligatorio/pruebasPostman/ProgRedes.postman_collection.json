@@ -1,0 +1,277 @@
+{
+	"info": {
+		"_postman_id": "1cb7ad13-5274-4cad-98d6-396848bc37e3",
+		"name": "ProgRedes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Usuarios",
+			"item": [
+				{
+					"name": "obtener usuarios",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Name\": \"Fede\",\r\n    \"CoverPath\": \"Fede\",\r\n    \"Description\": \"Fede\",\r\n    \"Genre\": \"Fede\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:54826/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "54826",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "crear usuario",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"prueba\",\r\n    \"password\": \"prueba\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:54826/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "54826",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "borrar usuario",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:54826/users/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "54826",
+							"path": [
+								"users",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "actualizar usuario",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"adminMod\",\r\n    \"password\": \"adminMod\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:54826/users/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "54826",
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "comprar juego",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:54826/users/1/games?gameId=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "54826",
+							"path": [
+								"users",
+								"1",
+								"games"
+							],
+							"query": [
+								{
+									"key": "gameId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Juegos",
+			"item": [
+				{
+					"name": "obtener juegos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:54826/games",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "54826",
+							"path": [
+								"games"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "crear juego",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"cyberpunk 2077\",\r\n    \"genre\": \"rpg\",\r\n    \"description\": \"inspired by the cyberpunk tabletop game\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:54826/games",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "54826",
+							"path": [
+								"games"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "borrar juego",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:54826/games/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "54826",
+							"path": [
+								"games",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "actualizar juego",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"cyberpunk 2078\",\r\n    \"genre\": \"rpg\",\r\n    \"description\": \"inspired by the cyberpunk tabletop game\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:54826/games/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "54826",
+							"path": [
+								"games",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "comprar juego",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:54826/games/1/owners?buyerName=admin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "54826",
+							"path": [
+								"games",
+								"1",
+								"owners"
+							],
+							"query": [
+								{
+									"key": "buyerName",
+									"value": "admin"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

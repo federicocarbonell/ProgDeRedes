@@ -17,12 +17,15 @@ namespace AdminServer.Controllers
         
         private User.UserClient client;
 
+        private Game.GameClient gameClient;
+
         public UsersController()
         {
             AppContext.SetSwitch(
                 "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             channel = GrpcChannel.ForAddress("http://localhost:5000");
             client = new User.UserClient(channel);
+            gameClient = new Game.GameClient(channel);
         }
 
         [HttpGet]
@@ -77,6 +80,23 @@ namespace AdminServer.Controllers
             if(reply.Ok) return Ok();
             
             return BadRequest(reply.Messsage);
+        }
+
+        [HttpPost("{buyerId}/games")]
+        public async Task<IActionResult> BuyGame([FromQuery] int gameId, int buyerId)
+        {
+            var getUsernameMessage = new UserIdMessage { Id = buyerId };
+            GenericResponse usernameResponse = await client.GetUsernameAsync(getUsernameMessage);
+            
+            BuyGameRequest message = new BuyGameRequest 
+            { 
+                GameId = gameId,
+                Owner = usernameResponse.Messsage
+            };
+            GenResponse response = await gameClient.BuyGameAsync(message);
+            
+            if (response.Ok) Ok(response.Message);
+            return BadRequest(response.Message);
         }
     }
 }

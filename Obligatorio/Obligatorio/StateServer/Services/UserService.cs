@@ -44,6 +44,25 @@ namespace StateServer.Services
             });
         }
 
+        public override Task<GenericResponse> GetUsername(UserIdMessage request, ServerCallContext context)
+        {
+            var users = UserRepository.GetInstance().GetAll();
+            GenericResponse response = new GenericResponse();
+
+            if(users.Count >= request.Id)
+            {
+                response.Ok = true;
+                response.Messsage = users[request.Id - 1].Username;
+            }
+            else
+            {
+                response.Ok = false;
+                response.Messsage = "undefined";
+            }
+
+            return Task.FromResult(response);
+        }
+
         public override Task<GenericResponse> AddUser(UserMessage request, ServerCallContext context)
         {
             try
