@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "1a20a19a-f7fb-46dd-9ce6-4608ff548c47",
+		"_postman_id": "627b7bdc-5277-4d33-a2c6-3b6de4c5c300",
 		"name": "ProgRedes",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -10,21 +10,9 @@
 			"item": [
 				{
 					"name": "obtener usuarios",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"Name\": \"Fede\",\r\n    \"CoverPath\": \"Fede\",\r\n    \"Description\": \"Fede\",\r\n    \"Genre\": \"Fede\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
 							"raw": "http://localhost:54826/users",
 							"protocol": "http",
@@ -282,8 +270,8 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:53113/Logs",
-							"protocol": "https",
+							"raw": "http://localhost:53113/Logs",
+							"protocol": "http",
 							"host": [
 								"localhost"
 							],
@@ -299,7 +287,7 @@
 								},
 								{
 									"key": "juego",
-									"value": "Cyberpunk",
+									"value": "cyberpunk",
 									"disabled": true
 								},
 								{

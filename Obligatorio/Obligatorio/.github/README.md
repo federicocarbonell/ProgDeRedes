@@ -17,6 +17,40 @@
     - Esta aplicación se la puede ejecutar desde el principio, luego de haber operado, etc dado que los mensajes existen mas allá de el consumidor.
     - Ejecutar LogsAPI/LogAPI.exe
 
+## Endpoints
+
+### USERS
+* POST /users crea usuario (userDTO en el body)
+* GET /users ver todos los usuarios
+* DELETE /users/{id} borra (logico) usuario con id dado
+* PUT /users/{id} actualiza usuario (userDTO en el body)
+* POST /users/{id}/games?gameId={gameId} asocia al juego con el id $gameId al usuario con el id $id
+
+```javascript
+//userDTO
+{
+    "username": "prueba",
+    "password": "prueba"
+}
+```
+
+### GAMES
+* POST /games crea juego (gameDTO en el body)
+* GET /games ver todos los juegos
+* DELETE /games/{id} borra (logico) juego con id dado
+* PUT /games/{id} actualiza juego (gameDTO en el body)
+* POST /games/{id}/owners?buyerName={buyerName} asocia al juego con el id $gameId al usuario con el username(secondary key) $buyerName
+
+```javascript
+//gameDTO
+{
+    "name": "cyberpunk 2077",
+    "genre": "rpg",
+    "description": "inspired by the cyberpunk tabletop game"
+}
+```
+
+
 ## Alcance proyecto
 
 ### Alcance AdminServer
