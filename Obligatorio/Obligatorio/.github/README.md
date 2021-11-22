@@ -214,6 +214,12 @@ En ese caso, nuestra trama de datos tendria el siguiente formato => |4|0|0|0|1|5
 
 Al querer deserializar los datos el servidor, comienza a leer sabiendo que los primeros 4 bytes se corresponden al largo del dato. Luego, asigna al dato el valor correspondiente a la deserializacion de los siguientes cuatro bytes.
 
+
+## Comunicación entre aplicaciones
+
+Para la comunicacion entre aplicaciones utilizamos las tecnologias gRPC, Rabbit Mq, Rest Api y un protocolo propietario. En el diagrama que se encuentra debajo se encuentra especificado como se utilizaron.
+
+[<img src="../wiki/.images/comunicaciones.png" width="500"/>](comunicaciones.png)
 ## Arquitectura
 
 La arquitectura del sistema esta compuesta por un servidor y un cliente, ellos se comunicaran mediante el protocolo TCP. Como se menciono previamente, se pueden conectar diversos clientes al mismo servidor.
@@ -227,15 +233,15 @@ Los ejecutables mencionados se pueden deployar en un mismo host, no es necesario
   - Client.dll
   - ProtocolLibrary.dll
 
-[<img src="../wiki/.images/architecture.png" width="500"/>](architecture.png)
+[<img src="../wiki/.images/arquitectura.png" width="500"/>](arquitectura.png)
 
-### RESPONSABILIDADES DE LOS PAQUETES
+### Responsabilidad de los paquetes
 
 * Paquete Server
 
-    Es el encargado del servidor, recibe las consultas, las procesa y envía mensajes al cliente.
+    Es el encargado del servidor, recibe las consultas, las procesa y retorna la informació.
 
-* Paquete StateServices
+* Paquete StateServer
 
     Es el encargado de manejar la consistencia de datos entre conexiones.
 
@@ -246,6 +252,14 @@ Los ejecutables mencionados se pueden deployar en un mismo host, no es necesario
 * Paquete Client
 
     Es el encargado del servicio de cliente que va a comunicarse con el Servidor. Procesa el input del usuario para luego enviarlo al servidor y tambien recibir y mostrar mensajes del mismo.
+
+* Paquete AdminServer
+
+    Es la api rest encargada de la administracion de usuarios y juegos.
+
+* Paquete LogApi
+
+    Es la api rest encargada de obtener y filtrar logs..
 
 ## Comandos
 
