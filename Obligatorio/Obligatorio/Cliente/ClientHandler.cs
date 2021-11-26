@@ -31,15 +31,15 @@ namespace Client
 
             clientIpEndPoint = new IPEndPoint(IPAddress.Parse(ClientIp), ClientPort);
             tcpClient = new TcpClient(clientIpEndPoint);
-           
-            ConnectToServer();
+
+            Task.Run(() => ConnectToServerAsync());
         }
         
-        public void ConnectToServer()
+        public async Task ConnectToServerAsync()
         {
             try
             {
-                tcpClient.ConnectAsync(IPAddress.Parse(ServerIp), ServerPort);
+                await tcpClient.ConnectAsync(IPAddress.Parse(ServerIp), ServerPort);
             }
             catch (Exception e)
             {
